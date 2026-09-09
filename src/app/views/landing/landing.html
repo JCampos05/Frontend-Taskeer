@@ -1,0 +1,179 @@
+<a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+
+<header class="nav">
+  <div class="nav__interior">
+    <span class="marca">Taskeer</span>
+
+    <nav class="nav__links" aria-label="Navegación principal">
+      <a href="#caracteristicas">Características</a>
+      <a href="#planes">Planes</a>
+    </nav>
+
+    <div class="nav__acciones">
+      <a routerLink="/login" class="boton-nav boton-nav--fantasma">Iniciar sesión</a>
+      <a routerLink="/crear-cuenta" class="boton-nav boton-nav--solido">Crear cuenta</a>
+    </div>
+  </div>
+</header>
+
+<main id="contenido">
+  <section class="hero">
+    <div class="hero__texto">
+      <span class="etiqueta">Kanban simple, sin abrumarte</span>
+      <h1>Organiza tus tareas sin perder de vista lo importante</h1>
+      <p>
+        Tableros kanban, recordatorios que llegan a tiempo, y espacios de trabajo para compartir
+        con tu equipo — todo en un mismo lugar, pensado para no complicarte.
+      </p>
+      <div class="hero__acciones">
+        <a routerLink="/crear-cuenta" class="boton-nav boton-nav--solido boton-nav--grande">
+          Empezar gratis
+        </a>
+        <a routerLink="/login" class="boton-nav boton-nav--fantasma boton-nav--grande">
+          Ya tengo cuenta
+        </a>
+      </div>
+    </div>
+
+    <div class="hero__visual" aria-hidden="true">
+      <div class="mockup">
+        <div class="mockup__barra">
+          <span class="mockup__punto"></span>
+          <span class="mockup__punto"></span>
+          <span class="mockup__punto"></span>
+          <span class="mockup__url">app.taskeer.com/sprint-actual</span>
+        </div>
+
+        <div class="mockup__columnas">
+          <div class="mockup__columna">
+            <span class="mockup__columna-titulo">Por hacer</span>
+            <div class="mockup__tarjeta">
+              <span class="mockup__etiqueta mockup__etiqueta--azul"></span>
+              Diseñar pantalla de login
+            </div>
+            <div class="mockup__tarjeta">
+              <span class="mockup__etiqueta mockup__etiqueta--verde"></span>
+              Revisar PR #12
+            </div>
+          </div>
+
+          <div class="mockup__columna">
+            <span class="mockup__columna-titulo">En progreso</span>
+            <div class="mockup__tarjeta mockup__tarjeta--activa">
+              <span class="mockup__etiqueta mockup__etiqueta--morado"></span>
+              Configurar base de datos
+            </div>
+          </div>
+
+          <div class="mockup__columna">
+            <span class="mockup__columna-titulo">Hecho</span>
+            <div class="mockup__tarjeta mockup__tarjeta--tenue">
+              <span class="mockup__etiqueta mockup__etiqueta--azul"></span>
+              Definir paleta de colores
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="insignia insignia--recordatorio">
+        <span class="insignia__icono">
+          <app-svg-campana />
+        </span>
+        <div>
+          <strong>Recordatorio</strong>
+          <span>Entrega mañana, 10:00</span>
+        </div>
+      </div>
+
+      <div class="insignia insignia--equipo">
+        <span class="avatares">
+          <span class="avatar"></span>
+          <span class="avatar"></span>
+          <span class="avatar"></span>
+        </span>
+        <span>+3 en este workspace</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="caracteristicas" id="caracteristicas">
+    <div class="caracteristicas__encabezado">
+      <h2>Todo lo que necesitas, nada de lo que sobra</h2>
+      <p>Construido para que organizarte no se sienta como otra tarea pendiente.</p>
+    </div>
+
+    <div class="caracteristicas__rejilla">
+      @for (feature of features; track feature.titulo) {
+        <article class="tarjeta-feature">
+          <span class="tarjeta-feature__icono">
+            @switch (feature.icono) {
+              @case ('tablero') {
+                <app-svg-tablero />
+              }
+              @case ('campana') {
+                <app-svg-campana />
+              }
+              @case ('usuarios') {
+                <app-svg-usuarios />
+              }
+              @case ('candado') {
+                <app-svg-candado />
+              }
+            }
+          </span>
+          <h3>{{ feature.titulo }}</h3>
+          <p>{{ feature.descripcion }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="planes" id="planes">
+    <div class="caracteristicas__encabezado">
+      <h2>Un plan para cada tamaño de equipo</h2>
+      <p>
+        Todos empiezan en Free — subir de plan con cobro real todavía está en construcción,
+        así que por ahora cualquier botón te lleva a crear tu cuenta.
+      </p>
+    </div>
+
+    <div class="planes__rejilla">
+      @for (plan of planes; track plan.nombre) {
+        <article class="tarjeta-plan" [class.tarjeta-plan--destacado]="plan.destacado">
+          @if (plan.destacado) {
+            <span class="tarjeta-plan__insignia">Más elegido</span>
+          }
+          <h3>{{ plan.nombre }}</h3>
+          <p class="tarjeta-plan__precio">{{ plan.precio }}</p>
+          <p class="tarjeta-plan__descripcion">{{ plan.descripcion }}</p>
+          <ul class="tarjeta-plan__lista">
+            @for (caracteristica of plan.caracteristicas; track caracteristica) {
+              <li>{{ caracteristica }}</li>
+            }
+          </ul>
+          <a
+            routerLink="/crear-cuenta"
+            class="boton-nav"
+            [class.boton-nav--solido]="plan.destacado"
+            [class.boton-nav--fantasma]="!plan.destacado"
+          >
+            {{ plan.textoBoton }}
+          </a>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Empieza a organizarte hoy</h2>
+    <p>Crear tu cuenta toma menos de un minuto — sin tarjeta de crédito.</p>
+    <a routerLink="/crear-cuenta" class="boton-nav boton-nav--claro boton-nav--grande">
+      Crear cuenta gratis
+    </a>
+  </section>
+</main>
+
+<footer class="pie-pagina">
+  <span class="marca marca--pie">Taskeer</span>
+  <span>© {{ anioActual }} Taskeer. Todos los derechos reservados.</span>
+</footer>

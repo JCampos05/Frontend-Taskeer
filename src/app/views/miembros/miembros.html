@@ -1,0 +1,175 @@
+<div class="contenido">
+  <header class="encabezado">
+    <div>
+      <a [routerLink]="['/app/workspaces', workspaceId]" class="volver">← {{ workspaceNombre() || 'Tablero' }}</a>
+      <h1>Miembros</h1>
+      <p>Quién forma parte de este workspace y qué puede hacer.</p>
+    </div>
+    @if (puedeGestionar(miRol())) {
+      <button
+        type="button"
+        class="boton boton--primario"
+        (click)="mostrarFormularioInvitar.set(!mostrarFormularioInvitar())"
+      >
+        {{ mostrarFormularioInvitar() ? 'Cancelar' : 'Invitar' }}
+      </button>
+    }
+  </header>
+
+  @if (errorMensaje()) {
+    <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
+  }
+
+  @if (mostrarFormularioInvitar()) {
+    <form [formGroup]="formularioInvitar" (ngSubmit)="invitar()" class="formulario-inline" novalidate>
+      <div class="campo">
+        <label for="email">Correo</label>
+        <input id="email" type="email" formControlName="email" autocomplete="off" />
+      </div>
+      <div class="campo">
+        <label for="role">Rol</label>
+        <select id="role" formControlName="role">
+          @for (rol of rolesAsignables; track rol) {
+            <option [value]="rol">{{ etiquetaRol[rol] }}</option>
+          }
+        </select>
+      </div>
+      <button type="submit" class="boton boton--primario" [disabled]="invitando()">
+        {{ invitando() ? 'Invitando…' : 'Enviar invitación' }}
+      </button>
+    </form>
+  }
+
+  @if (cargando()) {
+    <p class="estado-vacio">Cargando…</p>
+  } @else {
+    <section class="seccion">
+      <h2>{{ miembros().length }} {{ miembros().length === 1 ? 'miembro' : 'miembros' }}</h2>
+      <div class="lista">
+        @for (member of miembros(); track member.userId) {
+          <article class="fila">
+            <div class="avatar">{{ member.displayName.charAt(0).toUpperCase() }}</div>
+            <div class="fila__info">
+              <p class="fila__nombre">
+                {{ member.displayName }}
+                @if (member.userId === miId) {
+                  <span class="etiqueta-tu">Tú</span>
+                }
+              </p>
+              <p class="fila__correo">{{ member.email }}</p>
+            </div>
+
+            @if (puedeGestionar(miRol()) && member.role !== 'OWNER') {
+              <select
+                class="select-rol"
+                [value]="member.role"
+                (change)="cambiarRol(member, $any($event.target).value)"
+              >
+                @for (rol of rolesAsignables; track rol) {
+                  <option [value]="rol">{{ etiquetaRol[rol] }}</option>
+                }
+              </select>
+            } @else {
+              <span class="etiqueta-rol">{{ etiquetaRol[member.role] }}</span>
+            }
+
+            <div class="fila__acciones">
+              @if (puedeTransferir(member)) {
+                <button type="button" class="boton boton--secundario boton--chico" (click)="transfiriendoA.set(member)">
+                  Hacer propietario
+                </button>
+              }
+              @if (puedeQuitar(member)) {
+                <button
+                  type="button"
+                  class="boton-icono"
+                  (click)="quitandoUserId.set(member.userId)"
+                  aria-label="Quitar del workspace"
+                >
+                  <app-svg-basura />
+                </button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+
+      @if (miRol() && miRol() !== 'OWNER') {
+        <button type="button" class="boton boton--secundario boton--peligro-texto" (click)="saliendo.set(true)">
+          Salir del workspace
+        </button>
+      }
+    </section>
+
+    @if (puedeGestionar(miRol())) {
+      <section class="seccion">
+        <h2>Invitaciones</h2>
+        @if (invitaciones().length === 0) {
+          <p class="estado-vacio estado-vacio--chico">No hay invitaciones enviadas todavía.</p>
+        } @else {
+          <div class="lista">
+            @for (invitacion of invitaciones(); track invitacion.id) {
+              <article class="fila">
+                <div class="fila__info">
+                  <p class="fila__nombre">{{ invitacion.email }}</p>
+                  <p class="fila__correo">{{ etiquetaRol[invitacion.role] }}</p>
+                </div>
+
+                <span
+                  class="etiqueta-estado"
+                  [class.etiqueta-estado--pendiente]="invitacion.status === 'PENDING' && !invitacionVencida(invitacion)"
+                  [class.etiqueta-estado--vencida]="invitacionVencida(invitacion)"
+                >
+                  {{ invitacionVencida(invitacion) ? 'Vencida' : etiquetaEstadoInvitacion[invitacion.status] }}
+                </span>
+
+                @if (invitacion.status === 'PENDING' && !invitacionVencida(invitacion)) {
+                  <button
+                    type="button"
+                    class="boton boton--secundario boton--chico"
+                    (click)="revocarInvitacion(invitacion)"
+                  >
+                    Revocar
+                  </button>
+                }
+              </article>
+            }
+          </div>
+        }
+      </section>
+    }
+  }
+</div>
+
+@if (quitandoUserId()) {
+  <app-modal-confirmacion
+    titulo="Quitar del workspace"
+    mensaje="Esta persona perderá acceso a todos los tableros de este workspace."
+    textoConfirmar="Quitar"
+    [confirmando]="procesando()"
+    (confirmar)="confirmarQuitar()"
+    (cancelar)="quitandoUserId.set(null)"
+  />
+}
+
+@if (saliendo()) {
+  <app-modal-confirmacion
+    titulo="Salir del workspace"
+    mensaje="Perderás acceso a todos sus tableros. Alguien con rol de administrador podrá volver a invitarte."
+    textoConfirmar="Salir"
+    [confirmando]="procesando()"
+    (confirmar)="confirmarSalir()"
+    (cancelar)="saliendo.set(false)"
+  />
+}
+
+@if (transfiriendoA(); as destino) {
+  <app-modal-confirmacion
+    titulo="Transferir propiedad"
+    [mensaje]="'Vas a ceder la propiedad del workspace a ' + destino.displayName + '. Tú quedarás como administrador.'"
+    textoConfirmar="Transferir"
+    [confirmando]="procesando()"
+    (confirmar)="confirmarTransferir()"
+    (cancelar)="transfiriendoA.set(null)"
+  />
+}

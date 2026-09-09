@@ -1,0 +1,169 @@
+/*
+ * Estilos base transversales — foco, selección, breakpoints de referencia.
+ *
+ * Breakpoints estándar del proyecto (mobile-first, usar siempre min-width):
+ *   --bp-sm: 640px   (móvil grande / phablet)
+ *   --bp-md: 768px   (tablet vertical)
+ *   --bp-lg: 1024px  (tablet horizontal / laptop chico)
+ *   --bp-xl: 1280px  (desktop)
+ *   --bp-2xl: 1536px (desktop grande)
+ * CSS no tiene "custom media queries" nativas todavía en el nivel soportado
+ * por todos los navegadores objetivo — estos valores son la referencia a
+ * copiar literal en cada @media de componente, no una variable usable
+ * dentro de @media.
+ */
+
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: var(--color-brand-300);
+  color: var(--color-ink);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Transición de tema claro/oscuro: sin esto, cambiar [data-theme] recalcula
+ * las variables CSS y todo salta de golpe al nuevo color. Con esto, el
+ * cambio de color/fondo/borde se anima parejo en toda la app en vez de
+ * hacerlo instantáneo. No incluye `transform`/`width`/etc. — esas ya tienen
+ * sus propias transiciones puntuales por componente (ej. el colapso del
+ * sidebar) y no queremos que este selector amplio las pise. */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease,
+    fill 0.22s ease,
+    stroke 0.22s ease;
+}
+
+/* Botones base — usados por las páginas de error/estado y reutilizables en
+ * cualquier vista mientras no exista un sistema de componentes de botón
+ * dedicado en components/secundarios/. */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid transparent;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.boton--primario {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.boton--primario:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.boton--primario:active {
+  background-color: var(--color-primary-active);
+}
+
+.boton--secundario {
+  background-color: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.boton--secundario:hover {
+  background-color: var(--color-surface-raised);
+}
+
+.boton--peligro {
+  background-color: var(--color-danger);
+  color: #ffffff;
+}
+
+.boton--peligro:hover {
+  background-color: color-mix(in srgb, var(--color-danger) 85%, black);
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Campos de formulario — usados por login/crear-cuenta y cualquier vista
+ * con formularios simples, mientras no exista un sistema de componentes de
+ * input dedicado en components/secundarios/. */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  text-align: left;
+}
+
+.campo label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.campo input {
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}
+
+.campo input:focus-visible {
+  border-color: var(--color-primary);
+}
+
+.campo input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.campo .campo-error {
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+}
+
+.alerta {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.alerta--error {
+  background-color: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+}
+
+.alerta--exito {
+  background-color: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--color-success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

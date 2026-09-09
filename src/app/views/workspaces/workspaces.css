@@ -1,0 +1,135 @@
+:host {
+  display: block;
+}
+
+.contenido {
+  padding: clamp(1.5rem, 5vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.encabezado p {
+  color: var(--color-text-secondary);
+  margin-top: 0.25rem;
+}
+
+.seccion-invitaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.seccion-invitaciones h2 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.lista-invitaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.invitacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+}
+
+.invitacion__titulo {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.invitacion__detalle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.boton--chico {
+  padding: 0.4rem 0.9rem;
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.formulario-inline {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background-color: var(--color-surface);
+}
+
+.formulario-inline .campo {
+  flex-grow: 1;
+  min-width: 12rem;
+}
+
+.estado-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: clamp(2rem, 6vw, 4rem) 1rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.estado-vacio__icono {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--color-text-muted);
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+
+.tarjeta-workspace {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.tarjeta-workspace__icono {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.tarjeta-workspace h3 {
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+.tarjeta-workspace p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}

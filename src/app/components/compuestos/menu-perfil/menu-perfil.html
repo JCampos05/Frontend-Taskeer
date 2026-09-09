@@ -1,0 +1,31 @@
+<button #boton type="button" class="chip" (click)="alternarMenu()" aria-haspopup="menu">
+  <span class="chip__avatar">
+    {{ authService.usuarioActual()?.displayName?.charAt(0) ?? '?' }}
+  </span>
+  <span class="chip__datos">
+    <strong>{{ authService.usuarioActual()?.displayName }}</strong>
+    <span>{{ authService.usuarioActual()?.email }}</span>
+  </span>
+  <span class="chip__chevron" [class.chip__chevron--abierto]="abierto()">
+    <app-svg-chevron />
+  </span>
+</button>
+
+@if (abierto()) {
+  <button type="button" class="fondo" (click)="cerrarMenu()" aria-label="Cerrar menú"></button>
+
+  <div class="menu" role="menu" [style.bottom.px]="posicion()?.bottom" [style.left.px]="posicion()?.left">
+    <a routerLink="/app/configuracion" class="menu__item" role="menuitem" (click)="cerrarMenu()">
+      <app-svg-persona />
+      Mi Perfil
+    </a>
+    <a routerLink="/app/configuracion" class="menu__item" role="menuitem" (click)="cerrarMenu()">
+      <app-svg-engranaje />
+      Configuración
+    </a>
+    <button type="button" class="menu__item menu__item--peligro" role="menuitem" (click)="cerrarSesion()">
+      <app-svg-salir />
+      Cerrar Sesión
+    </button>
+  </div>
+}

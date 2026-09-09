@@ -1,0 +1,15 @@
+<button type="button" class="fondo" (click)="cancelar.emit()" aria-label="Cerrar"></button>
+
+<div class="panel" role="alertdialog" aria-modal="true" [attr.aria-label]="titulo()">
+  <h2>{{ titulo() }}</h2>
+  <p>{{ mensaje() }}</p>
+
+  <div class="acciones">
+    <button type="button" class="boton boton--secundario" (click)="cancelar.emit()" [disabled]="confirmando()">
+      Cancelar
+    </button>
+    <button type="button" class="boton boton--peligro" (click)="confirmar.emit()" [disabled]="confirmando()">
+      {{ confirmando() ? 'Eliminando…' : textoConfirmar() }}
+    </button>
+  </div>
+</div>

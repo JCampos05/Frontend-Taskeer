@@ -1,0 +1,180 @@
+/*
+ * Variables de tema — modo claro / oscuro.
+ *
+ * Escala de marca (--color-brand-*): interpolada en RGB a partir de los 4
+ * hex exactos definidos por el usuario (50, 400, 600, 900) para que la
+ * rampa sea matemáticamente consistente, no tonos sueltos inventados.
+ * --color-ink es un neutro cálido aparte (no entra en la rampa azul,
+ * su matiz es distinto) usado como texto de máximo contraste.
+ *
+ * Patrón de aplicación de tema: :root define claro por defecto;
+ * @media (prefers-color-scheme: dark) aplica oscuro salvo que
+ * [data-theme="light"] lo anule explícitamente; [data-theme="dark"] fuerza
+ * oscuro en cualquier dirección. Esto conecta con UserPreferences.theme
+ * (LIGHT/DARK/AUTO) del backend — AUTO no setea data-theme y deja que
+ * prefers-color-scheme decida.
+ */
+
+:root {
+  /* Escala de marca (azul) */
+  --color-brand-50: #f5f3f5;
+  --color-brand-100: #ced1e2;
+  --color-brand-200: #a6b0cf;
+  --color-brand-300: #7f8ebb;
+  --color-brand-400: #576ca8;
+  --color-brand-500: #3f599c;
+  --color-brand-600: #274690;
+  --color-brand-700: #233b7a;
+  --color-brand-800: #1f3165;
+  --color-brand-900: #1b264f;
+  --color-brand-950: #131b37;
+
+  /* Neutro cálido de máximo contraste (no es parte de la rampa azul) */
+  --color-ink: #302b27;
+
+  /* Escala neutra (Slate) */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+
+  /* Estado (accesibles sobre fondo claro y oscuro, ver tokens semánticos) */
+  --color-success-500: #16a34a;
+  --color-warning-500: #d97706;
+  --color-danger-500: #dc2626;
+  --color-info-500: var(--color-brand-500);
+
+  color-scheme: light;
+
+  /* Tokens semánticos — modo claro (default) */
+  --color-bg: var(--color-brand-50);
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-border: var(--color-slate-200);
+  --color-border-strong: var(--color-slate-300);
+  --color-text: var(--color-ink);
+  --color-text-secondary: var(--color-slate-600);
+  --color-text-muted: var(--color-slate-400);
+  --color-primary: var(--color-brand-600);
+  --color-primary-hover: var(--color-brand-700);
+  --color-primary-active: var(--color-brand-800);
+  --color-on-primary: #ffffff;
+  --color-focus-ring: var(--color-brand-400);
+  --color-success: var(--color-success-500);
+  --color-warning: var(--color-warning-500);
+  --color-danger: var(--color-danger-500);
+  --color-info: var(--color-info-500);
+  --color-overlay: rgb(19 27 55 / 45%);
+
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 6%);
+  --shadow-md: 0 4px 12px rgb(15 23 42 / 10%);
+  --shadow-lg: 0 12px 32px rgb(15 23 42 / 16%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --color-bg: var(--color-brand-950);
+    --color-surface: var(--color-brand-900);
+    --color-surface-raised: var(--color-brand-800);
+    --color-border: var(--color-brand-800);
+    --color-border-strong: var(--color-brand-700);
+    --color-text: var(--color-slate-50);
+    --color-text-secondary: var(--color-slate-300);
+    --color-text-muted: var(--color-slate-500);
+    --color-primary: var(--color-brand-300);
+    --color-primary-hover: var(--color-brand-200);
+    --color-primary-active: var(--color-brand-100);
+    --color-on-primary: var(--color-ink);
+    --color-focus-ring: var(--color-brand-300);
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-danger: #f87171;
+    --color-info: var(--color-brand-300);
+    --color-overlay: rgb(7 10 20 / 60%);
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
+    --shadow-md: 0 4px 12px rgb(0 0 0 / 40%);
+    --shadow-lg: 0 12px 32px rgb(0 0 0 / 50%);
+  }
+}
+
+/*
+ * Utilidad opt-in: fija un subárbol a los valores de tema claro sin
+ * importar prefers-color-scheme/[data-theme] — para páginas públicas
+ * "de marca" con identidad visual fija (landing, login, crear-cuenta,
+ * verificar-correo). Las custom properties redefinidas en un descendiente
+ * siempre ganan sobre lo heredado desde :root, sin importar
+ * especificidad — así los componentes ya theme-aware (.boton, .campo,
+ * PaginaEstado, TarjetaAuth) se ven en claro fijo dentro de este subárbol
+ * sin duplicar ninguna regla.
+ */
+.tema-claro-fijo {
+  color-scheme: light;
+  /* Redeclarar las custom properties no alcanza: `color` es una propiedad
+   * heredada que ya quedó resuelta (posiblemente en modo oscuro) en algún
+   * ancestro fuera de este subárbol — sin esta línea, cualquier elemento
+   * de acá adentro que no declare `color` explícito (ej. los códigos de
+   * recuperación) sigue heredando el valor viejo en vez de recalcular con
+   * las variables ya fijadas. Forzar `color`/`background-color` aquí hace
+   * que la herencia arranque de nuevo, correctamente, desde este punto. */
+  color: var(--color-ink);
+  background-color: var(--color-brand-50);
+
+  --color-bg: var(--color-brand-50);
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-border: var(--color-slate-200);
+  --color-border-strong: var(--color-slate-300);
+  --color-text: var(--color-ink);
+  --color-text-secondary: var(--color-slate-600);
+  --color-text-muted: var(--color-slate-400);
+  --color-primary: var(--color-brand-600);
+  --color-primary-hover: var(--color-brand-700);
+  --color-primary-active: var(--color-brand-800);
+  --color-on-primary: #ffffff;
+  --color-focus-ring: var(--color-brand-400);
+  --color-success: var(--color-success-500);
+  --color-warning: var(--color-warning-500);
+  --color-danger: var(--color-danger-500);
+  --color-info: var(--color-info-500);
+  --color-overlay: rgb(19 27 55 / 45%);
+
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 6%);
+  --shadow-md: 0 4px 12px rgb(15 23 42 / 10%);
+  --shadow-lg: 0 12px 32px rgb(15 23 42 / 16%);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: var(--color-brand-950);
+  --color-surface: var(--color-brand-900);
+  --color-surface-raised: var(--color-brand-800);
+  --color-border: var(--color-brand-800);
+  --color-border-strong: var(--color-brand-700);
+  --color-text: var(--color-slate-50);
+  --color-text-secondary: var(--color-slate-300);
+  --color-text-muted: var(--color-slate-500);
+  --color-primary: var(--color-brand-300);
+  --color-primary-hover: var(--color-brand-200);
+  --color-primary-active: var(--color-brand-100);
+  --color-on-primary: var(--color-ink);
+  --color-focus-ring: var(--color-brand-300);
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --color-info: var(--color-brand-300);
+  --color-overlay: rgb(7 10 20 / 60%);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 40%);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 50%);
+}

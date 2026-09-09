@@ -1,0 +1,155 @@
+<div class="contenido">
+  <header class="encabezado">
+    <div>
+      <a [routerLink]="['/app/workspaces', workspaceId]" class="volver">← Tableros</a>
+      <h1>{{ tablero()?.name || 'Tablero' }}</h1>
+    </div>
+  </header>
+
+  @if (errorMensaje()) {
+    <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="estado-vacio">Cargando…</p>
+  } @else if (tablero()) {
+    <div class="tablero" cdkDropListGroup>
+      @for (columna of tablero()!.columns; track columna.id) {
+        <section class="columna">
+          <header class="columna__encabezado">
+            @if (editandoColumnaId() === columna.id) {
+              <form
+                [formGroup]="formularioRenombrarColumna"
+                (submit)="confirmarRenombrarColumna(columna); $event.preventDefault()"
+                class="formulario-renombrar"
+              >
+                <input type="text" formControlName="name" autocomplete="off" />
+                <div class="formulario-renombrar__acciones">
+                  <button type="submit" class="boton boton--primario boton--chico">Guardar</button>
+                  <button
+                    type="button"
+                    class="boton boton--secundario boton--chico"
+                    (click)="editandoColumnaId.set(null)"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <h2>{{ columna.name }}</h2>
+              <span class="columna__contador">{{ columna.tasks.length }}</span>
+              @if (puedeGestionarTableros(miRol())) {
+                <div class="columna__acciones">
+                  <button
+                    type="button"
+                    class="boton-icono"
+                    (click)="iniciarRenombrarColumna(columna)"
+                    aria-label="Renombrar columna"
+                  >
+                    <app-svg-lapiz />
+                  </button>
+                  <button
+                    type="button"
+                    class="boton-icono"
+                    (click)="borrandoColumnaId.set(columna.id)"
+                    aria-label="Eliminar columna"
+                  >
+                    <app-svg-basura />
+                  </button>
+                </div>
+              }
+            }
+          </header>
+
+          <div
+            class="lista-tareas"
+            cdkDropList
+            [cdkDropListData]="columna.tasks"
+            [cdkDropListDisabled]="!puedeGestionarTareas(miRol())"
+            (cdkDropListDropped)="alSoltar($event, columna)"
+          >
+            @for (tarea of columna.tasks; track tarea.id) {
+              <article
+                class="tarjeta-tarea"
+                cdkDrag
+                [cdkDragDisabled]="!puedeGestionarTareas(miRol())"
+                (click)="abrirTarea(tarea, columna.id)"
+              >
+                <h3>{{ tarea.title }}</h3>
+                @if (tarea.dueAt || nombreMiembro(tarea.assigneeId)) {
+                  <div class="tarjeta-tarea__meta">
+                    @if (tarea.dueAt) {
+                      <span class="etiqueta-fecha">{{ formatearFechaCorta(tarea.dueAt, zonaHoraria()) }}</span>
+                    }
+                    @if (nombreMiembro(tarea.assigneeId); as nombre) {
+                      <span class="etiqueta-asignado">{{ nombre }}</span>
+                    }
+                  </div>
+                }
+              </article>
+            }
+          </div>
+
+          @if (puedeGestionarTareas(miRol())) {
+            <button type="button" class="boton-agregar" (click)="abrirNuevaTarea(columna.id)">
+              <app-svg-mas />
+              Tarea
+            </button>
+          }
+        </section>
+      }
+
+      @if (puedeGestionarTableros(miRol())) {
+        <section class="columna columna--nueva">
+          @if (mostrarFormularioColumna()) {
+            <form [formGroup]="formularioColumna" (ngSubmit)="crearColumna()" class="formulario-columna" novalidate>
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="Nombre de la columna"
+                autocomplete="off"
+              />
+              <div class="formulario-columna__acciones">
+                <button type="submit" class="boton boton--primario boton--chico">Crear</button>
+                <button
+                  type="button"
+                  class="boton boton--secundario boton--chico"
+                  (click)="mostrarFormularioColumna.set(false)"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          } @else {
+            <button type="button" class="boton-agregar boton-agregar--columna" (click)="mostrarFormularioColumna.set(true)">
+              <app-svg-mas />
+              Nueva columna
+            </button>
+          }
+        </section>
+      }
+    </div>
+  }
+</div>
+
+@if (borrandoColumnaId()) {
+  <app-modal-confirmacion
+    titulo="Eliminar columna"
+    mensaje="Solo puedes eliminar una columna vacía — mueve o elimina sus tareas primero si tiene alguna."
+    (confirmar)="confirmarBorrarColumna()"
+    (cancelar)="borrandoColumnaId.set(null)"
+  />
+}
+
+@if (columnaIdCreandoTarea()) {
+  <app-modal-tarea
+    [tarea]="tareaAbierta()"
+    [columnaId]="columnaIdCreandoTarea()!"
+    [miembros]="miembros()"
+    [zonaHoraria]="zonaHoraria()"
+    [soloLectura]="!puedeGestionarTareas(miRol())"
+    (guardado)="alGuardarTarea($event)"
+    (eliminado)="alEliminarTarea($event)"
+    (cerrar)="cerrarModalTarea()"
+  />
+}

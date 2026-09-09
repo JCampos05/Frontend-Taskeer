@@ -1,0 +1,112 @@
+:host {
+  display: contents;
+}
+
+.fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background-color: rgb(0 0 0 / 45%);
+  cursor: default;
+  border: none;
+}
+
+.panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1501;
+  width: min(30rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 4rem);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 0.85rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.encabezado h2 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+}
+
+.boton-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.boton-icono:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.boton-icono svg,
+.boton-icono app-svg-x {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 30rem) {
+  .fila {
+    grid-template-columns: 1fr;
+  }
+}
+
+.campo textarea,
+.campo select {
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.campo textarea:focus-visible,
+.campo select:focus-visible {
+  border-color: var(--color-primary);
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.boton--con-icono {
+  gap: 0.4rem;
+}
+
+.boton--con-icono svg,
+.boton--con-icono app-svg-basura {
+  width: 1rem;
+  height: 1rem;
+}

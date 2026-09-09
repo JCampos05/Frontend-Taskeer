@@ -1,0 +1,8 @@
+:host {
+  display: block;
+}
+
+.contenedor {
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+}

@@ -1,0 +1,108 @@
+<div class="contenido">
+  <header class="encabezado">
+    <div>
+      <a routerLink="/app/workspaces" class="volver">← Workspaces</a>
+      <h1>{{ workspaceNombre() || 'Tableros' }}</h1>
+      <p>Los tableros kanban de este workspace.</p>
+    </div>
+    <div class="encabezado__acciones">
+      <a [routerLink]="['/app/workspaces', workspaceId, 'miembros']" class="boton boton--secundario">
+        <app-svg-usuarios />
+        Miembros
+      </a>
+      @if (puedeGestionar(miRol())) {
+        <button
+          type="button"
+          class="boton boton--primario"
+          (click)="mostrarFormulario.set(!mostrarFormulario())"
+        >
+          {{ mostrarFormulario() ? 'Cancelar' : 'Nuevo tablero' }}
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (errorMensaje()) {
+    <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
+  }
+
+  @if (mostrarFormulario()) {
+    <form [formGroup]="formulario" (ngSubmit)="crear()" class="formulario-inline" novalidate>
+      <div class="campo">
+        <label for="name">Nombre del tablero</label>
+        <input id="name" type="text" formControlName="name" autocomplete="off" />
+      </div>
+      <button type="submit" class="boton boton--primario" [disabled]="creando()">
+        {{ creando() ? 'Creando…' : 'Crear' }}
+      </button>
+    </form>
+  }
+
+  @if (cargando()) {
+    <p class="estado-vacio">Cargando…</p>
+  } @else if (boards().length === 0) {
+    <div class="estado-vacio">
+      <span class="estado-vacio__icono"><app-svg-tablero /></span>
+      <p>Todavía no hay tableros en este workspace.</p>
+    </div>
+  } @else {
+    <div class="rejilla">
+      @for (board of boards(); track board.id) {
+        <a [routerLink]="['/app/workspaces', workspaceId, 'boards', board.id]" class="tarjeta-board">
+          <span class="tarjeta-board__icono"><app-svg-tablero /></span>
+
+          @if (editandoId() === board.id) {
+            <form
+              [formGroup]="formularioRenombrar"
+              (submit)="confirmarRenombrar(board, $event)"
+              class="formulario-renombrar"
+            >
+              <input type="text" formControlName="name" autocomplete="off" (click)="$event.stopPropagation()" />
+              <div class="formulario-renombrar__acciones">
+                <button type="submit" class="boton boton--primario boton--chico">Guardar</button>
+                <button type="button" class="boton boton--secundario boton--chico" (click)="cancelarRenombrar($event)">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          } @else {
+            <div class="tarjeta-board__info">
+              <h3>{{ board.name }}</h3>
+              <p>/{{ board.slug }}</p>
+            </div>
+
+            @if (puedeGestionar(miRol())) {
+              <div class="tarjeta-board__acciones">
+                <button
+                  type="button"
+                  class="boton-icono"
+                  (click)="iniciarRenombrar(board, $event)"
+                  aria-label="Renombrar tablero"
+                >
+                  <app-svg-lapiz />
+                </button>
+                <button
+                  type="button"
+                  class="boton-icono"
+                  (click)="pedirBorrado(board.id, $event)"
+                  aria-label="Eliminar tablero"
+                >
+                  <app-svg-basura />
+                </button>
+              </div>
+            }
+          }
+        </a>
+      }
+    </div>
+  }
+</div>
+
+@if (borrandoId()) {
+  <app-modal-confirmacion
+    titulo="Eliminar tablero"
+    mensaje="Dejarás de ver este tablero y todo su contenido. Esta acción no se puede deshacer desde la app."
+    (confirmar)="confirmarBorrado()"
+    (cancelar)="borrandoId.set(null)"
+  />
+}

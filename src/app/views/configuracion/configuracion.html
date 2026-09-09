@@ -1,0 +1,154 @@
+<div class="contenido">
+  <h1>Configuración</h1>
+
+  @if (errorMensaje()) {
+    <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
+  }
+
+  <section class="seccion">
+    <h2>Perfil</h2>
+    <p class="seccion__descripcion">
+      El correo no se puede cambiar por ahora — editarlo llega en una actualización futura.
+    </p>
+
+    <form [formGroup]="formularioPerfil" (ngSubmit)="guardarPerfil()" class="formulario" novalidate>
+      <div class="campo">
+        <label for="displayName">Nombre</label>
+        <input
+          id="displayName"
+          type="text"
+          formControlName="displayName"
+          autocomplete="name"
+          [attr.aria-invalid]="
+            formularioPerfil.controls.displayName.invalid &&
+            formularioPerfil.controls.displayName.touched
+          "
+        />
+        @if (
+          formularioPerfil.controls.displayName.invalid &&
+          formularioPerfil.controls.displayName.touched
+        ) {
+          <span class="campo-error">Ingresa un nombre de al menos 2 caracteres.</span>
+        }
+      </div>
+
+      <button type="submit" class="boton boton--primario" [disabled]="guardandoPerfil()">
+        {{ guardandoPerfil() ? 'Guardando…' : perfilGuardado() ? 'Guardado ✓' : 'Guardar' }}
+      </button>
+    </form>
+
+    <div class="campo campo--solo-lectura">
+      <label>Correo</label>
+      <p>{{ authService.usuarioActual()?.email }}</p>
+    </div>
+
+    @if (!authService.usuarioActual()?.emailVerifiedAt) {
+      <div class="aviso-verificacion">
+        <p>Tu correo todavía no está verificado.</p>
+
+        @if (verificacionReenviada()) {
+          <p class="aviso-verificacion__ok">
+            Te reenviamos el enlace de verificación
+            @if (!tokenVerificacionDev()) {
+              — revisa tu bandeja de entrada.
+            }
+          </p>
+          @if (tokenVerificacionDev(); as token) {
+            <a class="boton boton--secundario" [routerLink]="['/verificar-correo']" [queryParams]="{ token }">
+              Verificar ahora
+            </a>
+          }
+        } @else {
+          <button
+            type="button"
+            class="boton boton--secundario"
+            (click)="reenviarVerificacion()"
+            [disabled]="reenviandoVerificacion()"
+          >
+            {{ reenviandoVerificacion() ? 'Enviando…' : 'Reenviar verificación' }}
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="seccion">
+    <h2>Apariencia</h2>
+    <p class="seccion__descripcion">Elige cómo se ve Taskeer en este dispositivo.</p>
+
+    <div class="segmentado" role="radiogroup" aria-label="Tema de la interfaz">
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="themeService.temaActual() === 'LIGHT'"
+        [class.activo]="themeService.temaActual() === 'LIGHT'"
+        (click)="elegirTema('LIGHT')"
+      >
+        Claro
+      </button>
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="themeService.temaActual() === 'DARK'"
+        [class.activo]="themeService.temaActual() === 'DARK'"
+        (click)="elegirTema('DARK')"
+      >
+        Oscuro
+      </button>
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="themeService.temaActual() === 'AUTO'"
+        [class.activo]="themeService.temaActual() === 'AUTO'"
+        (click)="elegirTema('AUTO')"
+      >
+        Automático
+      </button>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <h2>Región</h2>
+    <p class="seccion__descripcion">
+      Para mostrar fechas y horas en tu hora local — las tareas siempre se guardan en UTC.
+    </p>
+
+    @if (cargandoCatalogos()) {
+      <p>Cargando…</p>
+    } @else {
+      <form [formGroup]="formularioRegion" (ngSubmit)="guardarRegion()" class="formulario">
+        <div class="campo">
+          <label for="countryId">País</label>
+          <select id="countryId" formControlName="countryId">
+            <option [ngValue]="null">Sin especificar</option>
+            @for (pais of paises(); track pais.id) {
+              <option [ngValue]="pais.id">{{ pais.flagEmoji }} {{ pais.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="timezoneId">Zona horaria</label>
+          <select id="timezoneId" formControlName="timezoneId">
+            <option [ngValue]="null">Sin especificar</option>
+            @for (zona of zonasHorarias(); track zona.id) {
+              <option [ngValue]="zona.id">{{ zona.displayName }} (UTC{{ zona.utcOffset }})</option>
+            }
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="language">Idioma</label>
+          <select id="language" disabled>
+            <option>Español</option>
+          </select>
+          <span class="campo-nota">Más idiomas, próximamente.</span>
+        </div>
+
+        <button type="submit" class="boton boton--primario" [disabled]="guardandoRegion()">
+          {{ guardandoRegion() ? 'Guardando…' : regionGuardada() ? 'Guardado ✓' : 'Guardar' }}
+        </button>
+      </form>
+    }
+  </section>
+</div>

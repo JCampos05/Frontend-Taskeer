@@ -1,0 +1,172 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 15.5rem;
+  height: 100%;
+  flex-shrink: 0;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  transition: width 0.18s ease;
+  overflow: hidden;
+}
+
+:host(.colapsada) {
+  width: 4.5rem;
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.marca {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.marca__inicial {
+  display: none;
+}
+
+:host(.colapsada) .marca__completa {
+  display: none;
+}
+
+:host(.colapsada) .marca__inicial {
+  display: inline;
+}
+
+.boton-colapso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  border-radius: 0.4rem;
+  color: var(--color-text-secondary);
+  transition: transform 0.18s ease;
+}
+
+.boton-colapso:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.boton-colapso svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+:host(.colapsada) .boton-colapso {
+  transform: rotate(180deg);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.nav__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.nav__item:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.nav__item.activo {
+  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+}
+
+.nav__icono {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+:host(.colapsada) .nav__texto {
+  display: none;
+}
+
+.pie {
+  border-top: 1px solid var(--color-border);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.pie__accesos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.boton-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  color: var(--color-text-secondary);
+}
+
+.boton-icono:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.boton-icono svg,
+.boton-icono app-svg-sol,
+.boton-icono app-svg-luna {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* En pantallas chicas el sidebar se queda siempre en modo icono —
+ * suficiente espacio para no competir con el contenido, sin la
+ * complejidad de un overlay/hamburguesa por ahora. */
+@media (max-width: 48rem) {
+  :host {
+    width: 4.5rem;
+  }
+
+  .marca__completa,
+  .nav__texto {
+    display: none;
+  }
+
+  .marca__inicial {
+    display: inline;
+  }
+
+  .boton-colapso {
+    display: none;
+  }
+}

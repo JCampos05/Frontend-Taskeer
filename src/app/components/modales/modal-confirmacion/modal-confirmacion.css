@@ -1,0 +1,46 @@
+:host {
+  display: contents;
+}
+
+.fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background-color: rgb(0 0 0 / 45%);
+  cursor: default;
+  border: none;
+}
+
+.panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1501;
+  width: min(24rem, calc(100vw - 2rem));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-radius: 0.85rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.panel h2 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+}
+
+.panel p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}

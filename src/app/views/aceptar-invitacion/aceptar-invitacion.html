@@ -1,0 +1,28 @@
+<div class="contenedor">
+  @switch (estado()) {
+    @case ('cargando') {
+      <app-pagina-estado titulo="Uniéndote al workspace…" descripcion="Un momento." />
+    }
+    @case ('exito') {
+      <app-pagina-estado
+        titulo="¡Listo!"
+        [descripcion]="
+          yaEraMiembro()
+            ? 'Ya eras parte de ' + workspace()?.name + '.'
+            : 'Te uniste a ' + workspace()?.name + '.'
+        "
+      >
+        <app-svg-check ilustracion />
+        <button acciones type="button" class="boton boton--primario" (click)="irAlWorkspace()">
+          Ir al workspace
+        </button>
+      </app-pagina-estado>
+    }
+    @case ('error') {
+      <app-pagina-estado titulo="No pudimos aceptar la invitación" [descripcion]="errorMensaje()">
+        <app-svg-advertencia ilustracion />
+        <a acciones class="boton boton--primario" routerLink="/app/workspaces">Ir a mis workspaces</a>
+      </app-pagina-estado>
+    }
+  }
+</div>

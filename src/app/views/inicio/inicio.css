@@ -1,0 +1,20 @@
+:host {
+  display: block;
+}
+
+.contenido {
+  padding: clamp(1.5rem, 5vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  max-width: 40rem;
+}
+
+.contenido p {
+  color: var(--color-text-secondary);
+}
+
+.contenido .boton {
+  margin-top: 0.5rem;
+}

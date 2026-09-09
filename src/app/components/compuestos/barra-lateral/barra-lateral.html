@@ -1,0 +1,46 @@
+<div class="encabezado">
+  <a routerLink="/app/inicio" class="marca">
+    <span class="marca__completa">Taskeer</span>
+    <span class="marca__inicial">T</span>
+  </a>
+  <button
+    type="button"
+    class="boton-colapso"
+    (click)="alternarColapso()"
+    [attr.aria-label]="colapsada() ? 'Expandir menú' : 'Colapsar menú'"
+  >
+    <app-svg-flecha-doble />
+  </button>
+</div>
+
+<nav class="nav" aria-label="Navegación de la app">
+  <a routerLink="/app/inicio" routerLinkActive="activo" class="nav__item">
+    <span class="nav__icono"><app-svg-casa /></span>
+    <span class="nav__texto">Inicio</span>
+  </a>
+  <a routerLink="/app/workspaces" routerLinkActive="activo" class="nav__item">
+    <span class="nav__icono"><app-svg-carpetas /></span>
+    <span class="nav__texto">Workspaces</span>
+  </a>
+</nav>
+
+<div class="pie">
+  <app-menu-perfil />
+
+  <div class="pie__accesos">
+    <button
+      type="button"
+      class="boton-icono"
+      (click)="alternarTema()"
+      [attr.aria-label]="themeService.temaActual() === 'DARK' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+    >
+      @if (themeService.temaActual() === 'DARK') {
+        <app-svg-sol />
+      } @else {
+        <app-svg-luna />
+      }
+    </button>
+
+    <app-panel-notificaciones />
+  </div>
+</div>

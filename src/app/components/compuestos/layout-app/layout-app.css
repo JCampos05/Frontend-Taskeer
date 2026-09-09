@@ -1,0 +1,18 @@
+:host {
+  display: flex;
+  /* Altura fija (no min-height) + overflow:hidden a propósito: sin esto,
+   * cuando el contenido de una vista es más alto que la pantalla, todo
+   * este contenedor crecía para acomodarlo y arrastraba al sidebar con
+   * el scroll de la página completa, en vez de quedar fijo mientras solo
+   * .contenido hace scroll interno. */
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--color-bg);
+}
+
+.contenido {
+  flex-grow: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+}

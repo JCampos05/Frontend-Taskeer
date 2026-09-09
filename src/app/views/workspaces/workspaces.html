@@ -1,0 +1,76 @@
+<div class="contenido">
+  <header class="encabezado">
+    <div>
+      <h1>Workspaces</h1>
+      <p>Los espacios de trabajo donde compartes tableros con tu equipo.</p>
+    </div>
+    <button
+      type="button"
+      class="boton boton--primario"
+      (click)="mostrarFormulario.set(!mostrarFormulario())"
+    >
+      {{ mostrarFormulario() ? 'Cancelar' : 'Nuevo workspace' }}
+    </button>
+  </header>
+
+  @if (errorMensaje()) {
+    <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
+  }
+
+  @if (misInvitaciones().length > 0) {
+    <section class="seccion-invitaciones">
+      <h2>Invitaciones pendientes</h2>
+      <div class="lista-invitaciones">
+        @for (invitacion of misInvitaciones(); track invitacion.id) {
+          <article class="invitacion">
+            <div class="invitacion__info">
+              <p class="invitacion__titulo">Te invitaron a "{{ invitacion.workspaceName }}"</p>
+              <p class="invitacion__detalle">Como {{ invitacion.role === 'ADMIN' ? 'administrador' : invitacion.role === 'EDITOR' ? 'editor' : 'solo lectura' }}</p>
+            </div>
+            <button
+              type="button"
+              class="boton boton--primario boton--chico"
+              [disabled]="aceptandoInvitacionId() === invitacion.id"
+              (click)="aceptarInvitacion(invitacion)"
+            >
+              {{ aceptandoInvitacionId() === invitacion.id ? 'Uniéndote…' : 'Aceptar' }}
+            </button>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  @if (mostrarFormulario()) {
+    <form [formGroup]="formulario" (ngSubmit)="crear()" class="formulario-inline" novalidate>
+      <div class="campo">
+        <label for="name">Nombre del workspace</label>
+        <input id="name" type="text" formControlName="name" autocomplete="off" />
+      </div>
+      <button type="submit" class="boton boton--primario" [disabled]="creando()">
+        {{ creando() ? 'Creando…' : 'Crear' }}
+      </button>
+    </form>
+  }
+
+  @if (cargando()) {
+    <p class="estado-vacio">Cargando…</p>
+  } @else if (workspaces().length === 0) {
+    <div class="estado-vacio">
+      <span class="estado-vacio__icono"><app-svg-carpetas /></span>
+      <p>Todavía no tienes workspaces — crea el primero para empezar.</p>
+    </div>
+  } @else {
+    <div class="rejilla">
+      @for (workspace of workspaces(); track workspace.id) {
+        <a [routerLink]="['/app/workspaces', workspace.id]" class="tarjeta-workspace">
+          <span class="tarjeta-workspace__icono"><app-svg-carpetas /></span>
+          <div>
+            <h3>{{ workspace.name }}</h3>
+            <p>/{{ workspace.slug }}</p>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

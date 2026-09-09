@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.aviso {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  margin-bottom: 1rem;
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.codigo {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+  font-size: var(--font-size-sm);
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.continuar {
+  margin-top: 1.25rem;
+}
+
+.continuar:empty {
+  display: none;
+}
+
+@media (max-width: 24rem) {
+  .rejilla {
+    grid-template-columns: 1fr;
+  }
+}

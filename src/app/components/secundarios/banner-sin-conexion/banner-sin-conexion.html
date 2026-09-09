@@ -1,0 +1,6 @@
+@if (!conectividad.estaEnLinea()) {
+  <div class="banner" role="status" aria-live="polite">
+    <app-svg-sin-wifi class="icono" />
+    <span>Sin conexión a internet — algunos cambios podrían no guardarse hasta que vuelva.</span>
+  </div>
+}

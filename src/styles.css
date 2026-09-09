@@ -1,0 +1,8 @@
+/* Estilos globales — solo lo que debe ser consistente en toda la app.
+ * Las vistas y componentes tienen sus propios estilos encapsulados aparte
+ * (ver docs/06-frontend.md, sección "Estilos generales"). */
+
+@import './app/styles/reset.css';
+@import './app/styles/theme.css';
+@import './app/styles/typography.css';
+@import './app/styles/base.css';

@@ -1,0 +1,115 @@
+:host {
+  display: block;
+}
+
+.contenedor {
+  position: fixed;
+  z-index: 2000;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: min(24rem, calc(100vw - 2.5rem));
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 0.75rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  animation: toast-entrar 0.2s ease;
+}
+
+@keyframes toast-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast__icono {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+.toast--exito .toast__icono {
+  color: var(--color-success);
+}
+.toast--error .toast__icono {
+  color: var(--color-danger);
+}
+.toast--advertencia .toast__icono {
+  color: var(--color-warning);
+}
+.toast--info .toast__icono {
+  color: var(--color-info);
+}
+
+.toast__cuerpo {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.toast__cuerpo strong {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.toast__cuerpo p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.toast__accion {
+  align-self: flex-start;
+  margin-top: 0.4rem;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.toast__accion:hover {
+  text-decoration: underline;
+}
+
+.toast__cerrar {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.4rem;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.toast__cerrar:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+@media (max-width: 30rem) {
+  .contenedor {
+    left: 1.25rem;
+    right: 1.25rem;
+    width: auto;
+  }
+}

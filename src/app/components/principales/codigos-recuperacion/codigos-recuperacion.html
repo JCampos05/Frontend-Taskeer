@@ -1,0 +1,24 @@
+<div class="aviso">
+  Guarda estos códigos ahora — cada uno funciona una sola vez para recuperar
+  tu cuenta si olvidas tu contraseña, y no vas a poder volver a verlos
+  después de salir de esta pantalla.
+</div>
+
+<ul class="rejilla">
+  @for (codigo of codigos(); track codigo) {
+    <li class="codigo">{{ codigo }}</li>
+  }
+</ul>
+
+<div class="acciones">
+  <button type="button" class="boton boton--secundario" (click)="copiarTodos()">
+    {{ copiado() ? 'Copiado ✓' : 'Copiar todos' }}
+  </button>
+  <button type="button" class="boton boton--secundario" (click)="descargarTxt()">
+    Descargar .txt
+  </button>
+</div>
+
+<div class="continuar">
+  <ng-content select="[continuar]" />
+</div>

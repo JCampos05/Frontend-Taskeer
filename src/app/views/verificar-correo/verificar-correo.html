@@ -1,0 +1,25 @@
+<div class="contenedor tema-claro-fijo">
+  @switch (estado()) {
+    @case ('cargando') {
+      <app-pagina-estado titulo="Verificando tu correo…" descripcion="Un momento." />
+    }
+    @case ('exito') {
+      <app-pagina-estado
+        titulo="¡Correo verificado!"
+        descripcion="Ya puedes invitar a otras personas a tus workspaces."
+      >
+        <app-svg-check ilustracion />
+        <a acciones class="boton boton--primario" routerLink="/login">Ir a iniciar sesión</a>
+      </app-pagina-estado>
+    }
+    @case ('error') {
+      <app-pagina-estado
+        titulo="El enlace no es válido o venció"
+        descripcion="Vuelve a iniciar sesión y pide un nuevo enlace de verificación desde tu cuenta."
+      >
+        <app-svg-advertencia ilustracion />
+        <a acciones class="boton boton--primario" routerLink="/login">Ir a iniciar sesión</a>
+      </app-pagina-estado>
+    }
+  }
+</div>

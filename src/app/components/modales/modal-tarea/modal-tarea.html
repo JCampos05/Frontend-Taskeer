@@ -1,0 +1,74 @@
+<button type="button" class="fondo" (click)="cerrar.emit()" aria-label="Cerrar"></button>
+
+<div class="panel" role="dialog" aria-modal="true">
+  <header class="encabezado">
+    <h2>{{ esEdicion() ? 'Editar tarea' : 'Nueva tarea' }}</h2>
+    <button type="button" class="boton-icono" (click)="cerrar.emit()" aria-label="Cerrar">
+      <app-svg-x />
+    </button>
+  </header>
+
+  @if (errorMensaje()) {
+    <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
+  }
+
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" class="formulario" novalidate>
+    <div class="campo">
+      <label for="title">Título</label>
+      <input id="title" type="text" formControlName="title" autocomplete="off" />
+      @if (formulario.controls.title.invalid && formulario.controls.title.touched) {
+        <span class="campo-error">El título es obligatorio (máximo 200 caracteres).</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="description">Descripción</label>
+      <textarea id="description" formControlName="description" rows="4"></textarea>
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="dueAt">Fecha límite</label>
+        <input id="dueAt" type="datetime-local" formControlName="dueAt" />
+      </div>
+
+      <div class="campo">
+        <label for="assigneeId">Asignado a</label>
+        <select id="assigneeId" formControlName="assigneeId">
+          <option value="">Sin asignar</option>
+          @for (miembro of miembros(); track miembro.userId) {
+            <option [value]="miembro.userId">{{ miembro.displayName }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (!soloLectura()) {
+      <div class="acciones">
+        @if (esEdicion()) {
+          <button
+            type="button"
+            class="boton boton--secundario boton--con-icono"
+            (click)="confirmandoBorrado.set(true)"
+          >
+            <app-svg-basura />
+            Eliminar
+          </button>
+        }
+        <button type="submit" class="boton boton--primario" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    }
+  </form>
+</div>
+
+@if (confirmandoBorrado()) {
+  <app-modal-confirmacion
+    titulo="Eliminar tarea"
+    mensaje="Esta acción no se puede deshacer. La tarea se eliminará permanentemente."
+    [confirmando]="eliminando()"
+    (confirmar)="confirmarBorrado()"
+    (cancelar)="confirmandoBorrado.set(false)"
+  />
+}

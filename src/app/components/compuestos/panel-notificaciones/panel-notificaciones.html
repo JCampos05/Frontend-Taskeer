@@ -1,0 +1,149 @@
+<button
+  type="button"
+  class="campana"
+  (click)="abrirPanel()"
+  [attr.aria-label]="'Notificaciones' + (notificationsService.cantidadNoLeidas() > 0 ? ' (' + notificationsService.cantidadNoLeidas() + ' sin leer)' : '')"
+>
+  <app-svg-campana />
+  @if (notificationsService.cantidadNoLeidas() > 0) {
+    <span class="insignia">{{
+      notificationsService.cantidadNoLeidas() > 9 ? '9+' : notificationsService.cantidadNoLeidas()
+    }}</span>
+  }
+</button>
+
+@if (abierto()) {
+  <button type="button" class="fondo" (click)="cerrarPanel()" aria-label="Cerrar notificaciones"></button>
+
+  <aside class="panel">
+    <header class="panel__encabezado">
+      <div class="panel__titulo">
+        <app-svg-campana />
+        <h2>Notificaciones</h2>
+        @if (notificationsService.cantidadNoLeidas() > 0) {
+          <span class="panel__insignia">{{ notificationsService.cantidadNoLeidas() }}</span>
+        }
+      </div>
+      <button type="button" class="panel__cerrar" (click)="cerrarPanel()" aria-label="Cerrar">×</button>
+    </header>
+
+    <div class="panel__controles">
+      <div class="tabs">
+        <button
+          type="button"
+          class="tabs__item"
+          [class.activo]="filtroTab() === 'todas'"
+          (click)="filtroTab.set('todas')"
+        >
+          Todas
+        </button>
+        <button
+          type="button"
+          class="tabs__item"
+          [class.activo]="filtroTab() === 'no-leidas'"
+          (click)="filtroTab.set('no-leidas')"
+        >
+          No leídas
+          @if (notificationsService.cantidadNoLeidas() > 0) {
+            <span class="tabs__contador">{{ notificationsService.cantidadNoLeidas() }}</span>
+          }
+        </button>
+      </div>
+
+      <select
+        class="filtro-tipo"
+        [value]="filtroTipo()"
+        (change)="elegirTipo($any($event.target).value)"
+        aria-label="Filtrar por tipo"
+      >
+        <option value="TODOS">Todos los tipos</option>
+        @for (tipo of tiposDisponibles; track tipo) {
+          <option [value]="tipo">{{ etiquetasTipo[tipo] }}</option>
+        }
+      </select>
+
+      <div class="acciones">
+        <button
+          type="button"
+          class="acciones__item"
+          [disabled]="notificationsService.cantidadNoLeidas() === 0"
+          (click)="marcarTodasLeidas()"
+        >
+          Marcar todas leídas
+        </button>
+        <button
+          type="button"
+          class="acciones__item"
+          [disabled]="notificationsService.listaNotificaciones().length === notificationsService.cantidadNoLeidas()"
+          (click)="limpiarLeidas()"
+        >
+          <app-svg-basura />
+          Limpiar leídas
+        </button>
+      </div>
+    </div>
+
+    <div class="panel__lista">
+      @if (listaFiltrada().length === 0) {
+        <p class="panel__vacio">No tienes notificaciones{{ filtroTab() === 'no-leidas' ? ' sin leer' : '' }}.</p>
+      } @else {
+        @for (notificacion of listaFiltrada(); track notificacion.id) {
+          <article
+            class="item"
+            [class.item--no-leida]="!notificacion.readAt"
+            [class.item--clickeable]="notificacion.type === 'INVITATION'"
+            (click)="abrirNotificacion(notificacion)"
+          >
+            @if (!notificacion.readAt) {
+              <span class="item__barra" aria-hidden="true"></span>
+            }
+
+            <span class="item__icono">
+              @switch (notificacion.type) {
+                @case ('REMINDER') {
+                  <app-svg-campana />
+                }
+                @case ('INVITATION') {
+                  <app-svg-carpetas />
+                }
+                @case ('ROLE_CHANGED') {
+                  <app-svg-engranaje />
+                }
+                @case ('RECOVERY_CODE_USED') {
+                  <app-svg-candado />
+                }
+                @default {
+                  <app-svg-info />
+                }
+              }
+            </span>
+
+            <div class="item__cuerpo">
+              <div class="item__fila-titulo">
+                <strong>{{ notificacion.title }}</strong>
+                <span class="item__fecha">{{ fechaCorta(notificacion.createdAt) }}</span>
+              </div>
+              @if (notificacion.body) {
+                <p class="item__detalle">{{ notificacion.body }}</p>
+              }
+            </div>
+
+            <button
+              type="button"
+              class="item__borrar"
+              (click)="eliminar(notificacion.id, $event)"
+              aria-label="Borrar notificación"
+            >
+              <app-svg-basura />
+            </button>
+          </article>
+        }
+      }
+    </div>
+
+    <footer class="panel__pie">
+      <span class="estado-conexion" [class.estado-conexion--activo]="notificationsStreamService.estaConectado()"></span>
+      {{ notificationsStreamService.estaConectado() ? 'Conectado' : 'Reconectando…' }}
+    </footer>
+  </aside>
+}

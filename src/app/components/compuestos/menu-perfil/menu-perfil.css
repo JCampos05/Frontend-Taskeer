@@ -1,0 +1,140 @@
+:host {
+  display: block;
+}
+
+.chip {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem;
+  border-radius: 0.6rem;
+}
+
+.chip:hover {
+  background-color: var(--color-bg);
+}
+
+.chip__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-brand-400), var(--color-brand-700));
+  color: #ffffff;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.chip__datos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.chip__datos strong {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip__datos span {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip__chevron {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  transition: transform 0.15s ease;
+}
+
+.chip__chevron--abierto {
+  transform: rotate(180deg);
+}
+
+/* Con el sidebar colapsado (clase en el ancestro <app-barra-lateral>),
+ * el chip queda solo con el avatar — mismo criterio que el resto del
+ * sidebar (nav__texto/usuario__datos se ocultan igual). */
+:host-context(.colapsada) .chip__datos,
+:host-context(.colapsada) .chip__chevron {
+  display: none;
+}
+
+/* El sidebar fuerza modo-ícono en pantallas chicas independientemente de
+ * `.colapsada` (ver barra-lateral.css) — mismo criterio acá. */
+@media (max-width: 48rem) {
+  .chip__datos,
+  .chip__chevron {
+    display: none;
+  }
+}
+
+.fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: transparent;
+  cursor: default;
+}
+
+.menu {
+  position: fixed;
+  z-index: 950;
+  width: 13rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.menu__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.5rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  text-align: left;
+}
+
+.menu__item svg,
+.menu__item app-svg-persona,
+.menu__item app-svg-engranaje,
+.menu__item app-svg-salir {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.menu__item:hover {
+  background-color: var(--color-bg);
+}
+
+.menu__item--peligro:hover {
+  background-color: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+}
+
+.menu__item--peligro:hover svg,
+.menu__item--peligro:hover app-svg-salir {
+  color: var(--color-danger);
+}

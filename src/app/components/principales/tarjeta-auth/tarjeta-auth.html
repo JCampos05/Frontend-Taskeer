@@ -1,0 +1,16 @@
+<div class="contenedor tema-claro-fijo">
+  <div class="tarjeta">
+    <a class="marca" routerLink="/">Taskeer</a>
+
+    <h1 class="titulo">{{ titulo() }}</h1>
+    @if (subtitulo()) {
+      <p class="subtitulo">{{ subtitulo() }}</p>
+    }
+
+    <ng-content select="[contenido]" />
+
+    <div class="pie">
+      <ng-content select="[pie]" />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,101 @@
+:host {
+  display: block;
+}
+
+.contenido {
+  padding: clamp(1.5rem, 5vw, 3rem);
+  max-width: 36rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.seccion:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.seccion h2 {
+  font-size: var(--font-size-lg);
+}
+
+.seccion__descripcion {
+  margin-top: -0.5rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.campo--solo-lectura p {
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}
+
+.aviso-verificacion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.65rem;
+  background-color: color-mix(in srgb, var(--color-warning) 12%, transparent);
+}
+
+.aviso-verificacion p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.aviso-verificacion__ok {
+  color: var(--color-success);
+}
+
+.campo select {
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}
+
+.campo select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.campo-nota {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.segmentado {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.65rem;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  width: fit-content;
+}
+
+.segmentado button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.45rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.segmentado button.activo {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--shadow-sm);
+}

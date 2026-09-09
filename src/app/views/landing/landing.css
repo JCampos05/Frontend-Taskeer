@@ -1,0 +1,578 @@
+/*
+ * Landing — a propósito NO usa los tokens semánticos de tema
+ * (--color-bg, --color-text, --color-primary, etc., definidos en
+ * app/styles/theme.css) porque esos cambian con modo claro/oscuro. Esta
+ * página tiene una identidad visual fija, así que usa directamente la
+ * escala de marca (--color-brand-*, --color-slate-*), que nunca varía con
+ * el tema — mismo aspecto sin importar el sistema del visitante.
+ */
+
+:host {
+  display: block;
+  background-color: #ffffff;
+  color: var(--color-brand-950);
+}
+
+.saltar-contenido {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  z-index: 2000;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-brand-600);
+  color: #ffffff;
+  border-radius: 0 0 0.5rem 0;
+}
+
+.saltar-contenido:focus-visible {
+  left: 0;
+}
+
+/* Botones propios de la landing — deliberadamente distintos de .boton
+ * (que sí sigue el tema): forma de píldora, colores de marca fijos. */
+.boton-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.boton-nav--solido {
+  background-color: var(--color-brand-600);
+  color: #ffffff;
+}
+
+.boton-nav--solido:hover {
+  background-color: var(--color-brand-700);
+}
+
+.boton-nav--fantasma {
+  background-color: transparent;
+  color: var(--color-brand-700);
+  border-color: var(--color-slate-300);
+}
+
+.boton-nav--fantasma:hover {
+  background-color: var(--color-slate-50);
+}
+
+.boton-nav--claro {
+  background-color: #ffffff;
+  color: var(--color-brand-700);
+}
+
+.boton-nav--claro:hover {
+  background-color: var(--color-brand-50);
+}
+
+.boton-nav--grande {
+  padding: 0.85rem 1.75rem;
+  font-size: var(--font-size-base);
+}
+
+.boton-nav:active {
+  transform: scale(0.98);
+}
+
+/* Nav */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgb(255 255 255 / 85%);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--color-slate-200);
+}
+
+.nav__interior {
+  max-width: 76rem;
+  margin-inline: auto;
+  padding: 1rem clamp(1.25rem, 4vw, 2.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.marca {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  color: var(--color-brand-700);
+}
+
+.nav__links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav__links a {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-slate-600);
+}
+
+.nav__links a:hover {
+  color: var(--color-brand-700);
+}
+
+.nav__acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Hero */
+.hero {
+  max-width: 76rem;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 8vw, 6rem) clamp(1.25rem, 4vw, 2.5rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  background: linear-gradient(180deg, var(--color-brand-50) 0%, #ffffff 65%);
+}
+
+.hero__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.etiqueta {
+  align-self: flex-start;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background-color: var(--color-brand-100);
+  color: var(--color-brand-700);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.02em;
+}
+
+.hero__texto h1 {
+  font-size: clamp(2.1rem, 4.5vw, 3.25rem);
+  line-height: 1.1;
+  color: var(--color-brand-950);
+}
+
+.hero__texto p {
+  max-width: 34rem;
+  font-size: var(--font-size-lg);
+  color: var(--color-slate-600);
+}
+
+.hero__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* Mockup del tablero */
+.hero__visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.mockup {
+  width: 100%;
+  max-width: 30rem;
+  background-color: #ffffff;
+  border: 1px solid var(--color-slate-200);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.mockup__barra {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--color-slate-200);
+  background-color: var(--color-slate-50);
+}
+
+.mockup__punto {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background-color: var(--color-brand-200);
+}
+
+.mockup__url {
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background-color: #ffffff;
+  border: 1px solid var(--color-slate-200);
+  font-size: 0.65rem;
+  color: var(--color-slate-500);
+}
+
+.mockup__columnas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 1.1rem;
+}
+
+.mockup__columna {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  border-radius: 0.6rem;
+  background-color: var(--color-slate-50);
+}
+
+.mockup__columna-titulo {
+  font-size: 0.65rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mockup__tarjeta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.45rem;
+  background-color: #ffffff;
+  border: 1px solid var(--color-slate-200);
+  font-size: 0.65rem;
+  color: var(--color-brand-950);
+  line-height: 1.3;
+}
+
+.mockup__tarjeta--activa {
+  border-color: var(--color-brand-300);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brand-300) 35%, transparent);
+}
+
+.mockup__tarjeta--tenue {
+  opacity: 0.6;
+}
+
+.mockup__etiqueta {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+}
+
+.mockup__etiqueta--azul {
+  background-color: var(--color-brand-500);
+}
+.mockup__etiqueta--verde {
+  background-color: #16a34a;
+}
+.mockup__etiqueta--morado {
+  background-color: #7c3aed;
+}
+
+/* Insignias flotantes */
+.insignia {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid var(--color-slate-200);
+  box-shadow: var(--shadow-md);
+  font-size: 0.7rem;
+  color: var(--color-slate-600);
+}
+
+.insignia strong {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-brand-950);
+}
+
+.insignia--recordatorio {
+  top: -0.5rem;
+  right: 0.5rem;
+}
+
+.insignia--equipo {
+  bottom: -0.5rem;
+  left: 0;
+}
+
+.insignia__icono {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-brand-600);
+  flex-shrink: 0;
+}
+
+.avatares {
+  display: flex;
+}
+
+.avatar {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-brand-300), var(--color-brand-600));
+  border: 2px solid #ffffff;
+  margin-left: -0.5rem;
+}
+
+.avatar:first-child {
+  margin-left: 0;
+}
+
+/* Características */
+.caracteristicas {
+  max-width: 76rem;
+  margin-inline: auto;
+  padding: clamp(3rem, 8vw, 5rem) clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.caracteristicas__encabezado {
+  max-width: 34rem;
+  margin-inline: auto;
+  text-align: center;
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
+.caracteristicas__encabezado h2 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-brand-950);
+}
+
+.caracteristicas__encabezado p {
+  margin-top: 0.5rem;
+  color: var(--color-slate-600);
+}
+
+.caracteristicas__rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.25rem;
+}
+
+.tarjeta-feature {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--color-slate-200);
+  background-color: #ffffff;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.tarjeta-feature:hover {
+  border-color: var(--color-brand-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta-feature__icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0.6rem;
+  border-radius: 0.75rem;
+  background-color: var(--color-brand-100);
+  color: var(--color-brand-600);
+  margin-bottom: 0.9rem;
+}
+
+.tarjeta-feature h3 {
+  font-size: var(--font-size-base);
+  color: var(--color-brand-950);
+  margin-bottom: 0.4rem;
+}
+
+.tarjeta-feature p {
+  font-size: var(--font-size-sm);
+  color: var(--color-slate-600);
+}
+
+/* Planes */
+.planes {
+  max-width: 76rem;
+  margin-inline: auto;
+  padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 4vw, 2.5rem) clamp(3rem, 8vw, 5rem);
+}
+
+.planes__rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.tarjeta-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  border-radius: 1rem;
+  border: 1px solid var(--color-slate-200);
+  background-color: #ffffff;
+}
+
+.tarjeta-plan--destacado {
+  border-color: var(--color-brand-600);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-0.35rem);
+}
+
+.tarjeta-plan__insignia {
+  position: absolute;
+  top: -0.7rem;
+  left: 1.75rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background-color: var(--color-brand-600);
+  color: #ffffff;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.tarjeta-plan h3 {
+  font-size: var(--font-size-lg);
+  color: var(--color-brand-950);
+}
+
+.tarjeta-plan__precio {
+  margin-top: 0.35rem;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-700);
+}
+
+.tarjeta-plan__descripcion {
+  margin-top: 0.35rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-slate-600);
+  min-height: 2.5rem;
+}
+
+.tarjeta-plan__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1.1rem 0 1.5rem;
+  flex-grow: 1;
+}
+
+.tarjeta-plan__lista li {
+  padding-left: 1.4rem;
+  position: relative;
+  font-size: var(--font-size-sm);
+  color: var(--color-slate-700);
+}
+
+.tarjeta-plan__lista li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.45rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background-color: var(--color-brand-400);
+}
+
+.tarjeta-plan .boton-nav {
+  width: 100%;
+}
+
+/* CTA */
+.cta {
+  margin: clamp(2rem, 6vw, 3.5rem) clamp(1.25rem, 4vw, 2.5rem);
+  max-width: 76rem;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 6vw, 4rem);
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, var(--color-brand-600), var(--color-brand-800));
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cta h2 {
+  color: #ffffff;
+  font-size: var(--font-size-2xl);
+}
+
+.cta p {
+  color: var(--color-brand-100);
+}
+
+.cta .boton-nav {
+  margin-top: 0.5rem;
+}
+
+/* Footer */
+.pie-pagina {
+  margin-top: clamp(2rem, 6vw, 3.5rem);
+  padding: 1.75rem clamp(1.25rem, 4vw, 2.5rem);
+  background-color: var(--color-brand-950);
+  color: var(--color-slate-400);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: var(--font-size-sm);
+}
+
+.marca--pie {
+  color: #ffffff;
+}
+
+/* Responsivo */
+@media (min-width: 60rem) {
+  .hero {
+    grid-template-columns: 1.1fr 1fr;
+    align-items: center;
+  }
+}
+
+@media (max-width: 40rem) {
+  .nav__links {
+    display: none;
+  }
+
+  .mockup__columnas {
+    grid-template-columns: 1fr;
+  }
+
+  /* Las insignias flotantes son decorativas — en pantallas chicas el
+   * espacio no alcanza para que floten sin encimarse con el mockup, así
+   * que se ocultan en vez de forzar un layout apretado. */
+  .insignia {
+    display: none;
+  }
+
+  .pie-pagina {
+    flex-direction: column;
+    text-align: center;
+  }
+}
