@@ -4,27 +4,52 @@
 
 .contenido {
   padding: clamp(1.5rem, 5vw, 3rem);
-  max-width: 36rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  max-width: 70rem;
+  /* Layout de columnas (no CSS Grid): con secciones de alturas tan
+   * distintas (Apariencia es corta, Seguridad es larga), un grid de 2
+   * columnas fijas deja huecos — cada fila se estira a la altura de su
+   * elemento más alto, así que lo que sobra bajo la tarjeta corta queda en
+   * blanco en vez de que la siguiente sección suba a ocuparlo. `columns`
+   * balancea la altura entre columnas de verdad (como un masonry) y de
+   * paso resuelve el responsive: por debajo de ~40rem de ancho disponible
+   * (2 × 20rem) el navegador ya cae solo a una columna, sin media query. */
+  columns: 2 20rem;
+  column-gap: 1.5rem;
+}
+
+.contenido > h1 {
+  column-span: all;
+  margin-bottom: 0.5rem;
 }
 
 .seccion {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.seccion:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+  /* Evita que un navegador parta una tarjeta a la mitad entre dos columnas
+   * (el riesgo real de usar `columns` en vez de grid); margin-bottom
+   * reemplaza el `gap` vertical que daba el grid anterior, ya que
+   * `columns` no tiene un equivalente de row-gap entre bloques apilados. */
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .seccion h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   font-size: var(--font-size-lg);
+}
+
+.seccion__icono {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-primary);
 }
 
 .seccion__descripcion {
@@ -33,9 +58,93 @@
   color: var(--color-text-secondary);
 }
 
+/* Subdivisión dentro de una sección (ej. "Cambiar contraseña" y "Códigos de
+ * recuperación", ambas bajo "Seguridad") — separada por una línea sutil en
+ * vez de otra tarjeta, para no anidar superficies dentro de la misma
+ * sección. */
+.subseccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.subseccion:first-of-type {
+  padding-top: 0;
+  border-top: none;
+}
+
+.subseccion h3 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Los formularios de esta vista no viven en una tarjeta angosta centrada
+ * (a diferencia de login/crear-cuenta, donde .formulario ocupa todo el
+ * ancho de la tarjeta con toda intención) — acá el botón de guardar
+ * ocuparía todo el ancho de la sección si heredara el `align-items:
+ * stretch` por defecto del flex-column, así que se acota a su contenido. */
+.formulario > button[type='submit'] {
+  align-self: flex-start;
+  min-width: 9rem;
+}
+
+/* Variante compacta para el formulario de regenerar códigos: campo +
+ * botón en una sola fila en vez de apilados, ya que es un solo input. */
+.formulario--en-linea {
+  flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.formulario--en-linea .campo {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.formulario--en-linea > button[type='submit'] {
+  align-self: auto;
+}
+
 .campo--solo-lectura p {
   color: var(--color-text);
   font-size: var(--font-size-base);
+}
+
+.correo-con-copiar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Botón de solo ícono — el `title` nativo ya cubre el tooltip al pasar el
+ * cursor por encima en desktop; en móvil (sin hover) la confirmación real
+ * es que el ícono cambia a un check por 2s al copiar (ver
+ * `correoCopiado()` en configuracion.ts), así que no hace falta un tooltip
+ * aparte para ese caso. */
+.boton-copiar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-secondary);
+}
+
+.boton-copiar:hover {
+  color: var(--color-primary);
+  background-color: var(--color-surface-raised);
+}
+
+.boton-copiar .icono {
+  width: 1rem;
+  height: 1rem;
 }
 
 .aviso-verificacion {

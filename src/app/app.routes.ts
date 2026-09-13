@@ -19,9 +19,25 @@ export const routes: Routes = [
     canActivate: [guestGuard],
   },
   {
+    path: 'restablecer-contrasena',
+    loadComponent: () =>
+      import('./views/restablecer-contrasena/restablecer-contrasena').then(
+        (m) => m.RestablecerContrasena,
+      ),
+    canActivate: [guestGuard],
+  },
+  {
     path: 'verificar-correo',
     loadComponent: () =>
       import('./views/verificar-correo/verificar-correo').then((m) => m.VerificarCorreo),
+  },
+  {
+    // A donde Supabase redirige de vuelta tras el login con Google (ver
+    // AuthService.continuarConGoogle) — sin guard: todavía no hay sesión de
+    // Taskeer en este punto, la sesión solo existe del lado de Supabase.
+    path: 'auth/callback',
+    loadComponent: () =>
+      import('./views/auth-callback/auth-callback').then((m) => m.AuthCallback),
   },
   {
     // Coincide con el link que arma sendWorkspaceInvitationEmail en el

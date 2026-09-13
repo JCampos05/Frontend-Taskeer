@@ -22,9 +22,36 @@ export interface LoginInput {
   password: string;
 }
 
+export interface RestablecerContrasenaInput {
+  email: string;
+  code: string;
+  newPassword: string;
+}
+
+export interface CambiarContrasenaInput {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface RegenerarCodigosInput {
+  currentPassword: string;
+}
+
+export interface RecoveryCodesResultado {
+  recoveryCodes: string[];
+}
+
 export interface LoginResultado {
   accessToken: string;
   user: Usuario;
+}
+
+export interface GoogleLoginResultado {
+  accessToken: string;
+  user: Usuario;
+  // Solo presente si este login creó una cuenta nueva — igual que
+  // RegistroResultado.recoveryCodes, se muestran una sola vez.
+  recoveryCodes?: string[];
 }
 
 export interface ResendVerificationResultado {

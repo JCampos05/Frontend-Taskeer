@@ -1,12 +1,8 @@
 <div class="contenido">
   <h1>Configuración</h1>
 
-  @if (errorMensaje()) {
-    <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
-  }
-
   <section class="seccion">
-    <h2>Perfil</h2>
+    <h2><app-svg-persona class="seccion__icono" />Perfil</h2>
     <p class="seccion__descripcion">
       El correo no se puede cambiar por ahora — editarlo llega en una actualización futura.
     </p>
@@ -33,13 +29,31 @@
       </div>
 
       <button type="submit" class="boton boton--primario" [disabled]="guardandoPerfil()">
-        {{ guardandoPerfil() ? 'Guardando…' : perfilGuardado() ? 'Guardado ✓' : 'Guardar' }}
+        @if (guardandoPerfil()) {
+          <span class="boton__spinner" aria-hidden="true"></span>
+        }
+        {{ guardandoPerfil() ? 'Guardando…' : 'Guardar' }}
       </button>
     </form>
 
     <div class="campo campo--solo-lectura">
       <label>Correo</label>
-      <p>{{ authService.usuarioActual()?.email }}</p>
+      <div class="correo-con-copiar">
+        <p>{{ authService.usuarioActual()?.email }}</p>
+        <button
+          type="button"
+          class="boton-copiar"
+          (click)="copiarCorreo()"
+          title="Copiar correo al portapapeles"
+          aria-label="Copiar correo al portapapeles"
+        >
+          @if (correoCopiado()) {
+            <app-svg-check class="icono" />
+          } @else {
+            <app-svg-copiar class="icono" />
+          }
+        </button>
+      </div>
     </div>
 
     @if (!authService.usuarioActual()?.emailVerifiedAt) {
@@ -73,7 +87,7 @@
   </section>
 
   <section class="seccion">
-    <h2>Apariencia</h2>
+    <h2><app-svg-sol class="seccion__icono" />Apariencia</h2>
     <p class="seccion__descripcion">Elige cómo se ve Taskeer en este dispositivo.</p>
 
     <div class="segmentado" role="radiogroup" aria-label="Tema de la interfaz">
@@ -108,7 +122,7 @@
   </section>
 
   <section class="seccion">
-    <h2>Región</h2>
+    <h2><app-svg-reloj class="seccion__icono" />Región</h2>
     <p class="seccion__descripcion">
       Para mostrar fechas y horas en tu hora local — las tareas siempre se guardan en UTC.
     </p>
@@ -146,9 +160,212 @@
         </div>
 
         <button type="submit" class="boton boton--primario" [disabled]="guardandoRegion()">
-          {{ guardandoRegion() ? 'Guardando…' : regionGuardada() ? 'Guardado ✓' : 'Guardar' }}
+          @if (guardandoRegion()) {
+            <span class="boton__spinner" aria-hidden="true"></span>
+          }
+          {{ guardandoRegion() ? 'Guardando…' : 'Guardar' }}
         </button>
       </form>
+    }
+  </section>
+
+  <section class="seccion">
+    <h2><app-svg-candado class="seccion__icono" />Seguridad</h2>
+
+    @if (!authService.usuarioActual()?.hasPassword) {
+      <p class="seccion__descripcion">
+        Tu cuenta inició sesión con Google — no tiene una contraseña local que cambiar, ni
+        códigos de recuperación que regenerar.
+      </p>
+    } @else {
+      <div class="subseccion">
+        <h3>Cambiar contraseña</h3>
+
+        <form
+          [formGroup]="formularioContrasena"
+          (ngSubmit)="cambiarContrasena()"
+          class="formulario"
+          novalidate
+        >
+          <div class="campo">
+            <label for="currentPassword">Contraseña actual</label>
+            <div class="campo-input-envoltorio">
+              <input
+                id="currentPassword"
+                [type]="mostrarContrasenaActual() ? 'text' : 'password'"
+                formControlName="currentPassword"
+                autocomplete="current-password"
+                [attr.aria-invalid]="
+                  formularioContrasena.controls.currentPassword.invalid &&
+                  formularioContrasena.controls.currentPassword.touched
+                "
+              />
+              <button
+                type="button"
+                class="campo-boton-ojo"
+                (click)="alternarMostrarContrasenaActual()"
+                [attr.aria-label]="
+                  mostrarContrasenaActual() ? 'Ocultar contraseña' : 'Mostrar contraseña'
+                "
+              >
+                @if (mostrarContrasenaActual()) {
+                  <app-svg-ojo-cerrado class="icono" />
+                } @else {
+                  <app-svg-ojo class="icono" />
+                }
+              </button>
+            </div>
+            @if (
+              formularioContrasena.controls.currentPassword.invalid &&
+              formularioContrasena.controls.currentPassword.touched
+            ) {
+              <span class="campo-error">Ingresa tu contraseña actual.</span>
+            }
+          </div>
+
+          <div class="campo">
+            <label for="newPassword">Contraseña nueva</label>
+            <div class="campo-input-envoltorio">
+              <input
+                id="newPassword"
+                [type]="mostrarContrasenaNueva() ? 'text' : 'password'"
+                formControlName="newPassword"
+                autocomplete="new-password"
+                [attr.aria-invalid]="
+                  formularioContrasena.controls.newPassword.invalid &&
+                  formularioContrasena.controls.newPassword.touched
+                "
+              />
+              <button
+                type="button"
+                class="campo-boton-ojo"
+                (click)="alternarMostrarContrasenaNueva()"
+                [attr.aria-label]="
+                  mostrarContrasenaNueva() ? 'Ocultar contraseña' : 'Mostrar contraseña'
+                "
+              >
+                @if (mostrarContrasenaNueva()) {
+                  <app-svg-ojo-cerrado class="icono" />
+                } @else {
+                  <app-svg-ojo class="icono" />
+                }
+              </button>
+            </div>
+            @if (
+              formularioContrasena.controls.newPassword.invalid &&
+              formularioContrasena.controls.newPassword.touched
+            ) {
+              <span class="campo-error">Mínimo 8 caracteres.</span>
+            }
+          </div>
+
+          <div class="campo">
+            <label for="confirmacionNueva">Confirma la contraseña nueva</label>
+            <div class="campo-input-envoltorio">
+              <input
+                id="confirmacionNueva"
+                [type]="mostrarConfirmacionNueva() ? 'text' : 'password'"
+                formControlName="confirmacion"
+                autocomplete="new-password"
+                [attr.aria-invalid]="
+                  formularioContrasena.errors?.['contrasenasDistintas'] &&
+                  formularioContrasena.controls.confirmacion.touched
+                "
+              />
+              <button
+                type="button"
+                class="campo-boton-ojo"
+                (click)="alternarMostrarConfirmacionNueva()"
+                [attr.aria-label]="
+                  mostrarConfirmacionNueva() ? 'Ocultar contraseña' : 'Mostrar contraseña'
+                "
+              >
+                @if (mostrarConfirmacionNueva()) {
+                  <app-svg-ojo-cerrado class="icono" />
+                } @else {
+                  <app-svg-ojo class="icono" />
+                }
+              </button>
+            </div>
+            @if (
+              formularioContrasena.errors?.['contrasenasDistintas'] &&
+              formularioContrasena.controls.confirmacion.touched
+            ) {
+              <span class="campo-error">Las contraseñas no coinciden.</span>
+            }
+          </div>
+
+          <button type="submit" class="boton boton--primario" [disabled]="cambiandoContrasena()">
+            @if (cambiandoContrasena()) {
+              <span class="boton__spinner" aria-hidden="true"></span>
+            }
+            {{ cambiandoContrasena() ? 'Actualizando…' : 'Actualizar contraseña' }}
+          </button>
+        </form>
+      </div>
+
+      <div class="subseccion">
+        <h3>Códigos de recuperación</h3>
+
+        @if (codigosRegenerados(); as codigos) {
+          <p class="seccion__descripcion">
+            Guarda estos códigos nuevos — los 10 anteriores ya dejaron de funcionar.
+          </p>
+          <app-codigos-recuperacion [codigos]="codigos" />
+        } @else {
+          <p class="seccion__descripcion">
+            Si perdiste tus 10 códigos, genera un set nuevo — los viejos dejan de funcionar de
+            inmediato.
+          </p>
+          <form
+            [formGroup]="formularioRegenerarCodigos"
+            (ngSubmit)="regenerarCodigos()"
+            class="formulario formulario--en-linea"
+            novalidate
+          >
+            <div class="campo">
+              <label for="currentPasswordRegenerar">Confirma tu contraseña</label>
+              <div class="campo-input-envoltorio">
+                <input
+                  id="currentPasswordRegenerar"
+                  [type]="mostrarContrasenaRegenerar() ? 'text' : 'password'"
+                  formControlName="currentPassword"
+                  autocomplete="current-password"
+                  [attr.aria-invalid]="
+                    formularioRegenerarCodigos.controls.currentPassword.invalid &&
+                    formularioRegenerarCodigos.controls.currentPassword.touched
+                  "
+                />
+                <button
+                  type="button"
+                  class="campo-boton-ojo"
+                  (click)="alternarMostrarContrasenaRegenerar()"
+                  [attr.aria-label]="
+                    mostrarContrasenaRegenerar() ? 'Ocultar contraseña' : 'Mostrar contraseña'
+                  "
+                >
+                  @if (mostrarContrasenaRegenerar()) {
+                    <app-svg-ojo-cerrado class="icono" />
+                  } @else {
+                    <app-svg-ojo class="icono" />
+                  }
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="boton boton--secundario"
+              [disabled]="regenerandoCodigos()"
+            >
+              @if (regenerandoCodigos()) {
+                <span class="boton__spinner" aria-hidden="true"></span>
+              }
+              {{ regenerandoCodigos() ? 'Generando…' : 'Regenerar códigos' }}
+            </button>
+          </form>
+        }
+      </div>
     }
   </section>
 </div>

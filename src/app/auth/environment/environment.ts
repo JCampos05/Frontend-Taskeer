@@ -1,12 +1,8 @@
-// Config de build (URLs de API, flags) — vive en auth/environment/ por
-// decisión explícita del usuario (ver docs/06-frontend.md), no es la
-// ubicación por defecto de los schematics de Angular.
-//
-// Este archivo son los valores de PRODUCCIÓN. Para desarrollo,
-// angular.json reemplaza este archivo por environment.development.ts vía
-// fileReplacements en la configuración "development".
+const production = false; // Cambia esto a true para usar la URL de producción
 
 export const environment = {
-  production: true,
-  apiUrl: 'https://TODO-configurar-url-de-render.onrender.com/api/v1',
+  production: production,
+  apiUrl: production
+    ? '' // URL de producción
+    : 'http://localhost:3100/api/v1', // URL de desarrollo
 };

@@ -2,7 +2,10 @@
 
 <header class="nav">
   <div class="nav__interior">
-    <span class="marca">Taskeer</span>
+    <span class="marca">
+      <app-svg-logo class="marca__icono" />
+      Taskeer
+    </span>
 
     <nav class="nav__links" aria-label="Navegación principal">
       <a href="#caracteristicas">Características</a>
@@ -18,80 +21,82 @@
 
 <main id="contenido">
   <section class="hero">
-    <div class="hero__texto">
-      <span class="etiqueta">Kanban simple, sin abrumarte</span>
-      <h1>Organiza tus tareas sin perder de vista lo importante</h1>
-      <p>
-        Tableros kanban, recordatorios que llegan a tiempo, y espacios de trabajo para compartir
-        con tu equipo — todo en un mismo lugar, pensado para no complicarte.
-      </p>
-      <div class="hero__acciones">
-        <a routerLink="/crear-cuenta" class="boton-nav boton-nav--solido boton-nav--grande">
-          Empezar gratis
-        </a>
-        <a routerLink="/login" class="boton-nav boton-nav--fantasma boton-nav--grande">
-          Ya tengo cuenta
-        </a>
-      </div>
-    </div>
-
-    <div class="hero__visual" aria-hidden="true">
-      <div class="mockup">
-        <div class="mockup__barra">
-          <span class="mockup__punto"></span>
-          <span class="mockup__punto"></span>
-          <span class="mockup__punto"></span>
-          <span class="mockup__url">app.taskeer.com/sprint-actual</span>
-        </div>
-
-        <div class="mockup__columnas">
-          <div class="mockup__columna">
-            <span class="mockup__columna-titulo">Por hacer</span>
-            <div class="mockup__tarjeta">
-              <span class="mockup__etiqueta mockup__etiqueta--azul"></span>
-              Diseñar pantalla de login
-            </div>
-            <div class="mockup__tarjeta">
-              <span class="mockup__etiqueta mockup__etiqueta--verde"></span>
-              Revisar PR #12
-            </div>
-          </div>
-
-          <div class="mockup__columna">
-            <span class="mockup__columna-titulo">En progreso</span>
-            <div class="mockup__tarjeta mockup__tarjeta--activa">
-              <span class="mockup__etiqueta mockup__etiqueta--morado"></span>
-              Configurar base de datos
-            </div>
-          </div>
-
-          <div class="mockup__columna">
-            <span class="mockup__columna-titulo">Hecho</span>
-            <div class="mockup__tarjeta mockup__tarjeta--tenue">
-              <span class="mockup__etiqueta mockup__etiqueta--azul"></span>
-              Definir paleta de colores
-            </div>
-          </div>
+    <div class="hero__interior">
+      <div class="hero__texto">
+        <span class="etiqueta">Kanban simple, sin abrumarte</span>
+        <h1>Organiza tus tareas sin perder de vista lo importante</h1>
+        <p>
+          Tableros kanban, recordatorios que llegan a tiempo, y espacios de trabajo para compartir
+          con tu equipo — todo en un mismo lugar, pensado para no complicarte.
+        </p>
+        <div class="hero__acciones">
+          <a routerLink="/crear-cuenta" class="boton-nav boton-nav--solido boton-nav--grande">
+            Empezar gratis
+          </a>
+          <a routerLink="/login" class="boton-nav boton-nav--fantasma boton-nav--grande">
+            Ya tengo cuenta
+          </a>
         </div>
       </div>
 
-      <div class="insignia insignia--recordatorio">
-        <span class="insignia__icono">
-          <app-svg-campana />
-        </span>
-        <div>
-          <strong>Recordatorio</strong>
-          <span>Entrega mañana, 10:00</span>
-        </div>
-      </div>
+      <div class="hero__visual" aria-hidden="true">
+        <div class="mockup">
+          <div class="mockup__barra">
+            <span class="mockup__punto"></span>
+            <span class="mockup__punto"></span>
+            <span class="mockup__punto"></span>
+            <span class="mockup__url">app.taskeer.com/sprint-actual</span>
+          </div>
 
-      <div class="insignia insignia--equipo">
-        <span class="avatares">
-          <span class="avatar"></span>
-          <span class="avatar"></span>
-          <span class="avatar"></span>
-        </span>
-        <span>+3 en este workspace</span>
+          <div class="mockup__columnas">
+            <div class="mockup__columna">
+              <span class="mockup__columna-titulo">Por hacer</span>
+              <div class="mockup__tarjeta">
+                <span class="mockup__etiqueta mockup__etiqueta--azul"></span>
+                Diseñar pantalla de login
+              </div>
+              <div class="mockup__tarjeta">
+                <span class="mockup__etiqueta mockup__etiqueta--verde"></span>
+                Revisar PR #12
+              </div>
+            </div>
+
+            <div class="mockup__columna">
+              <span class="mockup__columna-titulo">En progreso</span>
+              <div class="mockup__tarjeta mockup__tarjeta--activa">
+                <span class="mockup__etiqueta mockup__etiqueta--morado"></span>
+                Configurar base de datos
+              </div>
+            </div>
+
+            <div class="mockup__columna">
+              <span class="mockup__columna-titulo">Hecho</span>
+              <div class="mockup__tarjeta mockup__tarjeta--tenue">
+                <span class="mockup__etiqueta mockup__etiqueta--azul"></span>
+                Definir paleta de colores
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="insignia insignia--recordatorio">
+          <span class="insignia__icono">
+            <app-svg-campana />
+          </span>
+          <div>
+            <strong>Recordatorio</strong>
+            <span>Entrega mañana, 10:00</span>
+          </div>
+        </div>
+
+        <div class="insignia insignia--equipo">
+          <span class="avatares">
+            <span class="avatar"></span>
+            <span class="avatar"></span>
+            <span class="avatar"></span>
+          </span>
+          <span>+3 en este workspace</span>
+        </div>
       </div>
     </div>
   </section>
@@ -174,6 +179,9 @@
 </main>
 
 <footer class="pie-pagina">
-  <span class="marca marca--pie">Taskeer</span>
+  <span class="marca marca--pie">
+    <app-svg-logo class="marca__icono" />
+    Taskeer
+  </span>
   <span>© {{ anioActual }} Taskeer. Todos los derechos reservados.</span>
 </footer>

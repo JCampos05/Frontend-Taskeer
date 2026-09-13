@@ -6,4 +6,8 @@ export interface Usuario {
   email: string;
   displayName: string;
   emailVerifiedAt: string | null;
+  // false para cuentas creadas con Google que nunca agregaron una
+  // contraseña local — la UI de configuración lo usa para decidir si
+  // mostrar "cambiar contraseña"/"regenerar códigos de recuperación".
+  hasPassword: boolean;
 }

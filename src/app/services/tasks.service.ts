@@ -2,7 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../auth/environment/environment';
-import { ActualizarTaskInput, CrearTaskInput, MoverTaskInput, Task } from '../models/task';
+import {
+  ActualizarSubtaskInput,
+  ActualizarTaskInput,
+  CrearSubtaskInput,
+  CrearTaskInput,
+  MoverTaskInput,
+  Subtask,
+  Task,
+} from '../models/task';
 
 @Injectable({ providedIn: 'root' })
 export class TasksService {
@@ -38,5 +46,39 @@ export class TasksService {
 
   async borrar(taskId: string): Promise<void> {
     await firstValueFrom(this.http.delete(`${environment.apiUrl}/tasks/${taskId}`));
+  }
+
+  async listarSubtareas(taskId: string): Promise<Subtask[]> {
+    const respuesta = await firstValueFrom(
+      this.http.get<{ subtasks: Subtask[] }>(`${environment.apiUrl}/tasks/${taskId}/subtasks`),
+    );
+    return respuesta.subtasks;
+  }
+
+  async crearSubtarea(taskId: string, input: CrearSubtaskInput): Promise<Subtask> {
+    const respuesta = await firstValueFrom(
+      this.http.post<{ subtask: Subtask }>(`${environment.apiUrl}/tasks/${taskId}/subtasks`, input),
+    );
+    return respuesta.subtask;
+  }
+
+  async actualizarSubtarea(
+    taskId: string,
+    subtaskId: string,
+    input: ActualizarSubtaskInput,
+  ): Promise<Subtask> {
+    const respuesta = await firstValueFrom(
+      this.http.patch<{ subtask: Subtask }>(
+        `${environment.apiUrl}/tasks/${taskId}/subtasks/${subtaskId}`,
+        input,
+      ),
+    );
+    return respuesta.subtask;
+  }
+
+  async borrarSubtarea(taskId: string, subtaskId: string): Promise<void> {
+    await firstValueFrom(
+      this.http.delete(`${environment.apiUrl}/tasks/${taskId}/subtasks/${subtaskId}`),
+    );
   }
 }

@@ -1,6 +1,96 @@
 <div class="contenido">
-  <h1>Hola, {{ authService.usuarioActual()?.displayName }}</h1>
-  <p>Este es tu punto de partida. Entra a tus workspaces para ver tus tableros.</p>
+  <header class="encabezado">
+    <h1>Hola, {{ authService.usuarioActual()?.displayName }}</h1>
+    <p>Esto es lo que tienes pendiente hoy.</p>
+  </header>
 
-  <a routerLink="/app/workspaces" class="boton boton--primario">Ver mis workspaces</a>
+  @if (misInvitaciones().length > 0) {
+    <section class="seccion">
+      <h2><app-svg-usuarios class="seccion__icono" />Invitaciones pendientes</h2>
+      <div class="lista-invitaciones">
+        @for (invitacion of misInvitaciones(); track invitacion.id) {
+          <article class="invitacion">
+            <div class="invitacion__info">
+              <p class="invitacion__titulo">Te invitaron a "{{ invitacion.workspaceName }}"</p>
+              <p class="invitacion__detalle">
+                Como
+                {{
+                  invitacion.role === 'ADMIN'
+                    ? 'administrador'
+                    : invitacion.role === 'EDITOR'
+                      ? 'editor'
+                      : 'solo lectura'
+                }}
+              </p>
+            </div>
+            <button
+              type="button"
+              class="boton boton--primario boton--chico"
+              [disabled]="aceptandoInvitacionId() === invitacion.id"
+              (click)="aceptarInvitacion(invitacion)"
+            >
+              {{ aceptandoInvitacionId() === invitacion.id ? 'Uniéndote…' : 'Aceptar' }}
+            </button>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <div class="paneles">
+    <section class="seccion">
+      <h2><app-svg-campana class="seccion__icono" />Próximos recordatorios</h2>
+
+      @if (cargando()) {
+        <p class="estado-vacio-texto">Cargando…</p>
+      } @else if (recordatorios().length === 0) {
+        <p class="estado-vacio-texto">No tienes recordatorios pendientes.</p>
+      } @else {
+        <ul class="lista-recordatorios">
+          @for (recordatorio of recordatorios(); track recordatorio.id) {
+            <li>
+              <a
+                class="recordatorio"
+                [routerLink]="[
+                  '/app/workspaces',
+                  recordatorio.workspaceId,
+                  'boards',
+                  recordatorio.board.id,
+                ]"
+              >
+                <span class="recordatorio__tarea">{{ recordatorio.task.title }}</span>
+                <span class="recordatorio__meta">
+                  {{ recordatorio.board.name }} · {{ formatearFecha(recordatorio.remindAt) }}
+                </span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="seccion">
+      <h2><app-svg-carpetas class="seccion__icono" />Tus workspaces</h2>
+
+      @if (cargando()) {
+        <p class="estado-vacio-texto">Cargando…</p>
+      } @else if (workspaces().length === 0) {
+        <p class="estado-vacio-texto">
+          Todavía no tienes workspaces —
+          <a routerLink="/app/workspaces">crea el primero</a>
+          para empezar.
+        </p>
+      } @else {
+        <div class="rejilla-workspaces">
+          @for (workspace of workspaces(); track workspace.id) {
+            <a [routerLink]="['/app/workspaces', workspace.id]" class="workspace-mini">
+              <app-svg-carpetas class="icono" />
+              {{ workspace.name }}
+            </a>
+          }
+        </div>
+        <a routerLink="/app/workspaces" class="enlace-sutil">Ver todos tus workspaces →</a>
+      }
+    </section>
+  </div>
 </div>

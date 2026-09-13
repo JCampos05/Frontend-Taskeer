@@ -2,32 +2,56 @@
   display: contents;
 }
 
+/* Sin color de fondo — a diferencia de panel-notificaciones (que sí oscurece
+ * detrás), acá el usuario pidió explícitamente poder seguir viendo el
+ * tablero completo mientras edita una tarea. El botón sigue existiendo
+ * (invisible, cubre toda la pantalla) solo para poder cerrar clickeando
+ * afuera del panel. */
 .fondo {
   position: fixed;
   inset: 0;
   z-index: 1500;
-  background-color: rgb(0 0 0 / 45%);
   cursor: default;
   border: none;
+  background: none;
 }
 
+/* Drawer anclado a la derecha, altura completa — mismo patrón que
+ * panel-notificaciones.css (components/compuestos/panel-notificaciones),
+ * en vez del modal centrado que tenía antes. */
 .panel {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  right: 0;
   z-index: 1501;
-  width: min(30rem, calc(100vw - 2rem));
-  max-height: calc(100dvh - 4rem);
+  width: min(26rem, 100vw);
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  animation: panel-entrar 0.2s ease;
+}
+
+@keyframes panel-entrar {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.contenido {
+  flex-grow: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1.5rem;
-  border-radius: 0.85rem;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-lg);
+  padding: 1.25rem;
 }
 
 .encabezado {
@@ -35,6 +59,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .encabezado h2 {
@@ -66,14 +93,28 @@
 
 .fila {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr), no 1fr a secas — un track `1fr` no encoge por debajo
+   * del ancho mínimo de su contenido (el select de "Asignado a" tiene uno
+   * propio), lo que desbordaba el panel horizontalmente en vez de apretar
+   * las columnas. El panel es angosto por diseño (drawer de 26rem, no un
+   * modal centrado), así que esto ya se queda en 2 columnas siempre — no
+   * depende del ancho de viewport como antes. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 22rem) {
   .fila {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
+}
+
+.campo {
+  min-width: 0;
+}
+
+.campo select {
+  width: 100%;
 }
 
 .campo textarea,
@@ -93,12 +134,115 @@
   border-color: var(--color-primary);
 }
 
+.subtareas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.subtareas h3 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.subtareas__estado {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.subtareas__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.subtareas__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  min-width: 0;
+}
+
+.subtareas__item--hecho .subtareas__titulo {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.subtareas__titulo {
+  flex-grow: 1;
+  min-width: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtareas__asignado {
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-raised);
+}
+
+.subtareas__borrar {
+  flex-shrink: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.4rem;
+  color: var(--color-text-muted);
+}
+
+.subtareas__borrar:hover {
+  background-color: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+}
+
+.subtareas__borrar svg,
+.subtareas__borrar app-svg-basura {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.subtareas__formulario {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.subtareas__formulario input {
+  flex-grow: 1;
+  min-width: 0;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+/* Footer fijo abajo del drawer (fuera de .contenido, que es lo único que
+ * scrollea) — antes quedaba pegado justo debajo de los campos del
+ * formulario, con un hueco vacío grande abajo en tareas cortas. */
 .acciones {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-top: 0.25rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .boton--con-icono {

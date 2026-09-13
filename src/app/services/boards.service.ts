@@ -7,10 +7,12 @@ import {
   ActualizarColumnaInput,
   Board,
   BoardDetalle,
+  BoardMemberOverride,
   Columna,
   CrearBoardInput,
   CrearColumnaInput,
 } from '../models/board';
+import { WorkspaceRole } from '../models/workspace';
 
 @Injectable({ providedIn: 'root' })
 export class BoardsService {
@@ -97,6 +99,38 @@ export class BoardsService {
     await firstValueFrom(
       this.http.delete(
         `${environment.apiUrl}/workspaces/${workspaceId}/boards/${boardId}/columns/${columnId}`,
+      ),
+    );
+  }
+
+  async listarOverridesDeRol(workspaceId: string, boardId: string): Promise<BoardMemberOverride[]> {
+    const respuesta = await firstValueFrom(
+      this.http.get<{ overrides: BoardMemberOverride[] }>(
+        `${environment.apiUrl}/workspaces/${workspaceId}/boards/${boardId}/member-overrides`,
+      ),
+    );
+    return respuesta.overrides;
+  }
+
+  async asignarOverrideDeRol(
+    workspaceId: string,
+    boardId: string,
+    userId: string,
+    role: WorkspaceRole,
+  ): Promise<BoardMemberOverride> {
+    const respuesta = await firstValueFrom(
+      this.http.put<{ override: BoardMemberOverride }>(
+        `${environment.apiUrl}/workspaces/${workspaceId}/boards/${boardId}/member-overrides/${userId}`,
+        { role },
+      ),
+    );
+    return respuesta.override;
+  }
+
+  async quitarOverrideDeRol(workspaceId: string, boardId: string, userId: string): Promise<void> {
+    await firstValueFrom(
+      this.http.delete(
+        `${environment.apiUrl}/workspaces/${workspaceId}/boards/${boardId}/member-overrides/${userId}`,
       ),
     );
   }

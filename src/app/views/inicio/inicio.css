@@ -4,17 +4,145 @@
 
 .contenido {
   padding: clamp(1.5rem, 5vw, 3rem);
+  max-width: 60rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.75rem;
-  max-width: 40rem;
+  gap: 1.5rem;
 }
 
-.contenido p {
+.encabezado p {
+  margin-top: 0.25rem;
   color: var(--color-text-secondary);
 }
 
-.contenido .boton {
-  margin-top: 0.5rem;
+/* Mismo lenguaje visual de tarjeta+ícono ya usado en views/configuracion —
+ * duplicado a propósito (componentes autocontenidos, mismo criterio ya
+ * documentado en el resto del Frontend) en vez de compartir una hoja de
+ * estilos entre vistas que no tienen otra relación entre sí. */
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.seccion h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--font-size-lg);
+}
+
+.seccion__icono {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-primary);
+}
+
+.estado-vacio-texto {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.paneles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.lista-invitaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.invitacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+}
+
+.invitacion__titulo {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.invitacion__detalle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.boton--chico {
+  padding: 0.4rem 0.9rem;
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.lista-recordatorios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recordatorio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--color-border);
+}
+
+.recordatorio:hover {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-surface-raised);
+}
+
+.recordatorio__tarea {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.recordatorio__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.rejilla-workspaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.workspace-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.workspace-mini:hover {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-surface-raised);
+}
+
+.workspace-mini .icono {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-primary);
 }

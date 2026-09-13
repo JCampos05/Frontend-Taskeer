@@ -11,6 +11,14 @@
   min-height: 0;
 }
 
+.encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 .encabezado .volver {
   display: inline-block;
   font-size: var(--font-size-sm);
@@ -20,6 +28,90 @@
 
 .encabezado .volver:hover {
   color: var(--color-primary);
+}
+
+.filtro-prioridad {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filtro-prioridad label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.filtro-prioridad select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.overrides {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.overrides h2 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.overrides__ayuda {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.overrides__estado {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.overrides__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.overrides__item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-bg);
+}
+
+.overrides__nombre {
+  flex-grow: 1;
+  min-width: 8rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.overrides__rol-base {
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.overrides__item select {
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
 }
 
 .estado-vacio {
@@ -77,6 +169,14 @@
   background-color: var(--color-bg);
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* Columna en (o por encima de) su límite WIP configurado. */
+.columna__contador--lleno {
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  font-weight: var(--font-weight-medium);
 }
 
 .columna__acciones {
@@ -145,10 +245,46 @@
   border-color: var(--color-primary);
 }
 
+.tarjeta-tarea__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .tarjeta-tarea h3 {
   font-size: var(--font-size-sm);
   color: var(--color-text);
   font-weight: var(--font-weight-medium);
+}
+
+.etiqueta-prioridad {
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.etiqueta-prioridad--low {
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg);
+}
+
+.etiqueta-prioridad--medium {
+  color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.etiqueta-prioridad--high {
+  color: var(--color-warning);
+  background-color: color-mix(in srgb, var(--color-warning) 14%, transparent);
+}
+
+.etiqueta-prioridad--urgent {
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 14%, transparent);
 }
 
 .tarjeta-tarea__meta {
@@ -158,12 +294,18 @@
 }
 
 .etiqueta-fecha,
-.etiqueta-asignado {
+.etiqueta-asignado,
+.etiqueta-subtareas {
   font-size: var(--font-size-xs);
   padding: 0.1rem 0.45rem;
   border-radius: 999px;
   color: var(--color-text-secondary);
   background-color: var(--color-surface-raised);
+}
+
+.etiqueta-subtareas--completo {
+  color: var(--color-success);
+  background-color: color-mix(in srgb, var(--color-success) 14%, transparent);
 }
 
 .boton-agregar {
@@ -180,6 +322,16 @@
 .boton-agregar:hover {
   background-color: var(--color-bg);
   color: var(--color-text);
+}
+
+.boton-agregar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.boton-agregar:disabled:hover {
+  background-color: transparent;
+  color: var(--color-text-secondary);
 }
 
 .boton-agregar svg,
@@ -214,6 +366,13 @@
 .formulario-renombrar__acciones {
   display: flex;
   gap: 0.5rem;
+}
+
+.formulario-renombrar__wip {
+  /* Achica los controles de flecha nativos del navegador — el campo es
+   * chico y opcional, no necesita el ancho completo de los inputs de texto
+   * de al lado. */
+  width: 100%;
 }
 
 .boton--chico {

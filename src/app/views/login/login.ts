@@ -3,13 +3,16 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TarjetaAuth } from '../../components/principales/tarjeta-auth/tarjeta-auth';
+import { SvgGoogle } from '../../components/svgs/svg-google/svg-google';
+import { SvgOjo } from '../../components/svgs/svg-ojo/svg-ojo';
+import { SvgOjoCerrado } from '../../components/svgs/svg-ojo-cerrado/svg-ojo-cerrado';
 import { ErrorApi } from '../../models/auth';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, TarjetaAuth],
+  imports: [ReactiveFormsModule, RouterLink, TarjetaAuth, SvgGoogle, SvgOjo, SvgOjoCerrado],
   templateUrl: './login.html',
 })
 export class Login {
@@ -20,6 +23,7 @@ export class Login {
 
   protected readonly enviando = signal(false);
   protected readonly errorMensaje = signal<string | null>(null);
+  protected readonly mostrarPassword = signal(false);
 
   protected readonly formulario = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -44,6 +48,16 @@ export class Login {
     } finally {
       this.enviando.set(false);
     }
+  }
+
+  protected alternarMostrarPassword(): void {
+    this.mostrarPassword.update((actual) => !actual);
+  }
+
+  protected continuarConGoogle(): void {
+    // Navegación de página completa — el resto del flujo sigue en el
+    // Backend (GET /auth/google/redirect) y después en /auth/callback.
+    this.authService.continuarConGoogle();
   }
 
   private obtenerMensajeError(err: unknown): string {

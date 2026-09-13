@@ -4,7 +4,57 @@
       <a [routerLink]="['/app/workspaces', workspaceId]" class="volver">← Tableros</a>
       <h1>{{ tablero()?.name || 'Tablero' }}</h1>
     </div>
+    <div class="filtro-prioridad">
+      <label for="filtroPrioridad">Prioridad</label>
+      <select
+        id="filtroPrioridad"
+        [value]="filtroPrioridad() ?? ''"
+        (change)="cambiarFiltroPrioridad($event)"
+      >
+        <option value="">Todas</option>
+        @for (opcion of prioridades; track opcion.valor) {
+          <option [value]="opcion.valor">{{ opcion.etiqueta }}</option>
+        }
+      </select>
+    </div>
+    @if (puedeGestionarTableros(miRol())) {
+      <button type="button" class="boton boton--secundario boton--chico" (click)="alternarPanelOverrides()">
+        Roles por tablero
+      </button>
+    }
   </header>
+
+  @if (mostrandoOverrides()) {
+    <section class="overrides">
+      <h2>Roles por tablero — solo para este board</h2>
+      <p class="overrides__ayuda">
+        Asigna un rol distinto al de workspace para un miembro, SOLO dentro de este board. Elegir
+        "Rol de workspace" quita el override.
+      </p>
+
+      @if (cargandoOverrides()) {
+        <p class="overrides__estado">Cargando…</p>
+      } @else {
+        <ul class="overrides__lista">
+          @for (miembro of miembros(); track miembro.userId) {
+            <li class="overrides__item">
+              <span class="overrides__nombre">{{ miembro.displayName }}</span>
+              <span class="overrides__rol-base">Workspace: {{ miembro.role }}</span>
+              <select
+                [value]="overrideDe(miembro.userId)?.role ?? ''"
+                (change)="cambiarOverride(miembro.userId, $event)"
+              >
+                <option value="">Rol de workspace ({{ miembro.role }})</option>
+                @for (rol of rolesAsignables; track rol) {
+                  <option [value]="rol">{{ rol }}</option>
+                }
+              </select>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
 
   @if (errorMensaje()) {
     <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
@@ -15,7 +65,7 @@
   } @else if (tablero()) {
     <div class="tablero" cdkDropListGroup>
       @for (columna of tablero()!.columns; track columna.id) {
-        <section class="columna">
+        <section class="columna" [attr.data-columna-id]="columna.id">
           <header class="columna__encabezado">
             @if (editandoColumnaId() === columna.id) {
               <form
@@ -24,6 +74,13 @@
                 class="formulario-renombrar"
               >
                 <input type="text" formControlName="name" autocomplete="off" />
+                <input
+                  type="number"
+                  formControlName="wipLimit"
+                  min="1"
+                  placeholder="Límite WIP (opcional)"
+                  class="formulario-renombrar__wip"
+                />
                 <div class="formulario-renombrar__acciones">
                   <button type="submit" class="boton boton--primario boton--chico">Guardar</button>
                   <button
@@ -37,8 +94,10 @@
               </form>
             } @else {
               <h2>{{ columna.name }}</h2>
-              <span class="columna__contador">{{ columna.tasks.length }}</span>
-              @if (puedeGestionarTableros(miRol())) {
+              <span class="columna__contador" [class.columna__contador--lleno]="columnaLlena(columna)">
+                {{ columna.tasks.length }}{{ columna.wipLimit ? '/' + columna.wipLimit : '' }}
+              </span>
+              @if (puedeGestionarTableros(miRolEfectivo())) {
                 <div class="columna__acciones">
                   <button
                     type="button"
@@ -65,18 +124,29 @@
             class="lista-tareas"
             cdkDropList
             [cdkDropListData]="columna.tasks"
-            [cdkDropListDisabled]="!puedeGestionarTareas(miRol())"
+            [cdkDropListDisabled]="!puedeGestionarTareas(miRolEfectivo())"
+            [cdkDropListEnterPredicate]="predicadoEntradaColumna(columna)"
             (cdkDropListDropped)="alSoltar($event, columna)"
           >
-            @for (tarea of columna.tasks; track tarea.id) {
+            @for (tarea of tareasVisibles(columna); track tarea.id) {
               <article
                 class="tarjeta-tarea"
                 cdkDrag
-                [cdkDragDisabled]="!puedeGestionarTareas(miRol())"
+                [cdkDragData]="tarea"
+                [cdkDragDisabled]="!puedeGestionarTareas(miRolEfectivo())"
+                (cdkDragMoved)="alArrastrar($event, columna)"
                 (click)="abrirTarea(tarea, columna.id)"
               >
-                <h3>{{ tarea.title }}</h3>
-                @if (tarea.dueAt || nombreMiembro(tarea.assigneeId)) {
+                <div class="tarjeta-tarea__encabezado">
+                  <h3>{{ tarea.title }}</h3>
+                  <span
+                    class="etiqueta-prioridad"
+                    [class]="'etiqueta-prioridad--' + tarea.priority.toLowerCase()"
+                  >
+                    {{ etiquetaPrioridad(tarea.priority) }}
+                  </span>
+                </div>
+                @if (tarea.dueAt || nombreMiembro(tarea.assigneeId) || tarea.subtaskTotal > 0) {
                   <div class="tarjeta-tarea__meta">
                     @if (tarea.dueAt) {
                       <span class="etiqueta-fecha">{{ formatearFechaCorta(tarea.dueAt, zonaHoraria()) }}</span>
@@ -84,14 +154,32 @@
                     @if (nombreMiembro(tarea.assigneeId); as nombre) {
                       <span class="etiqueta-asignado">{{ nombre }}</span>
                     }
+                    @if (tarea.subtaskTotal > 0) {
+                      <span
+                        class="etiqueta-subtareas"
+                        [class.etiqueta-subtareas--completo]="tarea.subtaskCompletado === tarea.subtaskTotal"
+                      >
+                        ✓ {{ tarea.subtaskCompletado }}/{{ tarea.subtaskTotal }}
+                      </span>
+                    }
                   </div>
                 }
               </article>
             }
           </div>
 
-          @if (puedeGestionarTareas(miRol())) {
-            <button type="button" class="boton-agregar" (click)="abrirNuevaTarea(columna.id)">
+          @if (puedeGestionarTareas(miRolEfectivo())) {
+            <button
+              type="button"
+              class="boton-agregar"
+              [disabled]="columnaLlena(columna)"
+              [attr.title]="
+                columnaLlena(columna)
+                  ? 'Esta columna llegó a su límite de ' + columna.wipLimit + ' tareas.'
+                  : null
+              "
+              (click)="abrirNuevaTarea(columna.id)"
+            >
               <app-svg-mas />
               Tarea
             </button>
@@ -99,7 +187,7 @@
         </section>
       }
 
-      @if (puedeGestionarTableros(miRol())) {
+      @if (puedeGestionarTableros(miRolEfectivo())) {
         <section class="columna columna--nueva">
           @if (mostrarFormularioColumna()) {
             <form [formGroup]="formularioColumna" (ngSubmit)="crearColumna()" class="formulario-columna" novalidate>
@@ -147,9 +235,10 @@
     [columnaId]="columnaIdCreandoTarea()!"
     [miembros]="miembros()"
     [zonaHoraria]="zonaHoraria()"
-    [soloLectura]="!puedeGestionarTareas(miRol())"
+    [soloLectura]="!puedeGestionarTareas(miRolEfectivo())"
     (guardado)="alGuardarTarea($event)"
     (eliminado)="alEliminarTarea($event)"
     (cerrar)="cerrarModalTarea()"
+    (subtareasActualizadas)="alActualizarProgresoSubtareas($event)"
   />
 }

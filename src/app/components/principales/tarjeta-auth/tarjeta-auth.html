@@ -1,6 +1,9 @@
 <div class="contenedor tema-claro-fijo">
   <div class="tarjeta">
-    <a class="marca" routerLink="/">Taskeer</a>
+    <a class="marca" routerLink="/">
+      <app-svg-logo class="marca__icono" />
+      Taskeer
+    </a>
 
     <h1 class="titulo">{{ titulo() }}</h1>
     @if (subtitulo()) {

@@ -8,59 +8,150 @@
     </button>
   </header>
 
-  @if (errorMensaje()) {
-    <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
-  }
+  <div class="contenido">
+    @if (errorMensaje()) {
+      <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
+    }
 
-  <form [formGroup]="formulario" (ngSubmit)="guardar()" class="formulario" novalidate>
-    <div class="campo">
-      <label for="title">Título</label>
-      <input id="title" type="text" formControlName="title" autocomplete="off" />
-      @if (formulario.controls.title.invalid && formulario.controls.title.touched) {
-        <span class="campo-error">El título es obligatorio (máximo 200 caracteres).</span>
-      }
-    </div>
+    <form
+      id="formulario-tarea"
+      [formGroup]="formulario"
+      (ngSubmit)="guardar()"
+      class="formulario"
+      novalidate
+    >
+      <div class="campo">
+        <label for="title">Título</label>
+        <input id="title" type="text" formControlName="title" autocomplete="off" />
+        @if (formulario.controls.title.invalid && formulario.controls.title.touched) {
+          <span class="campo-error">El título es obligatorio (máximo 200 caracteres).</span>
+        }
+      </div>
 
-    <div class="campo">
-      <label for="description">Descripción</label>
-      <textarea id="description" formControlName="description" rows="4"></textarea>
-    </div>
+      <div class="campo">
+        <label for="description">Descripción</label>
+        <textarea id="description" formControlName="description" rows="4"></textarea>
+      </div>
 
-    <div class="fila">
       <div class="campo">
         <label for="dueAt">Fecha límite</label>
         <input id="dueAt" type="datetime-local" formControlName="dueAt" />
       </div>
 
-      <div class="campo">
-        <label for="assigneeId">Asignado a</label>
-        <select id="assigneeId" formControlName="assigneeId">
-          <option value="">Sin asignar</option>
-          @for (miembro of miembros(); track miembro.userId) {
-            <option [value]="miembro.userId">{{ miembro.displayName }}</option>
-          }
-        </select>
-      </div>
-    </div>
+      <div class="fila">
+        <div class="campo">
+          <label for="assigneeId">Asignado a</label>
+          <select id="assigneeId" formControlName="assigneeId">
+            <option value="">Sin asignar</option>
+            @for (miembro of miembros(); track miembro.userId) {
+              <option [value]="miembro.userId">{{ miembro.displayName }}</option>
+            }
+          </select>
+        </div>
 
-    @if (!soloLectura()) {
-      <div class="acciones">
-        @if (esEdicion()) {
-          <button
-            type="button"
-            class="boton boton--secundario boton--con-icono"
-            (click)="confirmandoBorrado.set(true)"
-          >
-            <app-svg-basura />
-            Eliminar
-          </button>
-        }
-        <button type="submit" class="boton boton--primario" [disabled]="guardando()">
-          {{ guardando() ? 'Guardando…' : 'Guardar' }}
-        </button>
+        <div class="campo">
+          <label for="priority">Prioridad</label>
+          <select id="priority" formControlName="priority">
+            @for (opcion of prioridades; track opcion.valor) {
+              <option [value]="opcion.valor">{{ opcion.etiqueta }}</option>
+            }
+          </select>
+        </div>
       </div>
+
+    </form>
+
+    @if (esEdicion()) {
+      <section class="subtareas">
+        <h3>Pasos</h3>
+
+        @if (errorSubtareas()) {
+          <p class="alerta alerta--error" role="alert">{{ errorSubtareas() }}</p>
+        }
+
+        @if (cargandoSubtareas()) {
+          <p class="subtareas__estado">Cargando…</p>
+        } @else if (subtareas().length === 0) {
+          <p class="subtareas__estado">Todavía no hay pasos en esta tarea.</p>
+        } @else {
+          <ul class="subtareas__lista" cdkDropList (cdkDropListDropped)="alSoltarSubtarea($event)">
+            @for (subtarea of subtareas(); track subtarea.id) {
+              <li
+                class="subtareas__item"
+                [class.subtareas__item--hecho]="subtarea.completed"
+                cdkDrag
+                [cdkDragDisabled]="soloLectura()"
+              >
+                <input
+                  type="checkbox"
+                  [checked]="subtarea.completed"
+                  [disabled]="soloLectura()"
+                  (change)="alternarCompletado(subtarea)"
+                  [attr.aria-label]="'Marcar \'' + subtarea.title + '\' como completado'"
+                />
+                <span class="subtareas__titulo">{{ subtarea.title }}</span>
+                @if (nombreMiembro(subtarea.assigneeId); as nombre) {
+                  <span class="subtareas__asignado">{{ nombre }}</span>
+                }
+                @if (!soloLectura()) {
+                  <button
+                    type="button"
+                    class="subtareas__borrar"
+                    (click)="eliminarSubtarea(subtarea)"
+                    aria-label="Eliminar paso"
+                  >
+                    <app-svg-basura />
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        }
+
+        @if (!soloLectura()) {
+          <form
+            [formGroup]="formularioSubtarea"
+            (ngSubmit)="agregarSubtarea()"
+            class="subtareas__formulario"
+            novalidate
+          >
+            <input
+              type="text"
+              formControlName="title"
+              placeholder="Agregar un paso…"
+              autocomplete="off"
+            />
+            <button type="submit" class="boton boton--secundario boton--chico" [disabled]="agregandoSubtarea()">
+              +
+            </button>
+          </form>
+        }
+      </section>
     }
-  </form>
+  </div>
+
+  @if (!soloLectura()) {
+    <div class="acciones">
+      @if (esEdicion()) {
+        <button
+          type="button"
+          class="boton boton--secundario boton--con-icono"
+          (click)="confirmandoBorrado.set(true)"
+        >
+          <app-svg-basura />
+          Eliminar
+        </button>
+      }
+      <button
+        type="submit"
+        form="formulario-tarea"
+        class="boton boton--primario"
+        [disabled]="guardando()"
+      >
+        {{ guardando() ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  }
 </div>
 
 @if (confirmandoBorrado()) {

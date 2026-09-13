@@ -3,11 +3,16 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../auth/environment/environment';
 import {
+  CambiarContrasenaInput,
+  GoogleLoginResultado,
   LoginInput,
   LoginResultado,
+  RecoveryCodesResultado,
+  RegenerarCodigosInput,
   RegistroInput,
   RegistroResultado,
   ResendVerificationResultado,
+  RestablecerContrasenaInput,
 } from '../models/auth';
 import { Usuario } from '../models/usuario';
 
@@ -58,6 +63,66 @@ export class AuthService {
     );
     this.token.set(response.accessToken);
     this.user.set(response.user);
+  }
+
+  /** Navega (página completa, no fetch) al endpoint del Backend que arma la
+   * URL de autorización de Google y redirige — el Frontend nunca necesita
+   * las credenciales de Supabase ni su librería cliente, solo esta URL.
+   * Usado tanto desde login como desde crear-cuenta: es el mismo
+   * botón/acción en los dos, Google/Supabase decide si esto termina en una
+   * cuenta nueva o una que ya inició sesión antes. */
+  continuarConGoogle(): void {
+    window.location.href = `${environment.apiUrl}/auth/google/redirect`;
+  }
+
+  /** Completa el login con Google: cambia el JWT de Supabase (ya resuelto
+   * por /auth/callback) por una sesión real de Taskeer. `state` es el nonce
+   * anti-CSRF que /auth/google/redirect generó — el backend lo compara
+   * contra su cookie httpOnly antes de aceptar el token. */
+  async loginWithGoogle(supabaseAccessToken: string, state: string): Promise<GoogleLoginResultado> {
+    const response = await firstValueFrom(
+      this.http.post<GoogleLoginResultado>(
+        `${environment.apiUrl}/auth/google`,
+        { supabaseAccessToken, state },
+        { withCredentials: true },
+      ),
+    );
+    this.token.set(response.accessToken);
+    this.user.set(response.user);
+    return response;
+  }
+
+  /** Sin sesión — la identidad se demuestra con el código de recuperación,
+   * no con un token de auth. Revoca todas las sesiones activas del lado del
+   * Backend, así que quien lo llama debe volver a iniciar sesión después. */
+  async resetPasswordWithCode(input: RestablecerContrasenaInput): Promise<void> {
+    await firstValueFrom(
+      this.http.post(`${environment.apiUrl}/auth/reset-password-with-code`, input),
+    );
+  }
+
+  /** A diferencia de resetPasswordWithCode, esta requiere sesión activa (va
+   * con el JWT actual vía el interceptor) y confirma la contraseña actual en
+   * vez de un código. El Backend revoca todas las demás sesiones pero emite
+   * una nueva para este mismo dispositivo — por eso actualiza el token/user
+   * en memoria en vez de solo resolver sin más, igual que login()/refresh(). */
+  async changePassword(input: CambiarContrasenaInput): Promise<void> {
+    const response = await firstValueFrom(
+      this.http.post<LoginResultado>(`${environment.apiUrl}/auth/change-password`, input, {
+        withCredentials: true,
+      }),
+    );
+    this.token.set(response.accessToken);
+    this.user.set(response.user);
+  }
+
+  async regenerateRecoveryCodes(input: RegenerarCodigosInput): Promise<RecoveryCodesResultado> {
+    return firstValueFrom(
+      this.http.post<RecoveryCodesResultado>(
+        `${environment.apiUrl}/auth/recovery-codes/regenerate`,
+        input,
+      ),
+    );
   }
 
   async resendVerification(): Promise<ResendVerificationResultado> {

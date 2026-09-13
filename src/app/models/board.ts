@@ -2,6 +2,9 @@
 // Backend no comparte paquete de tipos con el Frontend por ahora (decisión
 // explícita, ver CLAUDE.md).
 
+import type { PrioridadTarea } from './task';
+import type { WorkspaceRole } from './workspace';
+
 export interface Board {
   id: string;
   workspaceId: string;
@@ -16,6 +19,8 @@ export interface Columna {
   boardId: string;
   name: string;
   position: number;
+  // null = sin límite de tareas simultáneas en esta columna.
+  wipLimit: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -29,8 +34,11 @@ export interface TaskResumen {
   title: string;
   description: string | null;
   dueAt: string | null;
+  priority: PrioridadTarea;
   position: number;
   assigneeId: string | null;
+  subtaskTotal: number;
+  subtaskCompletado: number;
 }
 
 export interface ColumnaConTareas extends Columna {
@@ -38,6 +46,10 @@ export interface ColumnaConTareas extends Columna {
 }
 
 export interface BoardDetalle extends Board {
+  // Rol EFECTIVO del usuario actual en ESTE board — ya resuelto contra un
+  // posible BoardMemberOverride por el Backend. Usar esto (no el rol de
+  // workspace del usuario) para decidir qué botones mostrar en el tablero.
+  viewerEffectiveRole: WorkspaceRole;
   columns: ColumnaConTareas[];
 }
 
@@ -52,9 +64,24 @@ export interface ActualizarBoardInput {
 
 export interface CrearColumnaInput {
   name: string;
+  wipLimit?: number | null;
 }
 
 export interface ActualizarColumnaInput {
   name?: string;
   position?: number;
+  wipLimit?: number | null;
+}
+
+// Espejo de BoardMemberOverrideDto — rol EFECTIVO de un miembro dentro de
+// ESTE board puntual, mientras exista esta fila reemplaza (no combina) su
+// rol de workspace, en cualquier dirección. Solo lo gestiona el OWNER/ADMIN
+// del workspace (ver docs/02-modelo-datos.md).
+export interface BoardMemberOverride {
+  id: string;
+  boardId: string;
+  userId: string;
+  role: WorkspaceRole;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SvgCampana } from '../../components/svgs/svg-campana/svg-campana';
 import { SvgCandado } from '../../components/svgs/svg-candado/svg-candado';
+import { SvgLogo } from '../../components/svgs/svg-logo/svg-logo';
 import { SvgTablero } from '../../components/svgs/svg-tablero/svg-tablero';
 import { SvgUsuarios } from '../../components/svgs/svg-usuarios/svg-usuarios';
 
@@ -23,7 +24,7 @@ interface Plan {
 @Component({
   selector: 'app-landing',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, SvgTablero, SvgCampana, SvgUsuarios, SvgCandado],
+  imports: [RouterLink, SvgTablero, SvgCampana, SvgUsuarios, SvgCandado, SvgLogo],
   templateUrl: './landing.html',
   styleUrl: './landing.css',
 })

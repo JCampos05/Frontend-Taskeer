@@ -1,0 +1,38 @@
+@switch (estado()) {
+  @case ('cargando') {
+    <div class="contenedor tema-claro-fijo">
+      <app-pagina-estado titulo="Conectando con Google…" descripcion="Un momento." />
+    </div>
+  }
+  @case ('codigos') {
+    <app-tarjeta-auth
+      titulo="Guarda tus códigos de recuperación"
+      subtitulo="Son la única forma de recuperar tu cuenta si algún día pierdes acceso a Google."
+    >
+      <app-codigos-recuperacion contenido [codigos]="recoveryCodes()">
+        <button
+          continuar
+          type="button"
+          class="boton boton--primario"
+          style="width: 100%"
+          (click)="continuar()"
+        >
+          Ya los guardé, continuar
+        </button>
+      </app-codigos-recuperacion>
+    </app-tarjeta-auth>
+  }
+  @case ('error') {
+    <div class="contenedor tema-claro-fijo">
+      <app-pagina-estado
+        titulo="No pudimos completar el login con Google"
+        [descripcion]="
+          errorMensaje() || 'Vuelve a intentarlo desde la pantalla de inicio de sesión.'
+        "
+      >
+        <app-svg-advertencia ilustracion />
+        <a acciones class="boton boton--primario" routerLink="/login">Ir a iniciar sesión</a>
+      </app-pagina-estado>
+    </div>
+  }
+}
