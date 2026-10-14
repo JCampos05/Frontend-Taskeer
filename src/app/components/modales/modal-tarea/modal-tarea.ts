@@ -18,11 +18,14 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalConfirmacion } from '../modal-confirmacion/modal-confirmacion';
 import { SvgBasura } from '../../svgs/svg-basura/svg-basura';
+import { SvgEstrella } from '../../svgs/svg-estrella/svg-estrella';
+import { SvgEstrellaLlena } from '../../svgs/svg-estrella-llena/svg-estrella-llena';
 import { SvgX } from '../../svgs/svg-x/svg-x';
 import { ErrorApi } from '../../../models/auth';
 import { PrioridadTarea, Subtask, Task } from '../../../models/task';
 import { WorkspaceMember } from '../../../models/workspace';
 import { TasksService } from '../../../services/tasks.service';
+import { ToastService } from '../../../services/toast.service';
 import { datetimeLocalAUtcIso, utcIsoADatetimeLocalInput } from '../../../utils/fecha';
 
 // Solo los campos que el formulario necesita — tanto TaskResumen (embebido
@@ -50,13 +53,23 @@ export const PRIORIDADES: { valor: PrioridadTarea; etiqueta: string }[] = [
 @Component({
   selector: 'app-modal-tarea',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, ModalConfirmacion, SvgBasura, SvgX, CdkDropList, CdkDrag],
+  imports: [
+    ReactiveFormsModule,
+    ModalConfirmacion,
+    SvgBasura,
+    SvgEstrella,
+    SvgEstrellaLlena,
+    SvgX,
+    CdkDropList,
+    CdkDrag,
+  ],
   templateUrl: './modal-tarea.html',
   styleUrl: './modal-tarea.css',
 })
 export class ModalTarea implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly tasksService = inject(TasksService);
+  private readonly toastService = inject(ToastService);
 
   /** `null` = modo creación. */
   readonly tarea = input<TareaEditable | null>(null);
@@ -69,6 +82,10 @@ export class ModalTarea implements OnInit {
   readonly guardado = output<Task>();
   readonly eliminado = output<string>();
   readonly cerrar = output<void>();
+  /** Se emite al agregar/quitar de "Mi día" desde el botón de estrella de
+   * este modal — para que la tarjeta del tablero (que tiene su propio
+   * botón, ver tablero.html) quede sincronizada sin recargar todo. */
+  readonly miDiaActualizada = output<{ taskId: string; enMiDia: boolean }>();
   /** El tablero mantiene su propio conteo de subtareas por tarjeta (para el
    * badge "x/y" del kanban) sin volver a pedir el board entero — se emite
    * cada vez que el checklist cambia mientras el drawer está abierto. */
@@ -78,6 +95,12 @@ export class ModalTarea implements OnInit {
   protected readonly eliminando = signal(false);
   protected readonly confirmandoBorrado = signal(false);
   protected readonly errorMensaje = signal<string | null>(null);
+
+  // "Mi día" — `null` mientras se resuelve el estado real contra el Backend
+  // (ver cargarEstadoMiDia), para no mostrar el ícono "sin marcar" un
+  // instante antes de saber si en realidad ya estaba marcada.
+  protected readonly enMiDia = signal<boolean | null>(null);
+  protected readonly actualizandoMiDia = signal(false);
 
   protected readonly esEdicion = computed(() => this.tarea() !== null);
   protected readonly prioridades = PRIORIDADES;
@@ -123,6 +146,41 @@ export class ModalTarea implements OnInit {
     }
     if (actual) {
       void this.cargarSubtareas(actual.id);
+      void this.cargarEstadoMiDia(actual.id);
+    }
+  }
+
+  private async cargarEstadoMiDia(taskId: string): Promise<void> {
+    try {
+      this.enMiDia.set(await this.tasksService.estaEnMiDia(taskId));
+    } catch {
+      // No bloquea la edición de la tarea si esto falla — el botón
+      // simplemente no se muestra (enMiDia queda en null).
+    }
+  }
+
+  protected async alternarMiDia(): Promise<void> {
+    const actual = this.tarea();
+    const estadoActual = this.enMiDia();
+    if (!actual || estadoActual === null || this.actualizandoMiDia()) return;
+
+    this.actualizandoMiDia.set(true);
+    const nuevoEstado = !estadoActual;
+    this.enMiDia.set(nuevoEstado);
+    try {
+      if (nuevoEstado) {
+        await this.tasksService.agregarAMiDia(actual.id);
+        this.toastService.exito('Agregada a Mi día.');
+      } else {
+        await this.tasksService.quitarDeMiDia(actual.id);
+        this.toastService.exito('Quitada de Mi día.');
+      }
+      this.miDiaActualizada.emit({ taskId: actual.id, enMiDia: nuevoEstado });
+    } catch (err) {
+      this.enMiDia.set(estadoActual);
+      this.errorMensaje.set(this.obtenerMensajeError(err));
+    } finally {
+      this.actualizandoMiDia.set(false);
     }
   }
 
@@ -249,6 +307,7 @@ export class ModalTarea implements OnInit {
           assigneeId: valores.assigneeId || null,
           priority: valores.priority,
         });
+        this.toastService.exito(`Tarea "${resultado.title}" actualizada.`);
       } else {
         resultado = await this.tasksService.crear({
           columnId: this.columnaId(),
@@ -258,6 +317,7 @@ export class ModalTarea implements OnInit {
           assigneeId: valores.assigneeId || undefined,
           priority: valores.priority,
         });
+        this.toastService.exito(`Tarea "${resultado.title}" creada.`);
       }
       this.guardado.emit(resultado);
     } catch (err) {
@@ -275,6 +335,7 @@ export class ModalTarea implements OnInit {
     try {
       await this.tasksService.borrar(actual.id);
       this.eliminado.emit(actual.id);
+      this.toastService.exito(`Tarea "${actual.title}" eliminada.`);
     } catch (err) {
       this.confirmandoBorrado.set(false);
       this.errorMensaje.set(this.obtenerMensajeError(err));

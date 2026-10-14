@@ -1,0 +1,50 @@
+<button type="button" class="fondo" (click)="cerrar.emit()" aria-label="Cerrar"></button>
+
+<div class="panel" role="dialog" aria-modal="true">
+  <button type="button" class="boton-icono boton-icono--cerrar" (click)="cerrar.emit()" aria-label="Cerrar">
+    <app-svg-x />
+  </button>
+
+  <div class="avatar">{{ miembro().displayName.charAt(0).toUpperCase() }}</div>
+
+  <h2 class="nombre">
+    {{ miembro().displayName }}
+    @if (esYo()) {
+      <span class="etiqueta-tu">Tú</span>
+    }
+  </h2>
+
+  <div class="correo-con-copiar">
+    <p class="correo">{{ miembro().email }}</p>
+    <button
+      type="button"
+      class="boton-copiar"
+      (click)="copiarCorreo()"
+      title="Copiar correo al portapapeles"
+      aria-label="Copiar correo al portapapeles"
+    >
+      @if (correoCopiado()) {
+        <app-svg-check class="icono" />
+      } @else {
+        <app-svg-copiar class="icono" />
+      }
+    </button>
+  </div>
+
+  <dl class="detalles">
+    <div class="detalles__fila">
+      <dt>Rol de workspace</dt>
+      <dd>{{ miembro().role }}</dd>
+    </div>
+    @if (rolEfectivoTablero(); as rol) {
+      <div class="detalles__fila">
+        <dt>Rol en {{ nombreTablero() || 'este tablero' }}</dt>
+        <dd>{{ rol }}</dd>
+      </div>
+    }
+    <div class="detalles__fila">
+      <dt>Miembro desde</dt>
+      <dd>{{ formatearMiembroDesde(miembro().createdAt) }}</dd>
+    </div>
+  </dl>
+</div>

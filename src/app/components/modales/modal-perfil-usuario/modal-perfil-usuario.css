@@ -1,0 +1,147 @@
+:host {
+  display: contents;
+}
+
+.fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background-color: rgb(0 0 0 / 45%);
+  cursor: default;
+  border: none;
+}
+
+.panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1501;
+  width: min(22rem, calc(100vw - 2rem));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1.5rem 1.5rem;
+  border-radius: 0.85rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.boton-icono--cerrar {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
+.boton-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  color: var(--color-text-secondary);
+}
+
+.boton-icono:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.boton-icono svg,
+.boton-icono app-svg-x {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 999px;
+  background-color: var(--color-brand-100);
+  color: var(--color-brand-700);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xl);
+}
+
+.nombre {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+  text-align: center;
+}
+
+.etiqueta-tu {
+  font-size: var(--font-size-xs);
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background-color: var(--color-bg);
+  color: var(--color-text-muted);
+}
+
+.correo-con-copiar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.correo {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.boton-copiar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 0.4rem;
+  color: var(--color-text-muted);
+}
+
+.boton-copiar:hover {
+  color: var(--color-primary);
+  background-color: var(--color-bg);
+}
+
+.boton-copiar .icono {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.detalles {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.detalles__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.detalles__fila dt {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.detalles__fila dd {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  text-align: right;
+}

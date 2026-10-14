@@ -88,3 +88,12 @@ export function formatearFechaCorta(iso: string, ianaName: string | null): strin
     month: 'short',
   }).format(new Date(iso));
 }
+
+/** `dueAt` ya pasó respecto al momento actual — comparación de instantes
+ * (`Date` compara UTC internamente), no hace falta `ianaName` acá: a
+ * diferencia de mostrar una fecha en pantalla, "¿ya pasó?" no depende de en
+ * qué zona horaria se lea el reloj de pared. */
+export function esFechaVencida(iso: string | null): boolean {
+  if (!iso) return false;
+  return new Date(iso).getTime() < Date.now();
+}

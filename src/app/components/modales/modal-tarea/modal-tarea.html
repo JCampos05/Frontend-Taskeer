@@ -3,9 +3,26 @@
 <div class="panel" role="dialog" aria-modal="true">
   <header class="encabezado">
     <h2>{{ esEdicion() ? 'Editar tarea' : 'Nueva tarea' }}</h2>
-    <button type="button" class="boton-icono" (click)="cerrar.emit()" aria-label="Cerrar">
-      <app-svg-x />
-    </button>
+    <div class="encabezado__acciones">
+      @if (esEdicion() && enMiDia() !== null) {
+        <button
+          type="button"
+          class="boton-icono"
+          [disabled]="actualizandoMiDia()"
+          (click)="alternarMiDia()"
+          [attr.aria-label]="enMiDia() ? 'Quitar de Mi día' : 'Agregar a Mi día'"
+        >
+          @if (enMiDia()) {
+            <app-svg-estrella-llena />
+          } @else {
+            <app-svg-estrella />
+          }
+        </button>
+      }
+      <button type="button" class="boton-icono" (click)="cerrar.emit()" aria-label="Cerrar">
+        <app-svg-x />
+      </button>
+    </div>
   </header>
 
   <div class="contenido">

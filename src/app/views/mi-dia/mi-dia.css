@@ -1,0 +1,237 @@
+:host {
+  display: block;
+}
+
+.contenido {
+  padding: clamp(1.5rem, 5vw, 3rem);
+  max-width: 72rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.encabezado p {
+  margin-top: 0.25rem;
+  color: var(--color-text-secondary);
+}
+
+/* Mismo lenguaje visual que views/inicio — componentes autocontenidos,
+ * mismo criterio ya documentado ahí (duplicado a propósito). */
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.seccion h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--font-size-lg);
+}
+
+.seccion__icono {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-primary);
+}
+
+.estado-vacio-texto {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.paneles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.lista-invitaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.invitacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+}
+
+.invitacion__titulo {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.invitacion__detalle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.boton--chico {
+  padding: 0.4rem 0.9rem;
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+/* Tarjetas de tarea — mismo lenguaje visual que views/tablero
+ * (.tarjeta-tarea/.etiqueta-prioridad/.etiqueta-fecha), duplicado a
+ * propósito, mismo criterio que el resto de este archivo. En grilla acá
+ * (a diferencia del tablero, que las apila en una columna) porque no hay
+ * noción de "columna kanban" en esta vista. */
+.grid-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 0.75rem;
+}
+
+.tarjeta-tarea {
+  position: relative;
+  display: flex;
+  border-radius: 0.6rem;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.tarjeta-tarea:hover {
+  border-color: var(--color-primary);
+}
+
+.tarjeta-tarea__enlace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.65rem 0.75rem;
+  min-width: 0;
+}
+
+.tarjeta-tarea__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.tarjeta-tarea h3 {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.etiqueta-prioridad {
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.etiqueta-prioridad--low {
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg);
+}
+
+.etiqueta-prioridad--medium {
+  color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.etiqueta-prioridad--high {
+  color: var(--color-warning);
+  background-color: color-mix(in srgb, var(--color-warning) 14%, transparent);
+}
+
+.etiqueta-prioridad--urgent {
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 14%, transparent);
+}
+
+.tarjeta-tarea__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.etiqueta-tablero,
+.etiqueta-fecha {
+  font-size: var(--font-size-xs);
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-raised);
+}
+
+.etiqueta-fecha--vencida {
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Botón de quitar de "Mi día" — pegado al borde derecho de la tarjeta, no
+ * dentro del enlace, para que el click no dispare la navegación. */
+.tarjeta-tarea__quitar {
+  flex-shrink: 0;
+  width: 2.25rem;
+  display: grid;
+  place-items: center;
+  border-left: 1px solid var(--color-border);
+  color: var(--color-warning);
+}
+
+.tarjeta-tarea__quitar:hover {
+  background-color: color-mix(in srgb, var(--color-warning) 10%, transparent);
+}
+
+.tarjeta-tarea__quitar svg,
+.tarjeta-tarea__quitar app-svg-estrella-llena {
+  width: 1rem;
+  height: 1rem;
+}
+
+.lista-recordatorios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recordatorio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--color-border);
+}
+
+.recordatorio:hover {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-surface-raised);
+}
+
+.recordatorio__tarea {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.recordatorio__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}

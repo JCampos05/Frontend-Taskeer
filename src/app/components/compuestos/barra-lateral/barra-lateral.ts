@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SvgCarpetas } from '../../svgs/svg-carpetas/svg-carpetas';
 import { SvgCasa } from '../../svgs/svg-casa/svg-casa';
+import { SvgEstrellaLlena } from '../../svgs/svg-estrella-llena/svg-estrella-llena';
 import { SvgFlechaDoble } from '../../svgs/svg-flecha-doble/svg-flecha-doble';
 import { SvgLuna } from '../../svgs/svg-luna/svg-luna';
 import { SvgSol } from '../../svgs/svg-sol/svg-sol';
@@ -20,6 +21,7 @@ const CLAVE_COLAPSADO = 'taskeer.sidebar-colapsado';
     RouterLinkActive,
     SvgCasa,
     SvgCarpetas,
+    SvgEstrellaLlena,
     SvgFlechaDoble,
     SvgSol,
     SvgLuna,

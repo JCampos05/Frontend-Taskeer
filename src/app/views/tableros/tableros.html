@@ -1,8 +1,11 @@
 <div class="contenido">
   <header class="encabezado">
     <div>
-      <a routerLink="/app/workspaces" class="volver">← Workspaces</a>
-      <h1>{{ workspaceNombre() || 'Tableros' }}</h1>
+      <app-boton-volver ruta="/app/workspaces" etiqueta="Workspaces" />
+      <h1 class="encabezado__titulo">
+        <app-svg-carpetas class="encabezado__icono" />
+        {{ workspaceNombre() || 'Tableros' }}
+      </h1>
       <p>Los tableros kanban de este workspace.</p>
     </div>
     <div class="encabezado__acciones">
@@ -57,9 +60,20 @@
               (submit)="confirmarRenombrar(board, $event)"
               class="formulario-renombrar"
             >
-              <input type="text" formControlName="name" autocomplete="off" (click)="$event.stopPropagation()" />
+              <input
+                type="text"
+                formControlName="name"
+                autocomplete="off"
+                (click)="$event.stopPropagation(); $event.preventDefault()"
+              />
               <div class="formulario-renombrar__acciones">
-                <button type="submit" class="boton boton--primario boton--chico">Guardar</button>
+                <button
+                  type="button"
+                  class="boton boton--primario boton--chico"
+                  (click)="confirmarRenombrar(board, $event)"
+                >
+                  Guardar
+                </button>
                 <button type="button" class="boton boton--secundario boton--chico" (click)="cancelarRenombrar($event)">
                   Cancelar
                 </button>

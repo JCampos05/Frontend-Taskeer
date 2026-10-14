@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.volver {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.volver:hover {
+  color: var(--color-primary);
+}

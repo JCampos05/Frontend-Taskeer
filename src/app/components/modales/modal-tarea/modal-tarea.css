@@ -64,6 +64,13 @@
   flex-shrink: 0;
 }
 
+.encabezado__acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
 .encabezado h2 {
   font-size: var(--font-size-lg);
   color: var(--color-text);

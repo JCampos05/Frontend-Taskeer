@@ -58,6 +58,10 @@ export const routes: Routes = [
       { path: '', redirectTo: 'inicio', pathMatch: 'full' },
       { path: 'inicio', loadComponent: () => import('./views/inicio/inicio').then((m) => m.Inicio) },
       {
+        path: 'mi-dia',
+        loadComponent: () => import('./views/mi-dia/mi-dia').then((m) => m.MiDia),
+      },
+      {
         path: 'workspaces',
         loadComponent: () =>
           import('./views/workspaces/workspaces').then((m) => m.WorkspacesVista),

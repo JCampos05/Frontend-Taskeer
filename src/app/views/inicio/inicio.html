@@ -4,6 +4,16 @@
     <p>Esto es lo que tienes pendiente hoy.</p>
   </header>
 
+  @if (cantidadVencidas() > 0) {
+    <a routerLink="/app/mi-dia" class="aviso-vencidas">
+      <app-svg-advertencia class="aviso-vencidas__icono" />
+      <span>
+        Tienes {{ cantidadVencidas() }}
+        {{ cantidadVencidas() === 1 ? 'tarea vencida' : 'tareas vencidas' }} — revisalas en Mi día.
+      </span>
+    </a>
+  }
+
   @if (misInvitaciones().length > 0) {
     <section class="seccion">
       <h2><app-svg-usuarios class="seccion__icono" />Invitaciones pendientes</h2>

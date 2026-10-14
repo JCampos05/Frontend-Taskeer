@@ -81,4 +81,29 @@ export class TasksService {
       this.http.delete(`${environment.apiUrl}/tasks/${taskId}/subtasks/${subtaskId}`),
     );
   }
+
+  /** Vencidas a nivel sistema (cualquier tarea asignada al usuario, en
+   * cualquier workspace propio o compartido) — concepto independiente de
+   * "Mi día", ver tasks.service.ts (Backend) countOverdueForUser. */
+  async contarVencidas(): Promise<number> {
+    const respuesta = await firstValueFrom(
+      this.http.get<{ count: number }>(`${environment.apiUrl}/me/tasks/overdue-count`),
+    );
+    return respuesta.count;
+  }
+
+  async estaEnMiDia(taskId: string): Promise<boolean> {
+    const respuesta = await firstValueFrom(
+      this.http.get<{ inMyDay: boolean }>(`${environment.apiUrl}/tasks/${taskId}/my-day`),
+    );
+    return respuesta.inMyDay;
+  }
+
+  async agregarAMiDia(taskId: string): Promise<void> {
+    await firstValueFrom(this.http.put(`${environment.apiUrl}/tasks/${taskId}/my-day`, {}));
+  }
+
+  async quitarDeMiDia(taskId: string): Promise<void> {
+    await firstValueFrom(this.http.delete(`${environment.apiUrl}/tasks/${taskId}/my-day`));
+  }
 }

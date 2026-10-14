@@ -8,18 +8,27 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ModalConfirmacion } from '../../components/modales/modal-confirmacion/modal-confirmacion';
+import { ModalPerfilUsuario } from '../../components/modales/modal-perfil-usuario/modal-perfil-usuario';
 import {
   ModalTarea,
   PRIORIDADES,
   TareaEditable,
 } from '../../components/modales/modal-tarea/modal-tarea';
+import { BotonVolver } from '../../components/secundarios/boton-volver/boton-volver';
 import { SvgBasura } from '../../components/svgs/svg-basura/svg-basura';
+import { SvgCheck } from '../../components/svgs/svg-check/svg-check';
+import { SvgCopiar } from '../../components/svgs/svg-copiar/svg-copiar';
+import { SvgEstrella } from '../../components/svgs/svg-estrella/svg-estrella';
+import { SvgEstrellaLlena } from '../../components/svgs/svg-estrella-llena/svg-estrella-llena';
 import { SvgLapiz } from '../../components/svgs/svg-lapiz/svg-lapiz';
 import { SvgMas } from '../../components/svgs/svg-mas/svg-mas';
+import { SvgTablero } from '../../components/svgs/svg-tablero/svg-tablero';
+import { SvgUsuarios } from '../../components/svgs/svg-usuarios/svg-usuarios';
+import { SvgX } from '../../components/svgs/svg-x/svg-x';
 import { ErrorApi } from '../../models/auth';
 import { BoardDetalle, BoardMemberOverride, ColumnaConTareas, TaskResumen } from '../../models/board';
 import { WorkspaceMember, WorkspaceRole } from '../../models/workspace';
@@ -27,11 +36,12 @@ import { PrioridadTarea, Task } from '../../models/task';
 import { AuthService } from '../../services/auth.service';
 import { BoardsService } from '../../services/boards.service';
 import { CatalogsService } from '../../services/catalogs.service';
+import { NotificationsService } from '../../services/notifications.service';
 import { PreferencesService } from '../../services/preferences.service';
 import { TasksService } from '../../services/tasks.service';
 import { ToastService } from '../../services/toast.service';
 import { WorkspacesService } from '../../services/workspaces.service';
-import { formatearFechaCorta } from '../../utils/fecha';
+import { esFechaVencida, formatearFechaCorta } from '../../utils/fecha';
 import { puedeGestionarTableros, puedeGestionarTareas } from '../../utils/permisos';
 
 @Component({
@@ -39,15 +49,23 @@ import { puedeGestionarTableros, puedeGestionarTareas } from '../../utils/permis
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     CdkDropListGroup,
     CdkDropList,
     CdkDrag,
     SvgMas,
     SvgLapiz,
     SvgBasura,
+    SvgUsuarios,
+    SvgX,
+    SvgCopiar,
+    SvgCheck,
+    SvgEstrella,
+    SvgEstrellaLlena,
+    SvgTablero,
+    BotonVolver,
     ModalConfirmacion,
     ModalTarea,
+    ModalPerfilUsuario,
   ],
   templateUrl: './tablero.html',
   styleUrl: './tablero.css',
@@ -62,6 +80,7 @@ export class Tablero {
   private readonly toastService = inject(ToastService);
   private readonly preferencesService = inject(PreferencesService);
   private readonly catalogsService = inject(CatalogsService);
+  private readonly notificationsService = inject(NotificationsService);
 
   protected readonly workspaceId = this.route.snapshot.paramMap.get('workspaceId')!;
   protected readonly boardId = this.route.snapshot.paramMap.get('boardId')!;
@@ -80,6 +99,18 @@ export class Tablero {
    * cargue, cae a `miRol()` para no ocultar de más mientras carga. */
   protected readonly miRolEfectivo = computed<WorkspaceRole | null>(
     () => this.tablero()?.viewerEffectiveRole ?? this.miRol(),
+  );
+  /** Ver/gestionar el panel de roles por tablero exige AMBOS: rol de
+   * workspace OWNER/ADMIN (nunca overridable, ver miRol() arriba) Y rol
+   * EFECTIVO OWNER/ADMIN en este board puntual. El segundo chequeo es lo
+   * que oculta el panel a un ADMIN real de workspace a quien otro admin
+   * restringió en este board — sin él, esa persona vería el panel gracias
+   * a su rol de workspace y podría revertirse su propia restricción, que
+   * es justo lo que la restricción quiere evitar. Mismo criterio aplicado
+   * en el Backend (ver boards.service.ts::requireCanManageBoardOverrides).
+   * Es solo UX — el Backend es quien realmente lo exige. */
+  protected readonly puedeGestionarRolesDeTablero = computed(
+    () => puedeGestionarTableros(this.miRol()) && puedeGestionarTableros(this.miRolEfectivo()),
   );
   protected readonly zonaHoraria = signal<string | null>(null);
 
@@ -109,10 +140,17 @@ export class Tablero {
   protected readonly cargandoOverrides = signal(false);
   protected readonly overrides = signal<BoardMemberOverride[]>([]);
   protected readonly rolesAsignables: WorkspaceRole[] = ['OWNER', 'ADMIN', 'EDITOR', 'VIEWER'];
+  // userId cuyo correo se acaba de copiar — mismo patrón de
+  // views/configuracion (ver copiarCorreo() ahí): el ícono cambia a un
+  // check por 2s, sin tooltip aparte para móvil (sin hover).
+  protected readonly correoCopiadoId = signal<string | null>(null);
+  protected readonly verPerfilDe = signal<WorkspaceMember | null>(null);
 
   protected readonly puedeGestionarTableros = puedeGestionarTableros;
   protected readonly puedeGestionarTareas = puedeGestionarTareas;
   protected readonly formatearFechaCorta = formatearFechaCorta;
+  protected readonly esFechaVencida = esFechaVencida;
+  protected readonly miId = computed(() => this.authService.usuarioActual()?.id ?? null);
 
   /** Tareas de una columna que pasan el filtro de prioridad activo — solo
    * para qué se RENDERIZA. Deliberadamente separado de `columna.tasks`
@@ -136,10 +174,34 @@ export class Tablero {
     // interpreta como "sin límite" al mandarlo explícito (distinto de
     // omitir el campo, que significa "no toques el valor actual").
     wipLimit: this.fb.control<number | null>(null, [Validators.min(1)]),
+    isDoneColumn: this.fb.nonNullable.control(false),
   });
+
+  // Cantidad de notificaciones ya vistas al momento de montar este
+  // componente — el efecto de abajo solo reacciona a notificaciones NUEVAS
+  // (llegadas después de este punto), no al historial que NotificationsService
+  // ya tenía cargado de antes.
+  private cantidadNotificacionesVistas = this.notificationsService.listaNotificaciones().length;
 
   constructor() {
     void this.cargar();
+
+    // Sin esto, si a alguien le cambian su rol de workspace o su override
+    // de rol en ESTE board mientras tiene el tablero abierto en otra
+    // pestaña, esa pestaña queda con `miRolEfectivo()` desactualizado hasta
+    // que recargue a mano — bug real reportado por el usuario probando
+    // roles por tablero (dos sesiones mostraban roles inconsistentes entre
+    // sí). No filtra por board/workspace (Notification no guarda esa
+    // referencia) — cualquier ROLE_CHANGED nuevo mientras se está viendo
+    // un tablero dispara un recargado; en el peor caso es una recarga de
+    // más, nunca de menos.
+    effect(() => {
+      const lista = this.notificationsService.listaNotificaciones();
+      if (lista.length > this.cantidadNotificacionesVistas && lista[0]?.type === 'ROLE_CHANGED') {
+        void this.cargar();
+      }
+      this.cantidadNotificacionesVistas = lista.length;
+    });
   }
 
   private async cargar(): Promise<void> {
@@ -206,13 +268,18 @@ export class Tablero {
       );
       this.formularioColumna.reset();
       this.mostrarFormularioColumna.set(false);
+      this.toastService.exito(`Columna "${columna.name}" creada.`);
     } catch (err) {
       this.errorMensaje.set(this.obtenerMensajeError(err));
     }
   }
 
   protected iniciarRenombrarColumna(columna: ColumnaConTareas): void {
-    this.formularioRenombrarColumna.setValue({ name: columna.name, wipLimit: columna.wipLimit });
+    this.formularioRenombrarColumna.setValue({
+      name: columna.name,
+      wipLimit: columna.wipLimit,
+      isDoneColumn: columna.isDoneColumn,
+    });
     this.editandoColumnaId.set(columna.id);
   }
 
@@ -228,7 +295,7 @@ export class Tablero {
         this.workspaceId,
         this.boardId,
         columna.id,
-        { name: valores.name, wipLimit: valores.wipLimit },
+        { name: valores.name, wipLimit: valores.wipLimit, isDoneColumn: valores.isDoneColumn },
       );
       this.tablero.update((actual) =>
         actual
@@ -236,13 +303,19 @@ export class Tablero {
               ...actual,
               columns: actual.columns.map((c) =>
                 c.id === columna.id
-                  ? { ...c, name: actualizada.name, wipLimit: actualizada.wipLimit }
+                  ? {
+                      ...c,
+                      name: actualizada.name,
+                      wipLimit: actualizada.wipLimit,
+                      isDoneColumn: actualizada.isDoneColumn,
+                    }
                   : c,
               ),
             }
           : actual,
       );
       this.editandoColumnaId.set(null);
+      this.toastService.exito(`Columna "${actualizada.name}" actualizada.`);
     } catch (err) {
       this.errorMensaje.set(this.obtenerMensajeError(err));
     }
@@ -305,12 +378,15 @@ export class Tablero {
     const columnaId = this.borrandoColumnaId();
     if (!columnaId) return;
 
+    const nombre = this.tablero()?.columns.find((c) => c.id === columnaId)?.name;
+
     try {
       await this.boardsService.borrarColumna(this.workspaceId, this.boardId, columnaId);
       this.tablero.update((actual) =>
         actual ? { ...actual, columns: actual.columns.filter((c) => c.id !== columnaId) } : actual,
       );
       this.borrandoColumnaId.set(null);
+      this.toastService.exito(nombre ? `Columna "${nombre}" eliminada.` : 'Columna eliminada.');
     } catch (err) {
       this.errorMensaje.set(this.obtenerMensajeError(err));
       this.borrandoColumnaId.set(null);
@@ -357,6 +433,7 @@ export class Tablero {
       assigneeId: task.assigneeId,
       subtaskTotal: existente?.subtaskTotal ?? 0,
       subtaskCompletado: existente?.subtaskCompletado ?? 0,
+      inMyDay: existente?.inMyDay ?? false,
     };
 
     this.tablero.update((actual) => {
@@ -396,6 +473,50 @@ export class Tablero {
                   ? { ...t, subtaskTotal: evento.total, subtaskCompletado: evento.completado }
                   : t,
               ),
+            })),
+          }
+        : actual,
+    );
+  }
+
+  protected readonly actualizandoMiDiaId = signal<string | null>(null);
+
+  /** Botón de estrella en la tarjeta del kanban — agrega/quita de "Mi día"
+   * sin abrir el modal. `stopPropagation` para que el click no dispare
+   * `abrirTarea` (la tarjeta entera es clickeable). Optimista con rollback,
+   * mismo patrón que `alternarCompletado` en modal-tarea.ts. */
+  protected async alternarMiDiaTarjeta(tarea: TaskResumen, evento: Event): Promise<void> {
+    evento.stopPropagation();
+    if (this.actualizandoMiDiaId()) return;
+
+    this.actualizandoMiDiaId.set(tarea.id);
+    const nuevoEstado = !tarea.inMyDay;
+    this.aplicarEstadoMiDia(tarea.id, nuevoEstado);
+    try {
+      if (nuevoEstado) {
+        await this.tasksService.agregarAMiDia(tarea.id);
+      } else {
+        await this.tasksService.quitarDeMiDia(tarea.id);
+      }
+    } catch (err) {
+      this.aplicarEstadoMiDia(tarea.id, !nuevoEstado);
+      this.toastService.error(this.obtenerMensajeError(err));
+    } finally {
+      this.actualizandoMiDiaId.set(null);
+    }
+  }
+
+  /** También usado para sincronizar cuando el toggle se hace desde dentro
+   * del modal de tarea (ver `(miDiaActualizada)` en tablero.html) — misma
+   * tarjeta, dos puntos de entrada. */
+  protected aplicarEstadoMiDia(taskId: string, enMiDia: boolean): void {
+    this.tablero.update((actual) =>
+      actual
+        ? {
+            ...actual,
+            columns: actual.columns.map((c) => ({
+              ...c,
+              tasks: c.tasks.map((t) => (t.id === taskId ? { ...t, inMyDay: enMiDia } : t)),
             })),
           }
         : actual,
@@ -504,6 +625,16 @@ export class Tablero {
     } catch (err) {
       this.errorMensaje.set(this.obtenerMensajeError(err));
     }
+  }
+
+  protected async copiarCorreoMiembro(userId: string, email: string): Promise<void> {
+    await navigator.clipboard.writeText(email);
+    this.correoCopiadoId.set(userId);
+    setTimeout(() => {
+      // Solo limpia si sigue siendo el mismo (por si se copió otro correo
+      // mientras corría este timeout).
+      if (this.correoCopiadoId() === userId) this.correoCopiadoId.set(null);
+    }, 2000);
   }
 
   private obtenerMensajeError(err: unknown): string {

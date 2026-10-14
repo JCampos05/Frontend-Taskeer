@@ -19,15 +19,27 @@
   flex-wrap: wrap;
 }
 
-.encabezado .volver {
-  display: inline-block;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: 0.5rem;
+.encabezado__titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.encabezado .volver:hover {
+.encabezado__icono {
+  /* 1em, no un rem fijo — escala junto con el font-size del h1 (que ya
+   * usa clamp() para ser responsivo), en vez de quedar chico en pantallas
+   * grandes o grande en las chicas. */
+  width: 1.25em;
+  height: 1.5em;
   color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.encabezado__acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
 }
 
 .filtro-prioridad {
@@ -50,74 +62,226 @@
   font-size: var(--font-size-sm);
 }
 
-.overrides {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-}
-
-.overrides h2 {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
-}
-
-.overrides__ayuda {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-}
-
-.overrides__estado {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-}
-
-.overrides__lista {
-  display: flex;
-  flex-direction: column;
+.boton--con-icono {
   gap: 0.4rem;
 }
 
-.overrides__item {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  padding: 0.5rem 0.6rem;
-  border-radius: 0.5rem;
-  background-color: var(--color-bg);
+.boton--con-icono svg,
+.boton--con-icono app-svg-usuarios {
+  width: 0.95rem;
+  height: 0.95rem;
 }
 
-.overrides__nombre {
-  flex-grow: 1;
-  min-width: 8rem;
-  font-size: var(--font-size-sm);
+/* Drawer de "Roles por tablero" — mismo lenguaje visual que
+ * modal-tarea.css (drawer anclado a la derecha) y views/miembros/miembros.css
+ * (filas de miembro con avatar de iniciales, select de rol), para que esta
+ * feature se sienta parte de Taskeer y no un panel improvisado aparte. */
+.fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background-color: rgb(0 0 0 / 35%);
+  cursor: default;
+  border: none;
+}
+
+.panel-overrides {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1501;
+  width: min(26rem, 100vw);
+  height: 100dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  animation: panel-entrar 0.2s ease;
+}
+
+@keyframes panel-entrar {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.panel-overrides__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.panel-overrides__titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-overrides__titulo app-svg-usuarios {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--color-primary);
+}
+
+.panel-overrides__titulo h2 {
+  font-size: var(--font-size-lg);
   color: var(--color-text);
 }
 
-.overrides__rol-base {
-  flex-shrink: 0;
+.panel-overrides__ayuda {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
 }
 
-.overrides__item select {
-  padding: 0.35rem 0.55rem;
+.panel-overrides__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* .fila/.avatar/.select-rol — mismos nombres y estilos que
+ * views/miembros/miembros.css a propósito, es la misma idea (una fila por
+ * persona con su rol) en un contexto distinto (por board, no por
+ * workspace). */
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 999px;
+  background-color: var(--color-brand-100);
+  color: var(--color-brand-700);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.fila__info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.avatar--clickeable {
+  cursor: pointer;
+}
+
+.avatar--clickeable:hover {
+  filter: brightness(0.95);
+}
+
+.fila__nombre {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fila__nombre-boton {
+  color: inherit;
+  font: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fila__nombre-boton:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.etiqueta-tu {
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
+.fila__correo {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mismo patrón que .correo-con-copiar en views/configuracion/configuracion.css
+ * — el ícono ya sirve de confirmación en móvil (cambia a check por 2s), sin
+ * tooltip aparte para ese caso. */
+.fila__correo-con-copiar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.fila__correo-con-copiar .fila__correo {
+  min-width: 0;
+}
+
+.boton-copiar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.4rem;
+  height: 1.4rem;
   border-radius: 0.4rem;
+  color: var(--color-text-muted);
+}
+
+.boton-copiar:hover {
+  color: var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+.boton-copiar .icono {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.select-rol {
+  flex-shrink: 0;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
   border: 1px solid var(--color-border-strong);
   background-color: var(--color-surface);
   color: var(--color-text);
   font-size: var(--font-size-xs);
+  font-family: inherit;
 }
 
 .estado-vacio {
   padding: 3rem 1rem;
   text-align: center;
   color: var(--color-text-secondary);
+}
+
+.estado-vacio--chico {
+  padding: 1rem;
 }
 
 .tablero {
@@ -203,7 +367,8 @@
 
 .boton-icono svg,
 .boton-icono app-svg-lapiz,
-.boton-icono app-svg-basura {
+.boton-icono app-svg-basura,
+.boton-icono app-svg-x {
   width: 0.9rem;
   height: 0.9rem;
 }
@@ -258,6 +423,36 @@
   font-weight: var(--font-weight-medium);
 }
 
+.tarjeta-tarea__acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.tarjeta-tarea__estrella {
+  display: grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  color: var(--color-text-muted);
+  border-radius: 0.3rem;
+}
+
+.tarjeta-tarea__estrella svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.tarjeta-tarea__estrella:hover {
+  color: var(--color-warning);
+  background-color: var(--color-surface-raised);
+}
+
+.tarjeta-tarea__estrella--activa {
+  color: var(--color-warning);
+}
+
 .etiqueta-prioridad {
   flex-shrink: 0;
   font-size: var(--font-size-xs);
@@ -301,6 +496,12 @@
   border-radius: 999px;
   color: var(--color-text-secondary);
   background-color: var(--color-surface-raised);
+}
+
+.etiqueta-fecha--vencida {
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  font-weight: var(--font-weight-medium);
 }
 
 .etiqueta-subtareas--completo {
@@ -373,6 +574,25 @@
    * chico y opcional, no necesita el ancho completo de los inputs de texto
    * de al lado. */
   width: 100%;
+}
+
+.formulario-renombrar__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.formulario-renombrar__checkbox input {
+  width: auto;
+}
+
+.columna__icono-completadas {
+  width: 0.9rem;
+  height: 0.9rem;
+  color: var(--color-success, var(--color-primary));
+  flex-shrink: 0;
 }
 
 .boton--chico {

@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SvgAdvertencia } from '../../components/svgs/svg-advertencia/svg-advertencia';
 import { SvgCampana } from '../../components/svgs/svg-campana/svg-campana';
 import { SvgCarpetas } from '../../components/svgs/svg-carpetas/svg-carpetas';
 import { SvgUsuarios } from '../../components/svgs/svg-usuarios/svg-usuarios';
@@ -12,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
 import { CatalogsService } from '../../services/catalogs.service';
 import { PreferencesService } from '../../services/preferences.service';
 import { RemindersService } from '../../services/reminders.service';
+import { TasksService } from '../../services/tasks.service';
 import { ToastService } from '../../services/toast.service';
 import { WorkspacesService } from '../../services/workspaces.service';
 
@@ -23,7 +25,7 @@ import { WorkspacesService } from '../../services/workspaces.service';
 @Component({
   selector: 'app-inicio',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, SvgCampana, SvgCarpetas, SvgUsuarios],
+  imports: [RouterLink, SvgAdvertencia, SvgCampana, SvgCarpetas, SvgUsuarios],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css',
 })
@@ -31,6 +33,7 @@ export class Inicio {
   protected readonly authService = inject(AuthService);
   private readonly workspacesService = inject(WorkspacesService);
   private readonly remindersService = inject(RemindersService);
+  private readonly tasksService = inject(TasksService);
   private readonly preferencesService = inject(PreferencesService);
   private readonly catalogsService = inject(CatalogsService);
   private readonly toastService = inject(ToastService);
@@ -42,6 +45,11 @@ export class Inicio {
   protected readonly aceptandoInvitacionId = signal<string | null>(null);
   private readonly zonaHoraria = signal<string | null>(null);
 
+  // Vencidas a nivel sistema — cualquier tarea asignada al usuario en
+  // cualquier workspace propio o compartido, independiente de si está en
+  // "Mi día" o no (son dos conceptos distintos, ver tasksService.contarVencidas).
+  protected readonly cantidadVencidas = signal(0);
+
   constructor() {
     void this.cargarTodo();
   }
@@ -49,16 +57,19 @@ export class Inicio {
   private async cargarTodo(): Promise<void> {
     this.cargando.set(true);
     try {
-      const [workspaces, invitaciones, recordatorios, preferencias, zonas] = await Promise.all([
-        this.workspacesService.listar(),
-        this.workspacesService.misInvitaciones(),
-        this.remindersService.listarProximos(),
-        this.preferencesService.cargar(),
-        this.catalogsService.listarZonasHorarias(),
-      ]);
+      const [workspaces, invitaciones, recordatorios, vencidas, preferencias, zonas] =
+        await Promise.all([
+          this.workspacesService.listar(),
+          this.workspacesService.misInvitaciones(),
+          this.remindersService.listarProximos(),
+          this.tasksService.contarVencidas(),
+          this.preferencesService.cargar(),
+          this.catalogsService.listarZonasHorarias(),
+        ]);
       this.workspaces.set(workspaces);
       this.misInvitaciones.set(invitaciones);
       this.recordatorios.set(recordatorios);
+      this.cantidadVencidas.set(vencidas);
       const zona = zonas.find((z) => z.id === preferencias.timezoneId);
       this.zonaHoraria.set(zona?.ianaName ?? null);
     } catch (err) {

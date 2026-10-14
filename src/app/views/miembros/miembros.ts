@@ -1,8 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ModalConfirmacion } from '../../components/modales/modal-confirmacion/modal-confirmacion';
+import { ModalPerfilUsuario } from '../../components/modales/modal-perfil-usuario/modal-perfil-usuario';
+import { BotonVolver } from '../../components/secundarios/boton-volver/boton-volver';
 import { SvgBasura } from '../../components/svgs/svg-basura/svg-basura';
 import { ErrorApi } from '../../models/auth';
 import {
@@ -34,7 +36,7 @@ const ETIQUETA_ESTADO_INVITACION: Record<Invitation['status'], string> = {
 @Component({
   selector: 'app-miembros',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, SvgBasura, ModalConfirmacion],
+  imports: [ReactiveFormsModule, SvgBasura, ModalConfirmacion, ModalPerfilUsuario, BotonVolver],
   templateUrl: './miembros.html',
   styleUrl: './miembros.css',
 })
@@ -61,6 +63,7 @@ export class Miembros {
   protected readonly transfiriendoA = signal<WorkspaceMember | null>(null);
   protected readonly saliendo = signal(false);
   protected readonly procesando = signal(false);
+  protected readonly verPerfilDe = signal<WorkspaceMember | null>(null);
 
   protected readonly rolesAsignables = ROLES_ASIGNABLES;
   protected readonly etiquetaRol = ETIQUETA_ROL;

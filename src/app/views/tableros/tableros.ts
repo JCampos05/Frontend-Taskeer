@@ -3,7 +3,9 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ModalConfirmacion } from '../../components/modales/modal-confirmacion/modal-confirmacion';
+import { BotonVolver } from '../../components/secundarios/boton-volver/boton-volver';
 import { SvgBasura } from '../../components/svgs/svg-basura/svg-basura';
+import { SvgCarpetas } from '../../components/svgs/svg-carpetas/svg-carpetas';
 import { SvgLapiz } from '../../components/svgs/svg-lapiz/svg-lapiz';
 import { SvgTablero } from '../../components/svgs/svg-tablero/svg-tablero';
 import { SvgUsuarios } from '../../components/svgs/svg-usuarios/svg-usuarios';
@@ -12,6 +14,7 @@ import { Board } from '../../models/board';
 import { WorkspaceRole } from '../../models/workspace';
 import { AuthService } from '../../services/auth.service';
 import { BoardsService } from '../../services/boards.service';
+import { ToastService } from '../../services/toast.service';
 import { WorkspacesService } from '../../services/workspaces.service';
 import { puedeGestionarTableros } from '../../utils/permisos';
 
@@ -22,10 +25,12 @@ import { puedeGestionarTableros } from '../../utils/permisos';
     ReactiveFormsModule,
     RouterLink,
     SvgTablero,
+    SvgCarpetas,
     SvgUsuarios,
     SvgLapiz,
     SvgBasura,
     ModalConfirmacion,
+    BotonVolver,
   ],
   templateUrl: './tableros.html',
   styleUrl: './tableros.css',
@@ -36,6 +41,7 @@ export class Tableros {
   private readonly authService = inject(AuthService);
   private readonly workspacesService = inject(WorkspacesService);
   private readonly boardsService = inject(BoardsService);
+  private readonly toastService = inject(ToastService);
 
   protected readonly workspaceId = this.route.snapshot.paramMap.get('workspaceId')!;
 
@@ -98,6 +104,7 @@ export class Tableros {
       this.boards.update((lista) => [nuevo, ...lista]);
       this.formulario.reset();
       this.mostrarFormulario.set(false);
+      this.toastService.exito(`Tablero "${nuevo.name}" creado.`);
     } catch (err) {
       this.errorMensaje.set(this.obtenerMensajeError(err));
     } finally {
@@ -133,6 +140,7 @@ export class Tableros {
       });
       this.boards.update((lista) => lista.map((b) => (b.id === board.id ? actualizado : b)));
       this.editandoId.set(null);
+      this.toastService.exito(`Tablero renombrado a "${actualizado.name}".`);
     } catch (err) {
       this.errorMensaje.set(this.obtenerMensajeError(err));
     }
@@ -148,10 +156,13 @@ export class Tableros {
     const boardId = this.borrandoId();
     if (!boardId) return;
 
+    const nombre = this.boards().find((b) => b.id === boardId)?.name;
+
     try {
       await this.boardsService.borrar(this.workspaceId, boardId);
       this.boards.update((lista) => lista.filter((b) => b.id !== boardId));
       this.borrandoId.set(null);
+      this.toastService.exito(nombre ? `Tablero "${nombre}" eliminado.` : 'Tablero eliminado.');
     } catch (err) {
       this.errorMensaje.set(this.obtenerMensajeError(err));
     }

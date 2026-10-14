@@ -1,60 +1,38 @@
 <div class="contenido">
   <header class="encabezado">
     <div>
-      <a [routerLink]="['/app/workspaces', workspaceId]" class="volver">← Tableros</a>
-      <h1>{{ tablero()?.name || 'Tablero' }}</h1>
+      <app-boton-volver [ruta]="['/app/workspaces', workspaceId]" etiqueta="Tableros" />
+      <h1 class="encabezado__titulo">
+        <app-svg-tablero class="encabezado__icono" />
+        {{ tablero()?.name || 'Tablero' }}
+      </h1>
     </div>
-    <div class="filtro-prioridad">
-      <label for="filtroPrioridad">Prioridad</label>
-      <select
-        id="filtroPrioridad"
-        [value]="filtroPrioridad() ?? ''"
-        (change)="cambiarFiltroPrioridad($event)"
-      >
-        <option value="">Todas</option>
-        @for (opcion of prioridades; track opcion.valor) {
-          <option [value]="opcion.valor">{{ opcion.etiqueta }}</option>
-        }
-      </select>
-    </div>
-    @if (puedeGestionarTableros(miRol())) {
-      <button type="button" class="boton boton--secundario boton--chico" (click)="alternarPanelOverrides()">
-        Roles por tablero
-      </button>
-    }
-  </header>
-
-  @if (mostrandoOverrides()) {
-    <section class="overrides">
-      <h2>Roles por tablero — solo para este board</h2>
-      <p class="overrides__ayuda">
-        Asigna un rol distinto al de workspace para un miembro, SOLO dentro de este board. Elegir
-        "Rol de workspace" quita el override.
-      </p>
-
-      @if (cargandoOverrides()) {
-        <p class="overrides__estado">Cargando…</p>
-      } @else {
-        <ul class="overrides__lista">
-          @for (miembro of miembros(); track miembro.userId) {
-            <li class="overrides__item">
-              <span class="overrides__nombre">{{ miembro.displayName }}</span>
-              <span class="overrides__rol-base">Workspace: {{ miembro.role }}</span>
-              <select
-                [value]="overrideDe(miembro.userId)?.role ?? ''"
-                (change)="cambiarOverride(miembro.userId, $event)"
-              >
-                <option value="">Rol de workspace ({{ miembro.role }})</option>
-                @for (rol of rolesAsignables; track rol) {
-                  <option [value]="rol">{{ rol }}</option>
-                }
-              </select>
-            </li>
-          }
-        </ul>
+    <div class="encabezado__acciones">
+      @if (puedeGestionarRolesDeTablero()) {
+        <button
+          type="button"
+          class="boton boton--secundario boton--chico boton--con-icono"
+          (click)="alternarPanelOverrides()"
+        >
+          <app-svg-usuarios />
+          Roles por tablero
+        </button>
       }
-    </section>
-  }
+      <div class="filtro-prioridad">
+        <label for="filtroPrioridad">Prioridad</label>
+        <select
+          id="filtroPrioridad"
+          [value]="filtroPrioridad() ?? ''"
+          (change)="cambiarFiltroPrioridad($event)"
+        >
+          <option value="">Todas</option>
+          @for (opcion of prioridades; track opcion.valor) {
+            <option [value]="opcion.valor">{{ opcion.etiqueta }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </header>
 
   @if (errorMensaje()) {
     <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
@@ -81,6 +59,10 @@
                   placeholder="Límite WIP (opcional)"
                   class="formulario-renombrar__wip"
                 />
+                <label class="formulario-renombrar__checkbox">
+                  <input type="checkbox" formControlName="isDoneColumn" />
+                  Columna de completadas
+                </label>
                 <div class="formulario-renombrar__acciones">
                   <button type="submit" class="boton boton--primario boton--chico">Guardar</button>
                   <button
@@ -94,6 +76,9 @@
               </form>
             } @else {
               <h2>{{ columna.name }}</h2>
+              @if (columna.isDoneColumn) {
+                <app-svg-check class="columna__icono-completadas" aria-hidden="true" />
+              }
               <span class="columna__contador" [class.columna__contador--lleno]="columnaLlena(columna)">
                 {{ columna.tasks.length }}{{ columna.wipLimit ? '/' + columna.wipLimit : '' }}
               </span>
@@ -139,17 +124,41 @@
               >
                 <div class="tarjeta-tarea__encabezado">
                   <h3>{{ tarea.title }}</h3>
-                  <span
-                    class="etiqueta-prioridad"
-                    [class]="'etiqueta-prioridad--' + tarea.priority.toLowerCase()"
-                  >
-                    {{ etiquetaPrioridad(tarea.priority) }}
-                  </span>
+                  <div class="tarjeta-tarea__acciones">
+                    <span
+                      class="etiqueta-prioridad"
+                      [class]="'etiqueta-prioridad--' + tarea.priority.toLowerCase()"
+                    >
+                      {{ etiquetaPrioridad(tarea.priority) }}
+                    </span>
+                    <button
+                      type="button"
+                      class="tarjeta-tarea__estrella"
+                      [class.tarjeta-tarea__estrella--activa]="tarea.inMyDay"
+                      [disabled]="actualizandoMiDiaId() === tarea.id"
+                      (click)="alternarMiDiaTarjeta(tarea, $event)"
+                      [attr.aria-label]="tarea.inMyDay ? 'Quitar de Mi día' : 'Agregar a Mi día'"
+                      [title]="tarea.inMyDay ? 'Quitar de Mi día' : 'Agregar a Mi día'"
+                    >
+                      @if (tarea.inMyDay) {
+                        <app-svg-estrella-llena />
+                      } @else {
+                        <app-svg-estrella />
+                      }
+                    </button>
+                  </div>
                 </div>
                 @if (tarea.dueAt || nombreMiembro(tarea.assigneeId) || tarea.subtaskTotal > 0) {
                   <div class="tarjeta-tarea__meta">
                     @if (tarea.dueAt) {
-                      <span class="etiqueta-fecha">{{ formatearFechaCorta(tarea.dueAt, zonaHoraria()) }}</span>
+                      <span
+                        class="etiqueta-fecha"
+                        [class.etiqueta-fecha--vencida]="
+                          !columna.isDoneColumn && esFechaVencida(tarea.dueAt)
+                        "
+                      >
+                        {{ formatearFechaCorta(tarea.dueAt, zonaHoraria()) }}
+                      </span>
                     }
                     @if (nombreMiembro(tarea.assigneeId); as nombre) {
                       <span class="etiqueta-asignado">{{ nombre }}</span>
@@ -240,5 +249,96 @@
     (eliminado)="alEliminarTarea($event)"
     (cerrar)="cerrarModalTarea()"
     (subtareasActualizadas)="alActualizarProgresoSubtareas($event)"
+    (miDiaActualizada)="aplicarEstadoMiDia($event.taskId, $event.enMiDia)"
+  />
+}
+
+@if (mostrandoOverrides() && puedeGestionarRolesDeTablero()) {
+  <button type="button" class="fondo" (click)="alternarPanelOverrides()" aria-label="Cerrar"></button>
+
+  <aside class="panel-overrides" role="dialog" aria-modal="true">
+    <header class="panel-overrides__encabezado">
+      <div class="panel-overrides__titulo">
+        <app-svg-usuarios />
+        <h2>Roles por tablero</h2>
+      </div>
+      <button type="button" class="boton-icono" (click)="alternarPanelOverrides()" aria-label="Cerrar">
+        <app-svg-x />
+      </button>
+    </header>
+
+    <p class="panel-overrides__ayuda">
+      Asigná un rol distinto al de workspace para un miembro, solo dentro de este tablero. Elegir
+      "Rol de workspace" quita el override.
+    </p>
+
+    <div class="panel-overrides__lista">
+      @if (cargandoOverrides()) {
+        <p class="estado-vacio estado-vacio--chico">Cargando…</p>
+      } @else {
+        @for (miembro of miembros(); track miembro.userId) {
+          <article class="fila">
+            <button
+              type="button"
+              class="avatar avatar--clickeable"
+              (click)="verPerfilDe.set(miembro)"
+              [attr.aria-label]="'Ver perfil de ' + miembro.displayName"
+            >
+              {{ miembro.displayName.charAt(0).toUpperCase() }}
+            </button>
+            <div class="fila__info">
+              <p class="fila__nombre">
+                <button type="button" class="fila__nombre-boton" (click)="verPerfilDe.set(miembro)">
+                  {{ miembro.displayName }}
+                </button>
+                @if (miembro.userId === miId()) {
+                  <span class="etiqueta-tu">Tú</span>
+                }
+              </p>
+              @if (miembro.userId === miId()) {
+                <p class="fila__correo">Workspace: {{ miembro.role }}</p>
+              } @else {
+                <div class="fila__correo-con-copiar">
+                  <p class="fila__correo">{{ miembro.email }}</p>
+                  <button
+                    type="button"
+                    class="boton-copiar"
+                    (click)="copiarCorreoMiembro(miembro.userId, miembro.email)"
+                    title="Copiar correo al portapapeles"
+                    aria-label="Copiar correo al portapapeles"
+                  >
+                    @if (correoCopiadoId() === miembro.userId) {
+                      <app-svg-check class="icono" />
+                    } @else {
+                      <app-svg-copiar class="icono" />
+                    }
+                  </button>
+                </div>
+              }
+            </div>
+            <select
+              class="select-rol"
+              [value]="overrideDe(miembro.userId)?.role ?? ''"
+              (change)="cambiarOverride(miembro.userId, $event)"
+            >
+              <option value="">Rol de workspace</option>
+              @for (rol of rolesAsignables; track rol) {
+                <option [value]="rol">{{ rol }}</option>
+              }
+            </select>
+          </article>
+        }
+      }
+    </div>
+  </aside>
+}
+
+@if (verPerfilDe(); as miembro) {
+  <app-modal-perfil-usuario
+    [miembro]="miembro"
+    [esYo]="miembro.userId === miId()"
+    [rolEfectivoTablero]="overrideDe(miembro.userId)?.role ?? null"
+    [nombreTablero]="tablero()?.name ?? null"
+    (cerrar)="verPerfilDe.set(null)"
   />
 }

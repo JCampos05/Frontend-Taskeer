@@ -1,7 +1,10 @@
 <div class="contenido">
   <header class="encabezado">
     <div>
-      <a [routerLink]="['/app/workspaces', workspaceId]" class="volver">← {{ workspaceNombre() || 'Tablero' }}</a>
+      <app-boton-volver
+        [ruta]="['/app/workspaces', workspaceId]"
+        [etiqueta]="workspaceNombre() || 'Tablero'"
+      />
       <h1>Miembros</h1>
       <p>Quién forma parte de este workspace y qué puede hacer.</p>
     </div>
@@ -48,10 +51,19 @@
       <div class="lista">
         @for (member of miembros(); track member.userId) {
           <article class="fila">
-            <div class="avatar">{{ member.displayName.charAt(0).toUpperCase() }}</div>
+            <button
+              type="button"
+              class="avatar avatar--clickeable"
+              (click)="verPerfilDe.set(member)"
+              [attr.aria-label]="'Ver perfil de ' + member.displayName"
+            >
+              {{ member.displayName.charAt(0).toUpperCase() }}
+            </button>
             <div class="fila__info">
               <p class="fila__nombre">
-                {{ member.displayName }}
+                <button type="button" class="fila__nombre-boton" (click)="verPerfilDe.set(member)">
+                  {{ member.displayName }}
+                </button>
                 @if (member.userId === miId) {
                   <span class="etiqueta-tu">Tú</span>
                 }
@@ -171,5 +183,13 @@
     [confirmando]="procesando()"
     (confirmar)="confirmarTransferir()"
     (cancelar)="transfiriendoA.set(null)"
+  />
+}
+
+@if (verPerfilDe(); as miembro) {
+  <app-modal-perfil-usuario
+    [miembro]="miembro"
+    [esYo]="miembro.userId === miId"
+    (cerrar)="verPerfilDe.set(null)"
   />
 }

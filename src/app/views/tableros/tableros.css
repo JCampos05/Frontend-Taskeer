@@ -17,15 +17,20 @@
   flex-wrap: wrap;
 }
 
-.volver {
-  display: inline-block;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: 0.5rem;
+.encabezado__titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.volver:hover {
+.encabezado__icono {
+  /* 1em, no un rem fijo — escala junto con el font-size del h1 (que ya
+   * usa clamp() para ser responsivo), en vez de quedar chico en pantallas
+   * grandes o grande en las chicas. */
+  width: 1.25em;
+  height: 1.5em;
   color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .encabezado__acciones {

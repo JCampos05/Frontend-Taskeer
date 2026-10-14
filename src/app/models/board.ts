@@ -21,6 +21,9 @@ export interface Columna {
   position: number;
   // null = sin límite de tareas simultáneas en esta columna.
   wipLimit: number | null;
+  // true = las tareas de esta columna cuentan como terminadas — "Mi día"
+  // las excluye de lo pendiente. Un board puede tener más de una marcada así.
+  isDoneColumn: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -39,6 +42,9 @@ export interface TaskResumen {
   assigneeId: string | null;
   subtaskTotal: number;
   subtaskCompletado: number;
+  // Si el usuario actual ya la agregó a su "Mi día" — personal, nunca la
+  // marca de otro miembro del workspace.
+  inMyDay: boolean;
 }
 
 export interface ColumnaConTareas extends Columna {
@@ -65,12 +71,14 @@ export interface ActualizarBoardInput {
 export interface CrearColumnaInput {
   name: string;
   wipLimit?: number | null;
+  isDoneColumn?: boolean;
 }
 
 export interface ActualizarColumnaInput {
   name?: string;
   position?: number;
   wipLimit?: number | null;
+  isDoneColumn?: boolean;
 }
 
 // Espejo de BoardMemberOverrideDto — rol EFECTIVO de un miembro dentro de
