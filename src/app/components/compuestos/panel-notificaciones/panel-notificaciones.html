@@ -15,7 +15,7 @@
 @if (abierto()) {
   <button type="button" class="fondo" (click)="cerrarPanel()" aria-label="Cerrar notificaciones"></button>
 
-  <aside class="panel">
+  <aside class="panel" cdkTrapFocus cdkTrapFocusAutoCapture>
     <header class="panel__encabezado">
       <div class="panel__titulo">
         <app-svg-campana />
@@ -24,7 +24,7 @@
           <span class="panel__insignia">{{ notificationsService.cantidadNoLeidas() }}</span>
         }
       </div>
-      <button type="button" class="panel__cerrar" (click)="cerrarPanel()" aria-label="Cerrar">×</button>
+      <button type="button" class="panel__cerrar" (click)="cerrarPanel()" aria-label="Cerrar"><app-svg-x /></button>
     </header>
 
     <div class="panel__controles">
@@ -87,12 +87,17 @@
       @if (listaFiltrada().length === 0) {
         <p class="panel__vacio">No tienes notificaciones{{ filtroTab() === 'no-leidas' ? ' sin leer' : '' }}.</p>
       } @else {
-        @for (notificacion of listaFiltrada(); track notificacion.id) {
+        @for (grupo of grupos(); track grupo.titulo) {
+          <h3 class="panel__grupo">{{ grupo.titulo }}</h3>
+        @for (notificacion of grupo.items; track notificacion.id) {
           <article
             class="item"
             [class.item--no-leida]="!notificacion.readAt"
             [class.item--clickeable]="notificacion.type === 'INVITATION'"
+            [attr.tabindex]="notificacion.type === 'INVITATION' ? 0 : null"
+            [attr.role]="notificacion.type === 'INVITATION' ? 'button' : null"
             (click)="abrirNotificacion(notificacion)"
+            (keydown.enter)="abrirNotificacion(notificacion)"
           >
             @if (!notificacion.readAt) {
               <span class="item__barra" aria-hidden="true"></span>
@@ -111,6 +116,9 @@
                 }
                 @case ('RECOVERY_CODE_USED') {
                   <app-svg-candado />
+                }
+                @case ('TASK_ASSIGNED') {
+                  <app-svg-persona />
                 }
                 @default {
                   <app-svg-info />
@@ -137,6 +145,7 @@
               <app-svg-basura />
             </button>
           </article>
+        }
         }
       }
     </div>

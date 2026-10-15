@@ -1,0 +1,103 @@
+<button type="button" class="fondo" (click)="cancelar.emit()" aria-label="Cerrar"></button>
+
+<div
+  class="panel"
+  role="alertdialog"
+  aria-modal="true"
+  cdkTrapFocus
+  cdkTrapFocusAutoCapture
+  aria-labelledby="titulo-eliminar-workspace"
+>
+  <h2 id="titulo-eliminar-workspace">Eliminar «{{ workspace().name }}»</h2>
+  <p class="resumen">{{ textoTableros() }}</p>
+
+  @if (hayTableros()) {
+    <fieldset class="opciones" [disabled]="procesando()">
+      <legend>¿Qué hacemos con sus tableros?</legend>
+
+      <label class="opcion" [class.opcion--activa]="accion() === 'mover'" [class.opcion--deshabilitada]="!puedeMover()">
+        <input
+          type="radio"
+          name="accion-tableros"
+          [checked]="accion() === 'mover'"
+          [disabled]="!puedeMover()"
+          (change)="elegirAccion('mover')"
+        />
+        <span class="opcion__texto">
+          <strong>Moverlos a otro workspace</strong>
+          <small>
+            Los tableros se conservan con todas sus tareas. Las tareas asignadas a personas que no
+            son miembros del destino quedarán sin asignar, y quien no esté allí perderá acceso a
+            esos tableros.
+          </small>
+          @if (!puedeMover()) {
+            <small class="opcion__aviso">
+              No tienes otro workspace donde seas propietario o administrador. Crea uno primero.
+            </small>
+          } @else if (accion() === 'mover') {
+            <select
+              aria-label="Workspace destino"
+              [value]="destinoId() ?? ''"
+              (change)="elegirDestino($any($event.target).value)"
+            >
+              @for (destino of destinos(); track destino.id) {
+                <option [value]="destino.id">{{ destino.name }}</option>
+              }
+            </select>
+          }
+        </span>
+      </label>
+
+      <label class="opcion" [class.opcion--activa]="accion() === 'eliminar'">
+        <input
+          type="radio"
+          name="accion-tableros"
+          [checked]="accion() === 'eliminar'"
+          (change)="elegirAccion('eliminar')"
+        />
+        <span class="opcion__texto">
+          <strong>Eliminarlos junto con el workspace</strong>
+          <small>
+            Los tableros y todas sus tareas dejarán de estar disponibles para todos los miembros.
+          </small>
+        </span>
+      </label>
+    </fieldset>
+  }
+
+  <p class="aviso">
+    Se eliminará el workspace: las invitaciones pendientes dejarán de funcionar y no podrás
+    recuperarlo desde Taskeer. Liberas un lugar en tu límite de workspaces propios.
+  </p>
+
+  <label class="confirmar-texto">
+    <span>Escribe <strong>{{ workspace().name }}</strong> para confirmar</span>
+    <input
+      type="text"
+      autocomplete="off"
+      [value]="escrito()"
+      [disabled]="procesando()"
+      (input)="escrito.set($any($event.target).value)"
+    />
+  </label>
+
+  <div class="acciones">
+    <button type="button" class="boton boton--secundario" (click)="cancelar.emit()" [disabled]="procesando()">
+      Cancelar
+    </button>
+    <button
+      type="button"
+      class="boton boton--peligro"
+      (click)="enviar()"
+      [disabled]="procesando() || !puedeConfirmar()"
+    >
+      @if (procesando()) {
+        Procesando…
+      } @else if (hayTableros() && accion() === 'mover') {
+        Mover tableros y eliminar
+      } @else {
+        Eliminar workspace
+      }
+    </button>
+  </div>
+</div>

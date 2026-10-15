@@ -93,3 +93,16 @@ export interface BoardMemberOverride {
   createdAt: string;
   updatedAt: string;
 }
+
+// Espejos de MoveBoardsInput / MoveBoardsResultDto del Backend.
+export interface MoverTablerosInput {
+  targetWorkspaceId: string;
+  boardIds: string[];
+}
+
+export interface MoverTablerosResultado {
+  boards: Board[];
+  tasksUnassigned: number;
+  subtasksUnassigned: number;
+  overridesRemoved: number;
+}

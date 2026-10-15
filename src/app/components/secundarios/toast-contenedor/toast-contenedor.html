@@ -1,6 +1,12 @@
 <div class="contenedor" aria-live="polite" aria-atomic="false">
   @for (toast of toastService.toastsActivos(); track toast.id) {
-    <div class="toast" [class]="'toast--' + toast.tipo" role="status">
+    <div
+      class="toast"
+      [class]="'toast--' + toast.tipo"
+      [style.--i]="$count - 1 - $index"
+      animate.leave="toast-salir"
+      [attr.role]="toast.tipo === 'error' ? 'alert' : 'status'"
+    >
       <span class="toast__icono">
         @switch (toast.tipo) {
           @case ('exito') {
@@ -41,7 +47,7 @@
         (click)="cerrar(toast.id)"
         aria-label="Cerrar notificación"
       >
-        ×
+        <app-svg-x />
       </button>
     </div>
   }

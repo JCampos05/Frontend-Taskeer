@@ -1,3 +1,4 @@
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SvgBasura } from '../../svgs/svg-basura/svg-basura';
@@ -6,6 +7,8 @@ import { SvgCandado } from '../../svgs/svg-candado/svg-candado';
 import { SvgCarpetas } from '../../svgs/svg-carpetas/svg-carpetas';
 import { SvgEngranaje } from '../../svgs/svg-engranaje/svg-engranaje';
 import { SvgInfo } from '../../svgs/svg-info/svg-info';
+import { SvgX } from '../../svgs/svg-x/svg-x';
+import { SvgPersona } from '../../svgs/svg-persona/svg-persona';
 import { AppNotification, NotificationTipo } from '../../../models/notification';
 import { NotificationsService } from '../../../services/notifications.service';
 import { NotificationsStreamService } from '../../../services/notifications-stream.service';
@@ -27,9 +30,10 @@ const FORMATO_FECHA = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'sh
 @Component({
   selector: 'app-panel-notificaciones',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SvgCampana, SvgCandado, SvgCarpetas, SvgEngranaje, SvgInfo, SvgBasura],
+  imports: [CdkTrapFocus, SvgCampana, SvgCandado, SvgCarpetas, SvgEngranaje, SvgInfo, SvgBasura, SvgPersona, SvgX],
   templateUrl: './panel-notificaciones.html',
   styleUrl: './panel-notificaciones.css',
+  host: { '(document:keydown.escape)': 'alPresionarEscape()' },
 })
 export class PanelNotificaciones {
   protected readonly notificationsService = inject(NotificationsService);
@@ -53,6 +57,27 @@ export class PanelNotificaciones {
       .filter((n) => (soloNoLeidas ? n.readAt === null : true))
       .filter((n) => (tipo === 'TODOS' ? true : n.type === tipo));
   });
+
+  /** Las mismas notificaciones filtradas, separadas en "Hoy" y "Anteriores"
+   * (día calendario local) para que lo reciente destaque. Conserva el orden. */
+  protected readonly grupos = computed(() => {
+    const inicioHoy = new Date();
+    inicioHoy.setHours(0, 0, 0, 0);
+    const hoy: AppNotification[] = [];
+    const anteriores: AppNotification[] = [];
+    for (const n of this.listaFiltrada()) {
+      (new Date(n.createdAt) >= inicioHoy ? hoy : anteriores).push(n);
+    }
+    return [
+      { titulo: 'Hoy', items: hoy },
+      { titulo: 'Anteriores', items: anteriores },
+    ].filter((g) => g.items.length > 0);
+  });
+
+  /** Escape cierra el panel (host listener). */
+  alPresionarEscape(): void {
+    if (this.abierto()) this.cerrarPanel();
+  }
 
   protected abrirPanel(): void {
     this.abierto.set(true);

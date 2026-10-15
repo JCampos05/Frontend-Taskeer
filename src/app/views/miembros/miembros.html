@@ -3,7 +3,7 @@
     <div>
       <app-boton-volver
         [ruta]="['/app/workspaces', workspaceId]"
-        [etiqueta]="workspaceNombre() || 'Tablero'"
+        [etiqueta]="workspaceNombre() || 'Workspace'"
       />
       <h1>Miembros</h1>
       <p>Quién forma parte de este workspace y qué puede hacer.</p>
@@ -44,76 +44,142 @@
   }
 
   @if (cargando()) {
-    <p class="estado-vacio">Cargando…</p>
+    <div class="esqueleto-rejilla" role="status" aria-label="Cargando">
+    @for (n of [1, 2, 3]; track n) {
+      <div class="esqueleto esqueleto--tarjeta"></div>
+    }
+  </div>
   } @else {
-    <section class="seccion">
-      <h2>{{ miembros().length }} {{ miembros().length === 1 ? 'miembro' : 'miembros' }}</h2>
-      <div class="lista">
-        @for (member of miembros(); track member.userId) {
-          <article class="fila">
-            <button
-              type="button"
-              class="avatar avatar--clickeable"
-              (click)="verPerfilDe.set(member)"
-              [attr.aria-label]="'Ver perfil de ' + member.displayName"
-            >
-              {{ member.displayName.charAt(0).toUpperCase() }}
-            </button>
-            <div class="fila__info">
-              <p class="fila__nombre">
-                <button type="button" class="fila__nombre-boton" (click)="verPerfilDe.set(member)">
-                  {{ member.displayName }}
-                </button>
-                @if (member.userId === miId) {
-                  <span class="etiqueta-tu">Tú</span>
-                }
-              </p>
-              <p class="fila__correo">{{ member.email }}</p>
-            </div>
+    <div class="pestanas">
+      <button
+        type="button"
+        class="pestanas__item"
+        [class.activo]="pestana() === 'miembros'"
+        [attr.aria-pressed]="pestana() === 'miembros'"
+        (click)="pestana.set('miembros')"
+      >
+        Miembros
+        <span class="pestanas__contador">{{ miembros().length }}</span>
+      </button>
+      @if (puedeGestionar(miRol())) {
+        <button
+          type="button"
+            class="pestanas__item"
+          [class.activo]="pestana() === 'invitaciones'"
+          [attr.aria-pressed]="pestana() === 'invitaciones'"
+          (click)="pestana.set('invitaciones')"
+        >
+          Invitaciones
+          @if (invitacionesPendientes() > 0) {
+            <span class="pestanas__contador pestanas__contador--aviso">{{ invitacionesPendientes() }}</span>
+          }
+        </button>
+      }
+    </div>
 
-            @if (puedeGestionar(miRol()) && member.role !== 'OWNER') {
-              <select
-                class="select-rol"
-                [value]="member.role"
-                (change)="cambiarRol(member, $any($event.target).value)"
-              >
-                @for (rol of rolesAsignables; track rol) {
-                  <option [value]="rol">{{ etiquetaRol[rol] }}</option>
-                }
-              </select>
-            } @else {
-              <span class="etiqueta-rol">{{ etiquetaRol[member.role] }}</span>
-            }
+    @if (pestana() === 'miembros') {
+      <div class="barra-herramientas">
+        <input
+          type="search"
+          class="barra-herramientas__busqueda"
+          placeholder="Buscar por nombre o correo"
+          aria-label="Buscar miembros"
+          [value]="busqueda()"
+          (input)="busqueda.set($any($event.target).value)"
+        />
+        <select
+          class="barra-herramientas__rol"
+          aria-label="Filtrar por rol"
+          [value]="filtroRol()"
+          (change)="filtroRol.set($any($event.target).value)"
+        >
+          <option value="">Todos los roles</option>
+          <option value="OWNER">{{ etiquetaRol['OWNER'] }}</option>
+          @for (rol of rolesAsignables; track rol) {
+            <option [value]="rol">{{ etiquetaRol[rol] }}</option>
+          }
+        </select>
+      </div>
 
-            <div class="fila__acciones">
-              @if (puedeTransferir(member)) {
-                <button type="button" class="boton boton--secundario boton--chico" (click)="transfiriendoA.set(member)">
-                  Hacer propietario
-                </button>
-              }
-              @if (puedeQuitar(member)) {
+      @if (miembrosFiltrados().length === 0) {
+        <p class="estado-vacio estado-vacio--chico">Nadie coincide con tu búsqueda.</p>
+      } @else {
+        <div class="rejilla-miembros">
+          @for (member of miembrosFiltrados(); track member.userId) {
+            <article class="tarjeta-miembro">
+              <div class="tarjeta-miembro__cabecera">
                 <button
                   type="button"
-                  class="boton-icono"
-                  (click)="quitandoUserId.set(member.userId)"
-                  aria-label="Quitar del workspace"
+                  class="avatar avatar--grande avatar--clickeable"
+                  (click)="verPerfilDe.set(member)"
+                  [attr.aria-label]="'Ver perfil de ' + member.displayName"
                 >
-                  <app-svg-basura />
+                  {{ member.displayName.charAt(0).toUpperCase() }}
                 </button>
+
+                @if (puedeGestionar(miRol()) && member.role !== 'OWNER') {
+                  <select
+                    class="select-rol"
+                    [value]="member.role"
+                    [attr.aria-label]="'Rol de ' + member.displayName"
+                    (change)="cambiarRol(member, $any($event.target).value)"
+                  >
+                    @for (rol of rolesAsignables; track rol) {
+                      <option [value]="rol">{{ etiquetaRol[rol] }}</option>
+                    }
+                  </select>
+                } @else {
+                  <span class="etiqueta-rol" [class]="'etiqueta-rol etiqueta-rol--' + member.role.toLowerCase()">
+                    {{ etiquetaRol[member.role] }}
+                  </span>
+                }
+              </div>
+
+              <div class="tarjeta-miembro__datos">
+                <p class="fila__nombre">
+                  <button type="button" class="fila__nombre-boton" (click)="verPerfilDe.set(member)">
+                    {{ member.displayName }}
+                  </button>
+                  @if (member.userId === miId) {
+                    <span class="etiqueta-tu">Tú</span>
+                  }
+                </p>
+                <p class="fila__correo">{{ member.email }}</p>
+                <p class="tarjeta-miembro__desde">Miembro desde {{ fechaMiembro(member.createdAt) }}</p>
+              </div>
+
+              @if (puedeTransferir(member) || puedeQuitar(member)) {
+                <div class="tarjeta-miembro__acciones">
+                  @if (puedeTransferir(member)) {
+                    <button type="button" class="boton boton--secundario boton--chico" (click)="transfiriendoA.set(member)">
+                      Hacer propietario
+                    </button>
+                  }
+                  @if (puedeQuitar(member)) {
+                    <button
+                      type="button"
+                      class="boton-icono"
+                      (click)="quitandoUserId.set(member.userId)"
+                      aria-label="Quitar del workspace"
+                    >
+                      <app-svg-basura />
+                    </button>
+                  }
+                </div>
               }
-            </div>
-          </article>
-        }
-      </div>
+            </article>
+          }
+        </div>
+      }
 
       @if (miRol() && miRol() !== 'OWNER') {
         <button type="button" class="boton boton--secundario boton--peligro-texto" (click)="saliendo.set(true)">
           Salir del workspace
         </button>
       }
-    </section>
+    }
 
-    @if (puedeGestionar(miRol())) {
+    @if (puedeGestionar(miRol()) && pestana() === 'invitaciones') {
       <section class="seccion">
         <h2>Invitaciones</h2>
         @if (invitaciones().length === 0) {

@@ -2,39 +2,104 @@
   display: block;
 }
 
+/* Pila de toasts: todos comparten la misma celda de una grilla anclada abajo a
+ * la derecha. El más reciente (--i: 0) va al frente; cada anterior queda
+ * detrás, más chico y desplazado hacia arriba, y solo se ven los 3 primeros
+ * niveles — así varios avisos juntos no invaden la pantalla. Al apuntar la
+ * pila se despliega en columna para leerlos todos. --i lo calcula la
+ * plantilla (profundidad: 0 = más reciente). */
 .contenedor {
   position: fixed;
   z-index: 2000;
   bottom: 1.25rem;
   right: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  display: grid;
+  grid-template-columns: 1fr;
   width: min(24rem, calc(100vw - 2.5rem));
   pointer-events: none;
 }
 
 .toast {
-  pointer-events: auto;
+  --i: 0;
+  grid-area: 1 / 1;
+  align-self: end;
+  transform-origin: 50% 100%;
+  z-index: calc(100 - var(--i));
+  transform: translateY(calc(var(--i) * -0.7rem)) scale(calc(1 - var(--i) * 0.05));
+  /* Se desvanece con la profundidad y desaparece del cuarto nivel en adelante
+   * (siguen existiendo y se cierran por su propio temporizador). */
+  opacity: calc((1 - var(--i) * 0.15) * clamp(0, 3 - var(--i), 1));
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+  pointer-events: none;
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
   padding: 0.85rem 0.9rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-lg);
-  animation: toast-entrar 0.2s ease;
+  animation: toast-entrar 0.25s ease;
+}
+
+/* Los toasts de atrás ocupan el alto de la celda (el del más alto) para que
+ * siempre asome su borde superior por encima del que está al frente, y
+ * recortan su contenido: son solo "relleno" visual hasta que se despliega. */
+.toast:not(:last-child) {
+  align-self: stretch;
+  overflow: hidden;
+}
+
+.toast:last-child {
+  pointer-events: auto;
+}
+
+/* Desplegada: columna normal, todos legibles y clicables. */
+.contenedor:hover,
+.contenedor:focus-within {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.contenedor:hover .toast,
+.contenedor:focus-within .toast {
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.contenedor:hover .toast:not(:last-child),
+.contenedor:focus-within .toast:not(:last-child) {
+  align-self: auto;
+  overflow: visible;
 }
 
 @keyframes toast-entrar {
   from {
     opacity: 0;
-    transform: translateY(0.5rem);
+    transform: translateY(0.75rem) scale(0.96);
   }
+}
+
+.toast-salir {
+  animation: toast-salir 0.18s ease forwards;
+}
+
+@keyframes toast-salir {
   to {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 0;
+    transform: translateY(0.4rem) scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast,
+  .toast-salir {
+    animation: none;
+    transition: none;
   }
 }
 
@@ -46,13 +111,13 @@
 }
 
 .toast--exito .toast__icono {
-  color: var(--color-success);
+  color: var(--color-success-text);
 }
 .toast--error .toast__icono {
   color: var(--color-danger);
 }
 .toast--advertencia .toast__icono {
-  color: var(--color-warning);
+  color: var(--color-warning-text);
 }
 .toast--info .toast__icono {
   color: var(--color-info);
@@ -81,7 +146,7 @@
   margin-top: 0.4rem;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .toast__accion:hover {
@@ -90,19 +155,19 @@
 
 .toast__cerrar {
   flex-shrink: 0;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2rem;
+  height: 2rem;
+  margin: -0.25rem -0.25rem 0 0;
+  padding: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-sm);
   color: var(--color-text-muted);
-  font-size: 1.1rem;
-  line-height: 1;
 }
 
 .toast__cerrar:hover {
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
   color: var(--color-text);
 }
 

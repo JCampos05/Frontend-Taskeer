@@ -32,6 +32,8 @@ function contrasenasCoinciden(grupo: AbstractControl): ValidationErrors | null {
   return password === confirmacion ? null : { contrasenasDistintas: true };
 }
 
+type SeccionConfiguracion = 'perfil' | 'apariencia' | 'region' | 'seguridad';
+
 @Component({
   selector: 'app-configuracion',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,6 +54,14 @@ function contrasenasCoinciden(grupo: AbstractControl): ValidationErrors | null {
   styleUrl: './configuracion.css',
 })
 export class Configuracion {
+  protected readonly secciones: { id: SeccionConfiguracion; etiqueta: string }[] = [
+    { id: 'perfil', etiqueta: 'Perfil' },
+    { id: 'apariencia', etiqueta: 'Apariencia' },
+    { id: 'region', etiqueta: 'Región' },
+    { id: 'seguridad', etiqueta: 'Seguridad' },
+  ];
+  protected readonly seccionActiva = signal<SeccionConfiguracion>('perfil');
+
   private readonly fb = inject(FormBuilder);
   protected readonly authService = inject(AuthService);
   protected readonly themeService = inject(ThemeService);

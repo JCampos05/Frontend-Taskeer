@@ -10,9 +10,49 @@
   background-color: var(--color-bg);
 }
 
+/* El contenido es un panel elevado y redondeado sobre el fondo, como en los
+ * bosquejos de referencia — el sidebar vive directo sobre --color-bg. */
 .contenido {
   flex-grow: 1;
   min-width: 0;
-  height: 100%;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+  height: calc(100% - 1rem);
   overflow-y: auto;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 48rem) {
+  .contenido {
+    margin: 0;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+/* Entrada de cada vista (al navegar, o al recrearse por cambio de
+ * workspace/tablero — ver utils/reuso-de-rutas.ts): fundido corto con un
+ * leve ascenso, para que el cambio de contenido no sea un salto brusco.
+ * Solo opacidad y transform (baratos), nunca layout. */
+:host ::ng-deep .contenido > * {
+  animation: entrada-vista 0.16s ease-out;
+}
+
+@keyframes entrada-vista {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep .contenido > * {
+    animation: none;
+  }
 }

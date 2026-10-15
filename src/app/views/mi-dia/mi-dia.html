@@ -7,137 +7,100 @@
   @if (invitations().length > 0) {
     <section class="seccion">
       <h2><app-svg-usuarios class="seccion__icono" />Invitaciones pendientes</h2>
-      <div class="lista-invitaciones">
-        @for (invitacion of invitations(); track invitacion.id) {
-          <article class="invitacion">
-            <div class="invitacion__info">
-              <p class="invitacion__titulo">Te invitaron a "{{ invitacion.workspaceName }}"</p>
-              <p class="invitacion__detalle">
-                Como
-                {{
-                  invitacion.role === 'ADMIN'
-                    ? 'administrador'
-                    : invitacion.role === 'EDITOR'
-                      ? 'editor'
-                      : 'solo lectura'
-                }}
-              </p>
-            </div>
-            <button
-              type="button"
-              class="boton boton--primario boton--chico"
-              [disabled]="aceptandoInvitacionId() === invitacion.id"
-              (click)="aceptarInvitacion(invitacion)"
-            >
-              {{ aceptandoInvitacionId() === invitacion.id ? 'Uniéndote…' : 'Aceptar' }}
-            </button>
-          </article>
-        }
-      </div>
+      <app-lista-invitaciones
+        [invitaciones]="invitations()"
+        [aceptandoId]="aceptandoInvitacionId()"
+        (aceptar)="aceptarInvitacion($event)"
+      />
     </section>
   }
 
-  <section class="seccion">
-    <h2><app-svg-estrella-llena class="seccion__icono" />Marcadas para hoy</h2>
-
-    @if (cargando()) {
-      <p class="estado-vacio-texto">Cargando…</p>
-    } @else if (pinnedTasks().length === 0) {
-      <p class="estado-vacio-texto">
-        Todavía no marcaste ninguna tarea — abrí una desde un tablero y agregala a tu día con la
-        estrella.
-      </p>
-    } @else {
-      <div class="grid-tarjetas">
-        @for (pinned of pinnedTasks(); track pinned.task.id) {
-          <article class="tarjeta-tarea">
-            <a
-              class="tarjeta-tarea__enlace"
-              [routerLink]="['/app/workspaces', pinned.workspaceId, 'boards', pinned.board.id]"
-            >
-              <div class="tarjeta-tarea__encabezado">
-                <h3>{{ pinned.task.title }}</h3>
-                <span
-                  class="etiqueta-prioridad"
-                  [class]="'etiqueta-prioridad--' + pinned.task.priority.toLowerCase()"
-                >
-                  {{ etiquetaPrioridad(pinned.task.priority) }}
-                </span>
-              </div>
-              <div class="tarjeta-tarea__meta">
-                <span class="etiqueta-tablero">{{ pinned.board.name }}</span>
-                @if (pinned.task.dueAt) {
-                  <span
-                    class="etiqueta-fecha"
-                    [class.etiqueta-fecha--vencida]="esFechaVencida(pinned.task.dueAt)"
-                  >
-                    {{ formatearFecha(pinned.task.dueAt) }}
-                  </span>
-                }
-              </div>
-            </a>
-            <button
-              type="button"
-              class="tarjeta-tarea__quitar"
-              [disabled]="quitandoTaskId() === pinned.task.id"
-              (click)="quitarDeMiDia(pinned)"
-              aria-label="Quitar de Mi día"
-              title="Quitar de Mi día"
-            >
-              <app-svg-estrella-llena />
-            </button>
-          </article>
-        }
-      </div>
-    }
-  </section>
-
+  @if (errorCarga()) {
+    <p class="alerta alerta--error" role="alert">
+      No pudimos cargar tu día.
+      <button type="button" class="enlace-sutil" (click)="reintentar()">Reintentar</button>
+    </p>
+  } @else {
   <div class="paneles">
-    <section class="seccion">
-      <h2>Asignadas con fecha límite</h2>
-
+    <div class="grupos">
       @if (cargando()) {
-        <p class="estado-vacio-texto">Cargando…</p>
-      } @else if (assignedTasks().length === 0) {
-        <p class="estado-vacio-texto">No tienes tareas asignadas con fecha límite.</p>
-      } @else {
-        <div class="grid-tarjetas">
-          @for (asignada of assignedTasks(); track asignada.task.id) {
-            <a
-              class="tarjeta-tarea tarjeta-tarea__enlace"
-              [routerLink]="['/app/workspaces', asignada.workspaceId, 'boards', asignada.board.id]"
-            >
-              <div class="tarjeta-tarea__encabezado">
-                <h3>{{ asignada.task.title }}</h3>
-                <span
-                  class="etiqueta-prioridad"
-                  [class]="'etiqueta-prioridad--' + asignada.task.priority.toLowerCase()"
-                >
-                  {{ etiquetaPrioridad(asignada.task.priority) }}
-                </span>
-              </div>
-              <div class="tarjeta-tarea__meta">
-                <span class="etiqueta-tablero">{{ asignada.board.name }}</span>
-                @if (asignada.task.dueAt) {
-                  <span
-                    class="etiqueta-fecha"
-                    [class.etiqueta-fecha--vencida]="esFechaVencida(asignada.task.dueAt)"
-                  >
-                    {{ formatearFecha(asignada.task.dueAt) }}
-                  </span>
-                }
-              </div>
-            </a>
-          }
+        <section class="seccion">
+          <div class="esqueleto-lista" role="status" aria-label="Cargando">
+          <div class="esqueleto esqueleto--linea"></div>
+          <div class="esqueleto esqueleto--linea"></div>
         </div>
+        </section>
+      } @else if (grupos().length === 0) {
+        <section class="seccion">
+          <h2><app-svg-estrella-llena class="seccion__icono" />Tu día está libre</h2>
+          <p class="estado-vacio-texto">
+            No tienes tareas marcadas ni asignadas con fecha. Abre una desde un tablero y agrégala
+            a tu día con la estrella.
+          </p>
+        </section>
+      } @else {
+        @for (grupo of grupos(); track grupo.id) {
+          <section class="seccion" [class.seccion--alerta]="grupo.id === 'vencidas'">
+            <h2>
+              {{ grupo.titulo }}
+              <span class="seccion__contador">{{ grupo.items.length }}</span>
+            </h2>
+            <div class="grid-tarjetas">
+              @for (item of grupo.items; track item.task.id) {
+                <article class="tarjeta-tarea">
+                  <a
+                    class="tarjeta-tarea__enlace"
+                    [routerLink]="['/app/workspaces', item.workspaceId, 'boards', item.board.id]"
+                  >
+                    <div class="tarjeta-tarea__encabezado">
+                      <h3>{{ item.task.title }}</h3>
+                      <span
+                        class="etiqueta-prioridad"
+                        [class]="'etiqueta-prioridad--' + item.task.priority.toLowerCase()"
+                      >
+                        {{ etiquetaPrioridad(item.task.priority) }}
+                      </span>
+                    </div>
+                    <div class="tarjeta-tarea__meta">
+                      <span class="etiqueta-tablero">{{ item.board.name }}</span>
+                      @if (item.task.dueAt) {
+                        <span
+                          class="etiqueta-fecha"
+                          [class.etiqueta-fecha--vencida]="grupo.id === 'vencidas'"
+                        >
+                          {{ formatearFecha(item.task.dueAt) }}
+                        </span>
+                      }
+                    </div>
+                  </a>
+                  @if (item.fijada) {
+                    <button
+                      type="button"
+                      class="tarjeta-tarea__quitar"
+                      [disabled]="quitandoTaskId() === item.task.id"
+                      (click)="quitarDeMiDia(item.task.id)"
+                      aria-label="Quitar de Mi día"
+                      title="Quitar de Mi día"
+                    >
+                      <app-svg-estrella-llena />
+                    </button>
+                  }
+                </article>
+              }
+            </div>
+          </section>
+        }
       }
-    </section>
+    </div>
 
-    <section class="seccion">
+    <section class="seccion seccion--lateral">
       <h2><app-svg-campana class="seccion__icono" />Próximos recordatorios</h2>
 
       @if (cargando()) {
-        <p class="estado-vacio-texto">Cargando…</p>
+        <div class="esqueleto-lista" role="status" aria-label="Cargando">
+          <div class="esqueleto esqueleto--linea"></div>
+          <div class="esqueleto esqueleto--linea"></div>
+        </div>
       } @else if (reminders().length === 0) {
         <p class="estado-vacio-texto">No tienes recordatorios pendientes.</p>
       } @else {
@@ -164,4 +127,5 @@
       }
     </section>
   </div>
+  }
 </div>

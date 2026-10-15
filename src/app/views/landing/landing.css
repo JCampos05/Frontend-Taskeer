@@ -1,16 +1,15 @@
 /*
- * Landing — a propósito NO usa los tokens semánticos de tema
- * (--color-bg, --color-text, --color-primary, etc., definidos en
- * app/styles/theme.css) porque esos cambian con modo claro/oscuro. Esta
- * página tiene una identidad visual fija, así que usa directamente la
- * escala de marca (--color-brand-*, --color-slate-*), que nunca varía con
- * el tema — mismo aspecto sin importar el sistema del visitante.
+ * Landing — identidad fija (no responde a modo claro/oscuro). El host lleva
+ * `.tema-neutro-fijo` (ver landing.ts y styles/theme.css), que fija los
+ * tokens semánticos a la paleta neutra de la app en claro. Por eso aquí se
+ * usan los mismos tokens que en el resto de la app; el azul de marca queda
+ * solo como acento en las acciones.
  */
 
 :host {
   display: block;
-  background-color: #ffffff;
-  color: var(--color-brand-950);
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .saltar-contenido {
@@ -19,17 +18,16 @@
   top: 0;
   z-index: 2000;
   padding: 0.75rem 1.25rem;
-  background: var(--color-brand-600);
-  color: #ffffff;
-  border-radius: 0 0 0.5rem 0;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: 0 0 var(--radius-sm) 0;
 }
 
 .saltar-contenido:focus-visible {
   left: 0;
 }
 
-/* Botones propios de la landing — deliberadamente distintos de .boton
- * (que sí sigue el tema): forma de píldora, colores de marca fijos. */
+/* Botones propios de la landing: forma de píldora. */
 .boton-nav {
   display: inline-flex;
   align-items: center;
@@ -48,31 +46,31 @@
 }
 
 .boton-nav--solido {
-  background-color: var(--color-brand-600);
-  color: #ffffff;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 .boton-nav--solido:hover {
-  background-color: var(--color-brand-700);
+  background-color: var(--color-primary-hover);
 }
 
 .boton-nav--fantasma {
   background-color: transparent;
-  color: var(--color-brand-700);
-  border-color: var(--color-slate-300);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
 }
 
 .boton-nav--fantasma:hover {
-  background-color: var(--color-slate-50);
+  background-color: var(--color-hover);
 }
 
 .boton-nav--claro {
   background-color: #ffffff;
-  color: var(--color-brand-700);
+  color: var(--color-text);
 }
 
 .boton-nav--claro:hover {
-  background-color: var(--color-brand-50);
+  background-color: var(--color-bg);
 }
 
 .boton-nav--grande {
@@ -89,15 +87,17 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: rgb(255 255 255 / 85%);
+  /* Gris cálido intermedio: un paso más oscuro que el fondo del hero para
+   * que el header se distinga sin competir con el contenido. */
+  background-color: rgb(219 216 210 / 90%);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--color-slate-200);
+  border-bottom: 1px solid var(--color-border-strong);
 }
 
 .nav__interior {
   max-width: 76rem;
   margin-inline: auto;
-  padding: 1rem clamp(1.25rem, 4vw, 2.5rem);
+  padding: 0.85rem clamp(1.25rem, 4vw, 2.5rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -111,7 +111,7 @@
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-lg);
   letter-spacing: -0.01em;
-  color: var(--color-brand-700);
+  color: var(--color-text);
 }
 
 .marca__icono {
@@ -128,11 +128,11 @@
 .nav__links a {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-slate-600);
+  color: var(--color-text-secondary);
 }
 
 .nav__links a:hover {
-  color: var(--color-brand-700);
+  color: var(--color-text);
 }
 
 .nav__acciones {
@@ -141,13 +141,7 @@
   gap: 0.75rem;
 }
 
-/* Hero — el fondo va en .hero (full-bleed, sin max-width) para que la
- * mancha de color llegue de punta a punta de la pantalla; el contenido en
- * sí queda acotado y centrado dentro de .hero__interior. */
-.hero {
-  background: linear-gradient(180deg, var(--color-brand-50) 0%, #ffffff 65%);
-}
-
+/* Hero */
 .hero__interior {
   max-width: 76rem;
   margin-inline: auto;
@@ -167,8 +161,9 @@
   align-self: flex-start;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
-  background-color: var(--color-brand-100);
-  color: var(--color-brand-700);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   letter-spacing: 0.02em;
@@ -177,13 +172,14 @@
 .hero__texto h1 {
   font-size: clamp(2.1rem, 4.5vw, 3.25rem);
   line-height: 1.1;
-  color: var(--color-brand-950);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
 }
 
 .hero__texto p {
   max-width: 34rem;
   font-size: var(--font-size-lg);
-  color: var(--color-slate-600);
+  color: var(--color-text-secondary);
 }
 
 .hero__acciones {
@@ -193,7 +189,13 @@
   margin-top: 0.5rem;
 }
 
-/* Mockup del tablero */
+.hero__texto .hero__nota {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* Mockup: una ventana de la app real (sidebar + tablero), no un dibujo
+ * genérico — mismas capas de superficie y chips que el producto. */
 .hero__visual {
   position: relative;
   display: flex;
@@ -204,10 +206,10 @@
 
 .mockup {
   width: 100%;
-  max-width: 30rem;
-  background-color: #ffffff;
-  border: 1px solid var(--color-slate-200);
-  border-radius: 1rem;
+  max-width: 36rem;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
@@ -216,89 +218,220 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.7rem 0.9rem;
-  border-bottom: 1px solid var(--color-slate-200);
-  background-color: var(--color-slate-50);
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
 }
 
 .mockup__punto {
   width: 0.55rem;
   height: 0.55rem;
   border-radius: 999px;
-  background-color: var(--color-brand-200);
+  background-color: var(--color-border-strong);
 }
 
-.mockup__url {
-  margin-left: 0.5rem;
-  padding: 0.15rem 0.6rem;
-  border-radius: 999px;
-  background-color: #ffffff;
-  border: 1px solid var(--color-slate-200);
-  font-size: 0.65rem;
-  color: var(--color-slate-500);
+.mockup__app {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  min-height: 17rem;
+}
+
+.mockup__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem 0.55rem;
+  font-size: 0.62rem;
+  color: var(--color-text-secondary);
+}
+
+.mockup__marca {
+  margin-bottom: 0.5rem;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+  background-color: var(--color-surface);
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.mockup__seccion {
+  margin-top: 0.4rem;
+  padding: 0 0.4rem;
+  font-size: 0.55rem;
+  color: var(--color-text-muted);
+}
+
+.mockup__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.4rem;
+  border-radius: 0.35rem;
+}
+
+.mockup__nav i {
+  display: grid;
+  place-items: center;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 0.25rem;
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-soft-text);
+  font-size: 0.5rem;
+  font-style: normal;
+  font-weight: var(--font-weight-semibold);
+}
+
+.mockup__nav--activo {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
+}
+
+.mockup__panel {
+  margin: 0.4rem 0.4rem 0.4rem 0;
+  padding: 0.75rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.mockup__titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.mockup__titulo strong {
+  font-size: 0.8rem;
+}
+
+.mockup__titulo span {
+  font-size: 0.58rem;
+  color: var(--color-text-secondary);
 }
 
 .mockup__columnas {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-  padding: 1.1rem;
+  gap: 0.45rem;
 }
 
 .mockup__columna {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.6rem;
-  border-radius: 0.6rem;
-  background-color: var(--color-slate-50);
+  gap: 0.4rem;
+  padding: 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface-sunken);
 }
 
 .mockup__columna-titulo {
-  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.58rem;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-slate-500);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--color-text);
+}
+
+.mockup__columna-titulo b {
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background-color: var(--color-hover);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
 }
 
 .mockup__tarjeta {
   display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.5rem;
-  border-radius: 0.45rem;
-  background-color: #ffffff;
-  border: 1px solid var(--color-slate-200);
-  font-size: 0.65rem;
-  color: var(--color-brand-950);
-  line-height: 1.3;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  border-radius: 0.4rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  font-size: 0.58rem;
+  line-height: 1.25;
+  color: var(--color-text);
 }
 
 .mockup__tarjeta--activa {
-  border-color: var(--color-brand-300);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brand-300) 35%, transparent);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .mockup__tarjeta--tenue {
   opacity: 0.6;
 }
 
-.mockup__etiqueta {
-  flex-shrink: 0;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 999px;
+.mockup__pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.1rem;
 }
 
-.mockup__etiqueta--azul {
-  background-color: var(--color-brand-500);
+.mockup__pie em {
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background-color: var(--color-surface-sunken);
+  font-size: 0.5rem;
+  font-style: normal;
+  color: var(--color-text-secondary);
 }
-.mockup__etiqueta--verde {
-  background-color: #16a34a;
+
+.mockup__pie em.vencida {
+  background-color: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  color: var(--color-danger);
 }
-.mockup__etiqueta--morado {
-  background-color: #7c3aed;
+
+.mockup__pie i {
+  display: grid;
+  place-items: center;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 999px;
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-soft-text);
+  font-size: 0.5rem;
+  font-style: normal;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Chips de prioridad, mismos colores que el kanban real */
+.chip {
+  align-self: flex-start;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  font-size: 0.5rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.chip--baja {
+  color: var(--color-text-secondary);
+  background-color: var(--color-hover);
+}
+
+.chip--media {
+  color: var(--color-primary-text);
+  background-color: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.chip--alta {
+  color: var(--color-warning-text);
+  background-color: color-mix(in srgb, var(--color-warning) 14%, transparent);
+}
+
+.chip--urgente {
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 14%, transparent);
 }
 
 /* Insignias flotantes */
@@ -308,63 +441,63 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.6rem 0.9rem;
-  border-radius: 0.75rem;
-  background-color: #ffffff;
-  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
   font-size: 0.7rem;
-  color: var(--color-slate-600);
+  color: var(--color-text-secondary);
 }
 
 .insignia strong {
   display: block;
   font-size: 0.75rem;
-  color: var(--color-brand-950);
+  color: var(--color-text);
 }
 
 .insignia--recordatorio {
-  top: -0.5rem;
-  right: 0.5rem;
+  top: -0.25rem;
+  right: 0;
 }
 
-.insignia--equipo {
-  bottom: -0.5rem;
+.insignia--dia {
+  bottom: -0.25rem;
   left: 0;
 }
 
 .insignia__icono {
-  width: 1.5rem;
-  height: 1.5rem;
-  color: var(--color-brand-600);
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0.4rem;
   flex-shrink: 0;
+  border-radius: 0.5rem;
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-soft-text);
 }
 
-.avatares {
-  display: flex;
+/* Bandas a todo el ancho: alternan fondo (beige / blanco) para separar las
+ * secciones; el contenido va acotado en .banda__interior. */
+.banda {
+  padding: clamp(3rem, 8vw, 5rem) 0;
 }
 
-.avatar {
-  width: 1.35rem;
-  height: 1.35rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--color-brand-300), var(--color-brand-600));
-  border: 2px solid #ffffff;
-  margin-left: -0.5rem;
+.banda--clara {
+  background-color: var(--color-surface);
+  border-block: 1px solid var(--color-border);
 }
 
-.avatar:first-child {
-  margin-left: 0;
+.banda__interior {
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
 }
 
 /* Características */
-.caracteristicas {
-  max-width: 76rem;
-  margin-inline: auto;
-  padding: clamp(3rem, 8vw, 5rem) clamp(1.25rem, 4vw, 2.5rem);
-}
 
 .caracteristicas__encabezado {
-  max-width: 34rem;
+  max-width: 36rem;
   margin-inline: auto;
   text-align: center;
   margin-bottom: clamp(2rem, 5vw, 3rem);
@@ -372,33 +505,34 @@
 
 .caracteristicas__encabezado h2 {
   font-size: var(--font-size-2xl);
-  color: var(--color-brand-950);
+  letter-spacing: -0.01em;
+  color: var(--color-text);
 }
 
 .caracteristicas__encabezado p {
   margin-top: 0.5rem;
-  color: var(--color-slate-600);
+  color: var(--color-text-secondary);
 }
 
 .caracteristicas__rejilla {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
   gap: 1.25rem;
 }
 
 .tarjeta-feature {
   padding: 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid var(--color-slate-200);
-  background-color: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
 
 .tarjeta-feature:hover {
-  border-color: var(--color-brand-300);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .tarjeta-feature__icono {
@@ -407,31 +541,26 @@
   justify-content: center;
   width: 2.75rem;
   height: 2.75rem;
-  padding: 0.6rem;
-  border-radius: 0.75rem;
-  background-color: var(--color-brand-100);
-  color: var(--color-brand-600);
+  padding: 0.65rem;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
   margin-bottom: 0.9rem;
 }
 
 .tarjeta-feature h3 {
   font-size: var(--font-size-base);
-  color: var(--color-brand-950);
+  color: var(--color-text);
   margin-bottom: 0.4rem;
 }
 
 .tarjeta-feature p {
   font-size: var(--font-size-sm);
-  color: var(--color-slate-600);
+  color: var(--color-text-secondary);
 }
 
 /* Planes */
-.planes {
-  max-width: 76rem;
-  margin-inline: auto;
-  padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 4vw, 2.5rem) clamp(3rem, 8vw, 5rem);
-}
-
 .planes__rejilla {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
@@ -444,15 +573,14 @@
   display: flex;
   flex-direction: column;
   padding: 1.75rem;
-  border-radius: 1rem;
-  border: 1px solid var(--color-slate-200);
-  background-color: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
 }
 
-.tarjeta-plan--destacado {
-  border-color: var(--color-brand-600);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-0.35rem);
+.tarjeta-plan--inicio {
+  border-color: var(--color-text);
+  box-shadow: var(--shadow-md);
 }
 
 .tarjeta-plan__insignia {
@@ -461,7 +589,7 @@
   left: 1.75rem;
   padding: 0.2rem 0.7rem;
   border-radius: 999px;
-  background-color: var(--color-brand-600);
+  background-color: var(--color-text);
   color: #ffffff;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
@@ -469,20 +597,20 @@
 
 .tarjeta-plan h3 {
   font-size: var(--font-size-lg);
-  color: var(--color-brand-950);
+  color: var(--color-text);
 }
 
 .tarjeta-plan__precio {
   margin-top: 0.35rem;
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-brand-700);
+  color: var(--color-text);
 }
 
 .tarjeta-plan__descripcion {
   margin-top: 0.35rem;
   font-size: var(--font-size-sm);
-  color: var(--color-slate-600);
+  color: var(--color-text-secondary);
   min-height: 2.5rem;
 }
 
@@ -498,7 +626,7 @@
   padding-left: 1.4rem;
   position: relative;
   font-size: var(--font-size-sm);
-  color: var(--color-slate-700);
+  color: var(--color-text);
 }
 
 .tarjeta-plan__lista li::before {
@@ -509,21 +637,23 @@
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 999px;
-  background-color: var(--color-brand-400);
+  background-color: var(--color-success);
 }
 
 .tarjeta-plan .boton-nav {
   width: 100%;
 }
 
-/* CTA */
+/* CTA: banda a todo el ancho en azul de marca — devuelve presencia a la
+ * página tras las secciones neutras — y footer en azul profundo. */
 .cta {
-  margin: clamp(2rem, 6vw, 3.5rem) clamp(1.25rem, 4vw, 2.5rem);
+  background: linear-gradient(135deg, var(--color-brand-600), var(--color-brand-800));
+}
+
+.cta__interior {
   max-width: 76rem;
   margin-inline: auto;
-  padding: clamp(2.5rem, 6vw, 4rem);
-  border-radius: 1.5rem;
-  background: linear-gradient(135deg, var(--color-brand-600), var(--color-brand-800));
+  padding: clamp(3rem, 8vw, 5rem) clamp(1.25rem, 4vw, 2.5rem);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -534,6 +664,7 @@
 .cta h2 {
   color: #ffffff;
   font-size: var(--font-size-2xl);
+  letter-spacing: -0.01em;
 }
 
 .cta p {
@@ -546,16 +677,20 @@
 
 /* Footer */
 .pie-pagina {
-  margin-top: clamp(2rem, 6vw, 3.5rem);
-  padding: 1.75rem clamp(1.25rem, 4vw, 2.5rem);
   background-color: var(--color-brand-950);
   color: var(--color-slate-400);
+  font-size: var(--font-size-sm);
+}
+
+.pie-pagina__interior {
+  max-width: 76rem;
+  margin-inline: auto;
+  padding: 1.5rem clamp(1.25rem, 4vw, 2.5rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.75rem;
-  font-size: var(--font-size-sm);
 }
 
 .marca--pie {
@@ -565,13 +700,21 @@
 /* Responsivo */
 @media (min-width: 60rem) {
   .hero__interior {
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: 1fr 1.15fr;
     align-items: center;
   }
 }
 
 @media (max-width: 40rem) {
   .nav__links {
+    display: none;
+  }
+
+  .mockup__app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mockup__lateral {
     display: none;
   }
 
@@ -586,8 +729,15 @@
     display: none;
   }
 
-  .pie-pagina {
+  .pie-pagina__interior {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boton-nav,
+  .tarjeta-feature {
+    transition: none;
   }
 }

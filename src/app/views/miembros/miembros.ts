@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalConfirmacion } from '../../components/modales/modal-confirmacion/modal-confirmacion';
@@ -57,6 +57,29 @@ export class Miembros {
   protected readonly invitaciones = signal<Invitation[]>([]);
   protected readonly miRol = signal<WorkspaceRole | null>(null);
 
+  protected readonly pestana = signal<'miembros' | 'invitaciones'>('miembros');
+  protected readonly busqueda = signal('');
+  protected readonly filtroRol = signal<WorkspaceRole | ''>('');
+
+  protected readonly miembrosFiltrados = computed(() => {
+    const texto = this.busqueda().trim().toLowerCase();
+    const rol = this.filtroRol();
+    return this.miembros().filter(
+      (m) =>
+        (rol === '' || m.role === rol) &&
+        (texto === '' ||
+          m.displayName.toLowerCase().includes(texto) ||
+          m.email.toLowerCase().includes(texto)),
+    );
+  });
+
+  protected readonly invitacionesPendientes = computed(
+    () =>
+      this.invitaciones().filter(
+        (i) => i.status === 'PENDING' && new Date(i.expiresAt) >= new Date(),
+      ).length,
+  );
+
   protected readonly mostrarFormularioInvitar = signal(false);
   protected readonly invitando = signal(false);
   protected readonly quitandoUserId = signal<string | null>(null);
@@ -103,6 +126,10 @@ export class Miembros {
     } finally {
       this.cargando.set(false);
     }
+  }
+
+  protected fechaMiembro(iso: string): string {
+    return new Intl.DateTimeFormat('es', { month: 'short', year: 'numeric' }).format(new Date(iso));
   }
 
   protected invitacionVencida(invitacion: Invitation): boolean {

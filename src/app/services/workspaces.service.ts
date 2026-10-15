@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../auth/environment/environment';
 import {
@@ -17,10 +17,16 @@ import {
 export class WorkspacesService {
   private readonly http = inject(HttpClient);
 
+  /** Última lista conocida de workspaces del usuario — la alimenta `listar()`
+   * y `crear()`, y la lee la barra lateral para mostrarlos como accesos
+   * rápidos sin pedir la lista otra vez en cada vista. */
+  readonly workspacesConocidos = signal<Workspace[]>([]);
+
   async listar(): Promise<Workspace[]> {
     const respuesta = await firstValueFrom(
       this.http.get<{ workspaces: Workspace[] }>(`${environment.apiUrl}/workspaces`),
     );
+    this.workspacesConocidos.set(respuesta.workspaces);
     return respuesta.workspaces;
   }
 
@@ -35,7 +41,34 @@ export class WorkspacesService {
     const respuesta = await firstValueFrom(
       this.http.post<{ workspace: Workspace }>(`${environment.apiUrl}/workspaces`, input),
     );
-    return respuesta.workspace;
+    // Quien crea un workspace es su propietario (la respuesta de creación no trae el rol).
+    const creado: Workspace = { ...respuesta.workspace, myRole: 'OWNER' };
+    this.workspacesConocidos.update((lista) => [creado, ...lista]);
+    return creado;
+  }
+
+  /** Renombra un workspace (OWNER o ADMIN en el backend). */
+  async actualizar(workspaceId: string, input: { name: string }): Promise<Workspace> {
+    const respuesta = await firstValueFrom(
+      this.http.patch<{ workspace: Workspace }>(
+        `${environment.apiUrl}/workspaces/${workspaceId}`,
+        input,
+      ),
+    );
+    // La respuesta de PATCH no trae el rol de quien consulta: se conserva el que ya se conocía.
+    const rolAnterior = this.workspacesConocidos().find((w) => w.id === workspaceId)?.myRole;
+    const actualizado: Workspace = { ...respuesta.workspace, myRole: rolAnterior };
+    this.workspacesConocidos.update((lista) =>
+      lista.map((w) => (w.id === workspaceId ? actualizado : w)),
+    );
+    return actualizado;
+  }
+
+  /** Elimina un workspace (solo OWNER; soft delete en el backend: sus tableros
+   * y tareas quedan inaccesibles para todos los miembros). */
+  async eliminar(workspaceId: string): Promise<void> {
+    await firstValueFrom(this.http.delete(`${environment.apiUrl}/workspaces/${workspaceId}`));
+    this.workspacesConocidos.update((lista) => lista.filter((w) => w.id !== workspaceId));
   }
 
   async listarMiembros(workspaceId: string): Promise<WorkspaceMember[]> {

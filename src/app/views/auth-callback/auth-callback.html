@@ -1,6 +1,6 @@
 @switch (estado()) {
   @case ('cargando') {
-    <div class="contenedor tema-claro-fijo">
+    <div class="contenedor tema-neutro-fijo">
       <app-pagina-estado titulo="Conectando con Google…" descripcion="Un momento." />
     </div>
   }
@@ -23,7 +23,7 @@
     </app-tarjeta-auth>
   }
   @case ('error') {
-    <div class="contenedor tema-claro-fijo">
+    <div class="contenedor tema-neutro-fijo">
       <app-pagina-estado
         titulo="No pudimos completar el login con Google"
         [descripcion]="

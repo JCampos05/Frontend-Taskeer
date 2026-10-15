@@ -2,6 +2,8 @@ import { Injectable, signal } from '@angular/core';
 import { MostrarToastInput, Toast, ToastTipo } from '../models/toast';
 
 const DURACION_DEFAULT_MS = 5000;
+// Tope de toasts simultáneos: al pasarlo se descartan los más antiguos.
+const MAX_TOASTS = 6;
 
 /**
  * Sistema de toasts global de Taskeer — un signal con la lista de toasts
@@ -21,7 +23,7 @@ export class ToastService {
     const id = crypto.randomUUID();
     const toast: Toast = { id, tipo, ...input };
 
-    this.toasts.update((lista) => [...lista, toast]);
+    this.toasts.update((lista) => [...lista, toast].slice(-MAX_TOASTS));
 
     const duracion = input.duracionMs ?? (input.accion ? 0 : DURACION_DEFAULT_MS);
     if (duracion > 0) {

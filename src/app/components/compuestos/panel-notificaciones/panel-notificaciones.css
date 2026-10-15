@@ -9,12 +9,12 @@
   justify-content: center;
   width: 2.35rem;
   height: 2.35rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
 }
 
 .campana:hover {
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
   color: var(--color-text);
 }
 
@@ -36,7 +36,7 @@
   justify-content: center;
   border-radius: 999px;
   background-color: var(--color-danger);
-  color: #ffffff;
+  color: var(--color-on-danger);
   font-size: 0.65rem;
   font-weight: var(--font-weight-semibold);
   line-height: 1;
@@ -46,7 +46,7 @@
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background-color: rgb(0 0 0 / 35%);
+  background-color: var(--color-overlay);
   cursor: default;
   border: none;
 }
@@ -98,7 +98,7 @@
 .panel__titulo app-svg-campana {
   width: 1.3rem;
   height: 1.3rem;
-  color: var(--color-primary);
+  color: var(--color-text-secondary);
 }
 
 .panel__titulo h2 {
@@ -114,7 +114,7 @@
   padding: 0 0.4rem;
   border-radius: 999px;
   background-color: var(--color-danger);
-  color: #ffffff;
+  color: var(--color-on-danger);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
 }
@@ -125,14 +125,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   font-size: 1.4rem;
   line-height: 1;
   color: var(--color-text-muted);
 }
 
 .panel__cerrar:hover {
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
   color: var(--color-text);
 }
 
@@ -155,7 +155,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.45rem 0.9rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
@@ -182,7 +182,7 @@
 
 .filtro-tipo {
   padding: 0.5rem 0.65rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
   background-color: var(--color-surface);
   color: var(--color-text);
@@ -200,7 +200,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.4rem 0.7rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
@@ -213,13 +213,20 @@
 }
 
 .acciones__item:hover:not(:disabled) {
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
   color: var(--color-text);
 }
 
 .acciones__item:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.panel__grupo {
+  margin: 0.4rem 0.25rem 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
 }
 
 .panel__lista {
@@ -244,7 +251,7 @@
   align-items: flex-start;
   gap: 0.65rem;
   padding: 0.85rem 0.9rem;
-  border-radius: 0.65rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
   cursor: pointer;
@@ -255,13 +262,13 @@
   border-color: var(--color-border-strong);
 }
 
+/* No leída: solo la barra y el punto en el acento — sin tinte ni borde azul. */
 .item--no-leida {
-  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
-  background-color: color-mix(in srgb, var(--color-primary) 4%, var(--color-surface));
+  background-color: var(--color-surface-sunken);
 }
 
 .item--clickeable:hover {
-  border-color: var(--color-primary);
+  border-color: var(--color-border-strong);
 }
 
 .item__barra {
@@ -282,8 +289,8 @@
   height: 2.1rem;
   flex-shrink: 0;
   border-radius: 999px;
-  background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
-  color: var(--color-primary);
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-soft-text);
   padding: 0.45rem;
 }
 
@@ -320,19 +327,27 @@
 
 .item__borrar {
   flex-shrink: 0;
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-sm);
   color: var(--color-text-muted);
   opacity: 0;
   transition: opacity 0.15s ease;
 }
 
-.item:hover .item__borrar {
+.item:hover .item__borrar,
+.item:focus-within .item__borrar,
+.item__borrar:focus-visible {
   opacity: 1;
+}
+
+@media (hover: none) {
+  .item__borrar {
+    opacity: 1;
+  }
 }
 
 .item__borrar svg,

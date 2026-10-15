@@ -8,11 +8,11 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.4rem;
-  border-radius: 0.6rem;
+  border-radius: var(--radius-sm);
 }
 
 .chip:hover {
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
 }
 
 .chip__avatar {
@@ -23,6 +23,8 @@
   height: 2rem;
   flex-shrink: 0;
   border-radius: 999px;
+  /* Degradado azul de marca: el avatar del usuario es el único punto de color
+   * fijo del chrome, a propósito (decisión del usuario). */
   background: linear-gradient(135deg, var(--color-brand-400), var(--color-brand-700));
   color: #ffffff;
   font-size: var(--font-size-sm);
@@ -74,12 +76,20 @@
   display: none;
 }
 
+:host-context(.colapsada) .chip {
+  justify-content: center;
+}
+
 /* El sidebar fuerza modo-ícono en pantallas chicas independientemente de
  * `.colapsada` (ver barra-lateral.css) — mismo criterio acá. */
 @media (max-width: 48rem) {
   .chip__datos,
   .chip__chevron {
     display: none;
+  }
+
+  .chip {
+    justify-content: center;
   }
 }
 
@@ -98,7 +108,7 @@
   display: flex;
   flex-direction: column;
   padding: 0.4rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
   box-shadow: var(--shadow-lg);
@@ -109,7 +119,7 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.55rem 0.65rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
   color: var(--color-text);
   text-align: left;
@@ -118,6 +128,7 @@
 .menu__item svg,
 .menu__item app-svg-persona,
 .menu__item app-svg-engranaje,
+.menu__item app-svg-diamante,
 .menu__item app-svg-salir {
   width: 1.05rem;
   height: 1.05rem;
@@ -126,7 +137,7 @@
 }
 
 .menu__item:hover {
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
 }
 
 .menu__item--peligro:hover {

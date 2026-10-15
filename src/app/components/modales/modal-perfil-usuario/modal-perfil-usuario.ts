@@ -1,3 +1,4 @@
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { SvgCheck } from '../../svgs/svg-check/svg-check';
 import { SvgCopiar } from '../../svgs/svg-copiar/svg-copiar';
@@ -13,9 +14,10 @@ import { WorkspaceMember, WorkspaceRole } from '../../../models/workspace';
 @Component({
   selector: 'app-modal-perfil-usuario',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SvgX, SvgCopiar, SvgCheck],
+  imports: [CdkTrapFocus, SvgX, SvgCopiar, SvgCheck],
   templateUrl: './modal-perfil-usuario.html',
   styleUrl: './modal-perfil-usuario.css',
+  host: { '(document:keydown.escape)': 'cerrar.emit()' },
 })
 export class ModalPerfilUsuario {
   readonly miembro = input.required<WorkspaceMember>();

@@ -1,6 +1,6 @@
 <button type="button" class="fondo" (click)="cerrar.emit()" aria-label="Cerrar"></button>
 
-<div class="panel" role="dialog" aria-modal="true">
+<div class="panel" role="dialog" aria-modal="true" cdkTrapFocus cdkTrapFocusAutoCapture>
   <button type="button" class="boton-icono boton-icono--cerrar" (click)="cerrar.emit()" aria-label="Cerrar">
     <app-svg-x />
   </button>

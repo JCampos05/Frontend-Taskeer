@@ -1,0 +1,249 @@
+:host {
+  display: block;
+}
+
+.contenido {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  max-width: 78rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.encabezado p {
+  margin-top: 0.25rem;
+  color: var(--color-text-secondary);
+}
+
+.estado-vacio {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+/* Resumen del plan actual y consumo */
+.actual {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: clamp(1.1rem, 2.5vw, 1.5rem);
+  background-color: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 40rem) {
+  .actual {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.actual__etiqueta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.actual h2 {
+  font-size: var(--font-size-2xl);
+}
+
+.actual__estado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.uso__valor {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.uso__valor strong {
+  font-size: var(--font-size-2xl);
+  color: var(--color-text);
+}
+
+.barra {
+  height: 0.5rem;
+  margin-top: 0.6rem;
+  border-radius: 999px;
+  background-color: var(--color-hover);
+  overflow: hidden;
+}
+
+.barra__relleno {
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.barra__relleno--lleno {
+  background-color: var(--color-danger);
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background-color: var(--color-hover);
+}
+
+.chip--active {
+  color: var(--color-success-text);
+  background-color: color-mix(in srgb, var(--color-success) 14%, transparent);
+}
+
+.chip--trialing {
+  color: var(--color-primary-text);
+  background-color: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.chip--past_due {
+  color: var(--color-warning-text);
+  background-color: color-mix(in srgb, var(--color-warning) 14%, transparent);
+}
+
+.chip--canceled {
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 14%, transparent);
+}
+
+.chip--activo-plan {
+  color: var(--color-accent-soft-text);
+  background-color: var(--color-accent-soft);
+}
+
+.aviso {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.aviso--advertencia {
+  border-color: color-mix(in srgb, var(--color-warning) 50%, var(--color-border));
+  background-color: color-mix(in srgb, var(--color-warning) 8%, var(--color-surface));
+  color: var(--color-text);
+}
+
+/* Catálogo */
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+.plan--actual {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.plan__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.plan__cabecera h3 {
+  font-size: var(--font-size-lg);
+}
+
+.plan__descripcion {
+  min-height: 3.2em;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.plan__precio {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.plan__precio strong {
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.plan__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  flex-grow: 1;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.plan__lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.plan__marca {
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+  color: var(--color-success-text);
+}
+
+.plan__marca > * {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.plan__item--no {
+  color: var(--color-text-muted);
+}
+
+.plan__item--no .plan__marca {
+  color: var(--color-text-muted);
+}
+
+.plan__accion {
+  width: 100%;
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

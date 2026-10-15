@@ -1,0 +1,120 @@
+<div class="contenido">
+  <header class="encabezado">
+    <h1>Planes</h1>
+    <p>Elige el plan que se ajusta a cómo trabajas. Puedes cambiar más adelante.</p>
+  </header>
+
+  @if (errorMensaje()) {
+    <p class="alerta alerta--error" role="alert">{{ errorMensaje() }}</p>
+  }
+
+  @if (cargando()) {
+    <div class="esqueleto-rejilla" role="status" aria-label="Cargando">
+    @for (n of [1, 2, 3]; track n) {
+      <div class="esqueleto esqueleto--tarjeta"></div>
+    }
+  </div>
+  } @else if (suscripcion(); as sus) {
+    <section class="actual" aria-labelledby="titulo-actual">
+      <div class="actual__plan">
+        <p class="actual__etiqueta">Tu plan actual</p>
+        <h2 id="titulo-actual">{{ planActual()?.name ?? sus.planCode }}</h2>
+        <p class="actual__estado">
+          <span class="chip" [class]="'chip chip--' + sus.status.toLowerCase()">
+            {{ etiquetaEstado(sus.status) }}
+          </span>
+          @if (sus.currentPeriodEnd) {
+            <span>Se renueva el {{ fecha(sus.currentPeriodEnd) }}</span>
+          }
+        </p>
+      </div>
+
+      <div class="actual__uso">
+        <p class="actual__etiqueta">Workspaces propios</p>
+        <p class="uso__valor">
+          <strong>{{ sus.usage.workspacesOwned }}</strong>
+          <span>
+            {{ sus.usage.workspacesOwnedMax === null ? 'sin límite' : 'de ' + sus.usage.workspacesOwnedMax }}
+          </span>
+        </p>
+        @if (porcentajeWorkspaces() !== null) {
+          <div
+            class="barra"
+            role="progressbar"
+            [attr.aria-valuenow]="porcentajeWorkspaces()"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-label="Uso de workspaces propios"
+          >
+            <div
+              class="barra__relleno"
+              [class.barra__relleno--lleno]="porcentajeWorkspaces()! >= 100"
+              [style.width.%]="porcentajeWorkspaces()"
+            ></div>
+          </div>
+        }
+      </div>
+    </section>
+
+    @if (sus.downgradeGraceEndsAt) {
+      <p class="aviso aviso--advertencia" role="status">
+        Tu plan cambió. Conservas las ventajas del anterior hasta el {{ fecha(sus.downgradeGraceEndsAt) }}.
+        No se borra nada de lo que ya creaste, solo se limitan las acciones nuevas que excedan el plan.
+      </p>
+    }
+
+    <p class="aviso" role="note">
+      Cambiar de plan todavía no está disponible — estamos preparando el cobro. Cuando esté listo,
+      podrás mejorar o bajar de plan desde aquí.
+    </p>
+
+    <div class="rejilla">
+      @for (plan of planes(); track plan.code) {
+        <article class="plan" [class.plan--actual]="esActual(plan)">
+          <header class="plan__cabecera">
+            <h3>{{ plan.name }}</h3>
+            @if (esActual(plan)) {
+              <span class="chip chip--activo-plan">Actual</span>
+            }
+          </header>
+
+          <p class="plan__descripcion">{{ plan.description }}</p>
+
+          <p class="plan__precio">
+            <strong>{{ precio(plan).monto }}</strong>
+            <span>{{ precio(plan).detalle }}</span>
+          </p>
+
+          <ul class="plan__lista">
+            @for (item of caracteristicas(plan); track item.texto) {
+              <li [class.plan__item--no]="!item.incluida">
+                <span class="plan__marca" aria-hidden="true">
+                  @if (item.incluida) {
+                    <app-svg-check />
+                  } @else {
+                    <app-svg-x />
+                  }
+                </span>
+                <span>
+                  {{ item.texto }}
+                  @if (!item.incluida) {
+                    <span class="visualmente-oculto"> (no incluido)</span>
+                  }
+                </span>
+              </li>
+            }
+          </ul>
+
+          <button
+            type="button"
+            class="boton boton--secundario plan__accion"
+            disabled
+            [attr.title]="esActual(plan) ? null : 'El cambio de plan estará disponible pronto.'"
+          >
+            {{ esActual(plan) ? 'Tu plan actual' : plan.isCustomPricing ? 'Contactar (próximamente)' : 'Próximamente' }}
+          </button>
+        </article>
+      }
+    </div>
+  }
+</div>

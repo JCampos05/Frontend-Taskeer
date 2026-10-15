@@ -33,7 +33,18 @@
     <form [formGroup]="formulario" (ngSubmit)="crear()" class="formulario-inline" novalidate>
       <div class="campo">
         <label for="name">Nombre del tablero</label>
-        <input id="name" type="text" formControlName="name" autocomplete="off" />
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          autocomplete="off"
+          [attr.aria-invalid]="formulario.controls.name.touched && formulario.controls.name.invalid"
+        />
+        @if (formulario.controls.name.touched && formulario.controls.name.invalid) {
+          <span class="campo-error" role="alert">
+            El nombre debe tener entre 2 y 150 caracteres.
+          </span>
+        }
       </div>
       <button type="submit" class="boton boton--primario" [disabled]="creando()">
         {{ creando() ? 'Creando…' : 'Crear' }}
@@ -42,7 +53,11 @@
   }
 
   @if (cargando()) {
-    <p class="estado-vacio">Cargando…</p>
+    <div class="esqueleto-rejilla" role="status" aria-label="Cargando">
+    @for (n of [1, 2, 3]; track n) {
+      <div class="esqueleto esqueleto--tarjeta"></div>
+    }
+  </div>
   } @else if (boards().length === 0) {
     <div class="estado-vacio">
       <span class="estado-vacio__icono"><app-svg-tablero /></span>
@@ -51,7 +66,7 @@
   } @else {
     <div class="rejilla">
       @for (board of boards(); track board.id) {
-        <a [routerLink]="['/app/workspaces', workspaceId, 'boards', board.id]" class="tarjeta-board">
+        <article class="tarjeta-board">
           <span class="tarjeta-board__icono"><app-svg-tablero /></span>
 
           @if (editandoId() === board.id) {
@@ -81,12 +96,28 @@
             </form>
           } @else {
             <div class="tarjeta-board__info">
-              <h3>{{ board.name }}</h3>
+              <h3>
+                <a
+                  class="tarjeta-board__enlace"
+                  [routerLink]="['/app/workspaces', workspaceId, 'boards', board.id]"
+                >
+                  {{ board.name }}
+                </a>
+              </h3>
               <p>/{{ board.slug }}</p>
             </div>
 
             @if (puedeGestionar(miRol())) {
               <div class="tarjeta-board__acciones">
+                <button
+                  type="button"
+                  class="boton-icono"
+                  (click)="pedirMovimiento(board, $event)"
+                  aria-label="Mover a otro workspace"
+                  title="Mover a otro workspace"
+                >
+                  <app-svg-mover />
+                </button>
                 <button
                   type="button"
                   class="boton-icono"
@@ -106,7 +137,7 @@
               </div>
             }
           }
-        </a>
+        </article>
       }
     </div>
   }
@@ -118,5 +149,15 @@
     mensaje="Dejarás de ver este tablero y todo su contenido. Esta acción no se puede deshacer desde la app."
     (confirmar)="confirmarBorrado()"
     (cancelar)="borrandoId.set(null)"
+  />
+}
+
+@if (moviendo(); as tablero) {
+  <app-modal-mover-tablero
+    [tablero]="tablero"
+    [destinos]="destinosMovimiento()"
+    [procesando]="procesandoMovimiento()"
+    (confirmar)="confirmarMovimiento($event)"
+    (cancelar)="cancelarMovimiento()"
   />
 }

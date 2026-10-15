@@ -1,0 +1,45 @@
+<button type="button" class="fondo" (click)="cancelar.emit()" aria-label="Cerrar"></button>
+
+<div
+  class="panel"
+  role="dialog"
+  aria-modal="true"
+  cdkTrapFocus
+  cdkTrapFocusAutoCapture
+  aria-labelledby="titulo-mover-tablero"
+>
+  <h2 id="titulo-mover-tablero">Mover «{{ tablero().name }}»</h2>
+
+  @if (destinos().length === 0) {
+    <p class="aviso">
+      No tienes otro workspace donde seas propietario o administrador. Crea uno o pide ese rol para
+      poder mover tableros.
+    </p>
+  } @else {
+    <label class="campo-destino">
+      <span>Workspace destino</span>
+      <select [value]="destinoId() ?? ''" [disabled]="procesando()" (change)="elegirDestino($any($event.target).value)">
+        @for (destino of destinos(); track destino.id) {
+          <option [value]="destino.id">{{ destino.name }}</option>
+        }
+      </select>
+    </label>
+
+    <p class="nota">
+      El tablero se mueve con sus columnas, tareas y recordatorios. Las tareas asignadas a personas
+      que no son miembros del destino quedarán sin asignar, y quien no esté allí perderá acceso a
+      este tablero.
+    </p>
+  }
+
+  <div class="acciones">
+    <button type="button" class="boton boton--secundario" (click)="cancelar.emit()" [disabled]="procesando()">
+      Cancelar
+    </button>
+    @if (destinos().length > 0) {
+      <button type="button" class="boton boton--primario" (click)="enviar()" [disabled]="procesando()">
+        {{ procesando() ? 'Moviendo…' : 'Mover tablero' }}
+      </button>
+    }
+  </div>
+</div>

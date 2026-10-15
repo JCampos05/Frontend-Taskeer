@@ -6,6 +6,8 @@ export interface Workspace {
   ownerId: string;
   createdAt: string;
   updatedAt: string;
+  // Rol de quien consulta; solo viene en GET /workspaces (la lista).
+  myRole?: WorkspaceRole;
 }
 
 export interface CrearWorkspaceInput {

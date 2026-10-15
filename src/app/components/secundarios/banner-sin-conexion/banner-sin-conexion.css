@@ -15,7 +15,7 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   background-color: var(--color-warning);
-  color: var(--color-ink);
+  color: var(--color-on-warning);
 }
 
 .icono {

@@ -1,3 +1,4 @@
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   CdkDrag,
@@ -47,7 +48,7 @@ import { puedeGestionarTableros, puedeGestionarTareas } from '../../utils/permis
 @Component({
   selector: 'app-tablero',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
+  imports: [CdkTrapFocus, 
     ReactiveFormsModule,
     CdkDropListGroup,
     CdkDropList,
@@ -69,6 +70,7 @@ import { puedeGestionarTableros, puedeGestionarTareas } from '../../utils/permis
   ],
   templateUrl: './tablero.html',
   styleUrl: './tablero.css',
+  host: { '(document:keydown.escape)': 'alPresionarEscape()' },
 })
 export class Tablero {
   private readonly fb = inject(FormBuilder);
@@ -145,6 +147,27 @@ export class Tablero {
   // check por 2s, sin tooltip aparte para móvil (sin hover).
   protected readonly correoCopiadoId = signal<string | null>(null);
   protected readonly verPerfilDe = signal<WorkspaceMember | null>(null);
+
+  /** Totales del tablero para el encabezado. "Vencidas" excluye las tareas
+   * que ya están en una columna de completadas, igual que las tarjetas. */
+  protected readonly resumen = computed(() => {
+    const detalle = this.tablero();
+    if (!detalle) return null;
+    let total = 0;
+    let completadas = 0;
+    let vencidas = 0;
+    for (const columna of detalle.columns) {
+      for (const tarea of columna.tasks) {
+        total += 1;
+        if (columna.isDoneColumn) {
+          completadas += 1;
+        } else if (tarea.dueAt && esFechaVencida(tarea.dueAt)) {
+          vencidas += 1;
+        }
+      }
+    }
+    return { total, completadas, vencidas };
+  });
 
   protected readonly puedeGestionarTableros = puedeGestionarTableros;
   protected readonly puedeGestionarTareas = puedeGestionarTareas;
@@ -577,6 +600,14 @@ export class Tablero {
   }
 
   // --- Roles por tablero individual (overrides) ---
+
+  /** Escape cierra el drawer de roles, salvo que haya un modal encima (cada
+   * modal maneja su propio Escape). */
+  alPresionarEscape(): void {
+    if (!this.mostrandoOverrides()) return;
+    if (this.verPerfilDe() || this.borrandoColumnaId() || this.columnaIdCreandoTarea()) return;
+    void this.alternarPanelOverrides();
+  }
 
   protected async alternarPanelOverrides(): Promise<void> {
     const abriendo = !this.mostrandoOverrides();

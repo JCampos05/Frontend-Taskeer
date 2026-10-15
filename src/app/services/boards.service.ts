@@ -10,6 +10,8 @@ import {
   BoardMemberOverride,
   Columna,
   CrearBoardInput,
+  MoverTablerosInput,
+  MoverTablerosResultado,
   CrearColumnaInput,
 } from '../models/board';
 import { WorkspaceRole } from '../models/workspace';
@@ -25,6 +27,16 @@ export class BoardsService {
       ),
     );
     return respuesta.boards;
+  }
+
+  /** Mueve tableros a otro workspace (OWNER/ADMIN en origen y destino). */
+  async mover(workspaceId: string, input: MoverTablerosInput): Promise<MoverTablerosResultado> {
+    return firstValueFrom(
+      this.http.post<MoverTablerosResultado>(
+        `${environment.apiUrl}/workspaces/${workspaceId}/boards/move`,
+        input,
+      ),
+    );
   }
 
   async crear(workspaceId: string, input: CrearBoardInput): Promise<Board> {

@@ -6,7 +6,7 @@
   position: fixed;
   inset: 0;
   z-index: 1500;
-  background-color: rgb(0 0 0 / 45%);
+  background-color: var(--color-overlay);
   cursor: default;
   border: none;
 }
@@ -22,7 +22,7 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1.5rem;
-  border-radius: 0.85rem;
+  border-radius: var(--radius-md);
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-lg);
@@ -43,4 +43,26 @@
   justify-content: flex-end;
   gap: 0.6rem;
   margin-top: 0.5rem;
+}
+
+.confirmar-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.confirmar-texto strong {
+  color: var(--color-text);
+}
+
+.confirmar-texto input {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
 }

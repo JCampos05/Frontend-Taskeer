@@ -3,40 +3,95 @@
 }
 
 .contenido {
-  padding: clamp(1.5rem, 5vw, 3rem);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
   max-width: 70rem;
-  /* Layout de columnas (no CSS Grid): con secciones de alturas tan
-   * distintas (Apariencia es corta, Seguridad es larga), un grid de 2
-   * columnas fijas deja huecos — cada fila se estira a la altura de su
-   * elemento más alto, así que lo que sobra bajo la tarjeta corta queda en
-   * blanco en vez de que la siguiente sección suba a ocuparlo. `columns`
-   * balancea la altura entre columnas de verdad (como un masonry) y de
-   * paso resuelve el responsive: por debajo de ~40rem de ancho disponible
-   * (2 × 20rem) el navegador ya cae solo a una columna, sin media query. */
-  columns: 2 20rem;
-  column-gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.contenido > h1 {
-  column-span: all;
-  margin-bottom: 0.5rem;
+.encabezado p {
+  margin-top: 0.25rem;
+  color: var(--color-text-secondary);
+}
+
+/* Navegación lateral entre secciones (una visible a la vez): escala a más
+ * secciones (notificaciones, adjuntos, facturación…) sin alargar la página.
+ * En pantallas angostas pasa a una fila horizontal con scroll. */
+.disposicion {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.menu {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.menu__item {
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  text-align: left;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.menu__item:hover {
+  background-color: var(--color-hover);
+  color: var(--color-text);
+}
+
+.menu__item.activo {
+  background-color: var(--color-surface-raised);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
+}
+
+.menu__item--enlace {
+  margin-top: 0.5rem;
+  color: var(--color-text-muted);
+}
+
+.paneles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (max-width: 48rem) {
+  .disposicion {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .menu {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+
+  .menu__item--enlace {
+    margin-top: 0;
+  }
 }
 
 .seccion {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  /* Evita que un navegador parta una tarjeta a la mitad entre dos columnas
-   * (el riesgo real de usar `columns` en vez de grid); margin-bottom
-   * reemplaza el `gap` vertical que daba el grid anterior, ya que
-   * `columns` no tiene un equivalente de row-gap entre bloques apilados. */
-  break-inside: avoid;
-  margin-bottom: 1.5rem;
   padding: clamp(1.25rem, 3vw, 1.75rem);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-sunken);
   border: 1px solid var(--color-border);
-  border-radius: 0.85rem;
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-md);
 }
 
 .seccion h2 {
@@ -49,7 +104,7 @@
 .seccion__icono {
   width: 1.25rem;
   height: 1.25rem;
-  color: var(--color-primary);
+  color: var(--color-text-secondary);
 }
 
 .seccion__descripcion {
@@ -132,13 +187,13 @@
   width: 2rem;
   height: 2rem;
   padding: 0.4rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
   color: var(--color-text-secondary);
 }
 
 .boton-copiar:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   background-color: var(--color-surface-raised);
 }
 
@@ -153,7 +208,7 @@
   align-items: flex-start;
   gap: 0.6rem;
   padding: 0.85rem 1rem;
-  border-radius: 0.65rem;
+  border-radius: var(--radius-sm);
   background-color: color-mix(in srgb, var(--color-warning) 12%, transparent);
 }
 
@@ -163,12 +218,12 @@
 }
 
 .aviso-verificacion__ok {
-  color: var(--color-success);
+  color: var(--color-success-text);
 }
 
 .campo select {
   padding: 0.6rem 0.75rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
   background-color: var(--color-surface);
   color: var(--color-text);
@@ -189,22 +244,28 @@
   display: inline-flex;
   gap: 0.25rem;
   padding: 0.25rem;
-  border-radius: 0.65rem;
-  background-color: var(--color-bg);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
   border: 1px solid var(--color-border);
   width: fit-content;
 }
 
 .segmentado button {
   padding: 0.5rem 1rem;
-  border-radius: 0.45rem;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
 }
 
 .segmentado button.activo {
-  background-color: var(--color-surface);
-  color: var(--color-primary);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
   font-weight: var(--font-weight-medium);
   box-shadow: var(--shadow-sm);
+}
+
+/* `display: flex` de .seccion pisaría el atributo hidden; la sección no
+ * activa debe ocultarse de verdad. */
+.seccion[hidden] {
+  display: none;
 }

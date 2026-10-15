@@ -3,7 +3,7 @@
 }
 
 .contenido {
-  padding: clamp(1.5rem, 5vw, 3rem);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -48,7 +48,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.85rem 1rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-primary);
   background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
 }
@@ -76,8 +76,8 @@
   flex-wrap: wrap;
   padding: 1rem;
   border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
-  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-sunken);
 }
 
 .formulario-inline .campo {
@@ -103,25 +103,142 @@
 
 .rejilla {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
   gap: 1rem;
 }
 
 .tarjeta-workspace {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 1.1rem;
-  border-radius: 0.75rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
 }
 
+.tarjeta-workspace:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Recuadro suave con el ícono, en vez de un ícono suelto de color — mismo
+ * lenguaje que las iniciales del sidebar. */
 .tarjeta-workspace__icono {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-soft-text);
+}
+
+.tarjeta-workspace__icono > * {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.tarjeta-workspace__info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+/* Enlace "estirado": todo el recuadro es clicable sin anidar controles dentro
+ * de un <a>; las acciones y el formulario quedan por encima. */
+.tarjeta-workspace__enlace {
+  color: inherit;
+}
+
+.tarjeta-workspace__enlace::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+}
+
+.tarjeta-workspace__acciones,
+.formulario-renombrar {
+  position: relative;
+  z-index: 1;
+}
+
+.tarjeta-workspace__acciones {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  /* Aparecen al apuntar la tarjeta o al navegar con teclado; en táctil,
+   * siempre visibles. */
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tarjeta-workspace:hover .tarjeta-workspace__acciones,
+.tarjeta-workspace:focus-within .tarjeta-workspace__acciones {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .tarjeta-workspace__acciones {
+    opacity: 1;
+  }
+}
+
+.boton-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 2rem;
   height: 2rem;
+  padding: 0.45rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
   flex-shrink: 0;
-  color: var(--color-primary);
+}
+
+.boton-icono:hover {
+  background-color: var(--color-hover);
+  color: var(--color-text);
+}
+
+.boton-icono--peligro:hover {
+  background-color: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+}
+
+.formulario-renombrar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.formulario-renombrar input {
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.formulario-renombrar__acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.campo-error {
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
 }
 
 .tarjeta-workspace h3 {

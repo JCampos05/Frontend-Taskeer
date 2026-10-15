@@ -1,14 +1,26 @@
 <button type="button" class="fondo" (click)="cancelar.emit()" aria-label="Cerrar"></button>
 
-<div class="panel" role="alertdialog" aria-modal="true" [attr.aria-label]="titulo()">
+<div class="panel" role="alertdialog" aria-modal="true" cdkTrapFocus cdkTrapFocusAutoCapture [attr.aria-label]="titulo()">
   <h2>{{ titulo() }}</h2>
   <p>{{ mensaje() }}</p>
+
+  @if (textoRequerido(); as requerido) {
+    <label class="confirmar-texto">
+      <span>Escribe <strong>{{ requerido }}</strong> para confirmar</span>
+      <input
+        type="text"
+        autocomplete="off"
+        [value]="escrito()"
+        (input)="escrito.set($any($event.target).value)"
+      />
+    </label>
+  }
 
   <div class="acciones">
     <button type="button" class="boton boton--secundario" (click)="cancelar.emit()" [disabled]="confirmando()">
       Cancelar
     </button>
-    <button type="button" class="boton boton--peligro" (click)="confirmar.emit()" [disabled]="confirmando()">
+    <button type="button" class="boton boton--peligro" (click)="confirmar.emit()" [disabled]="confirmando() || !puedeConfirmar()">
       {{ confirmando() ? 'Eliminando…' : textoConfirmar() }}
     </button>
   </div>

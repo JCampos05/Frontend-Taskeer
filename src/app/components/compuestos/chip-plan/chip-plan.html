@@ -1,0 +1,28 @@
+<a
+  routerLink="/app/planes"
+  class="chip"
+  [title]="suscripcion() ? 'Plan ' + suscripcion()!.planName + ' — ver planes' : 'Ver planes'"
+  [attr.aria-label]="suscripcion() ? 'Plan ' + suscripcion()!.planName + ', ver planes' : 'Ver planes'"
+>
+  <span class="chip__icono"><app-svg-diamante /></span>
+  <span class="chip__datos">
+    <span class="chip__fila">
+      <strong>{{ suscripcion()?.planName ?? 'Planes' }}</strong>
+      <span class="chip__accion">Ver planes</span>
+    </span>
+    @if (suscripcion()) {
+      <span class="chip__uso">
+        {{ propios() }} {{ maximo() === null ? 'workspaces · sin límite' : 'de ' + maximo() + ' workspaces' }}
+      </span>
+      @if (porcentaje() !== null) {
+        <span class="chip__barra" aria-hidden="true">
+          <span
+            class="chip__relleno"
+            [class.chip__relleno--lleno]="porcentaje()! >= 100"
+            [style.width.%]="porcentaje()"
+          ></span>
+        </span>
+      }
+    }
+  </span>
+</a>

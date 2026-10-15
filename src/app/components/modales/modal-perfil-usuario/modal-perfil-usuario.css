@@ -6,7 +6,7 @@
   position: fixed;
   inset: 0;
   z-index: 1500;
-  background-color: rgb(0 0 0 / 45%);
+  background-color: var(--color-overlay);
   cursor: default;
   border: none;
 }
@@ -23,7 +23,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 2rem 1.5rem 1.5rem;
-  border-radius: 0.85rem;
+  border-radius: var(--radius-md);
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-lg);
@@ -41,12 +41,12 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
 }
 
 .boton-icono:hover {
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
   color: var(--color-text);
 }
 
@@ -63,8 +63,8 @@
   width: 4rem;
   height: 4rem;
   border-radius: 999px;
-  background-color: var(--color-brand-100);
-  color: var(--color-brand-700);
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-soft-text);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-xl);
 }
@@ -82,7 +82,7 @@
   font-size: var(--font-size-xs);
   padding: 0.05rem 0.4rem;
   border-radius: 999px;
-  background-color: var(--color-bg);
+  background-color: var(--color-surface-sunken);
   color: var(--color-text-muted);
 }
 
@@ -104,13 +104,13 @@
   flex-shrink: 0;
   width: 1.6rem;
   height: 1.6rem;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-sm);
   color: var(--color-text-muted);
 }
 
 .boton-copiar:hover {
-  color: var(--color-primary);
-  background-color: var(--color-bg);
+  color: var(--color-primary-text);
+  background-color: var(--color-surface-sunken);
 }
 
 .boton-copiar .icono {

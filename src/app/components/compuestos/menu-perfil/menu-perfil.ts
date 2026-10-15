@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SvgChevron } from '../../svgs/svg-chevron/svg-chevron';
+import { SvgDiamante } from '../../svgs/svg-diamante/svg-diamante';
 import { SvgEngranaje } from '../../svgs/svg-engranaje/svg-engranaje';
 import { SvgPersona } from '../../svgs/svg-persona/svg-persona';
 import { SvgSalir } from '../../svgs/svg-salir/svg-salir';
@@ -13,7 +14,7 @@ import { NotificationsStreamService } from '../../../services/notifications-stre
 @Component({
   selector: 'app-menu-perfil',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, SvgChevron, SvgPersona, SvgEngranaje, SvgSalir],
+  imports: [RouterLink, SvgChevron, SvgPersona, SvgDiamante, SvgEngranaje, SvgSalir],
   templateUrl: './menu-perfil.html',
   styleUrl: './menu-perfil.css',
 })

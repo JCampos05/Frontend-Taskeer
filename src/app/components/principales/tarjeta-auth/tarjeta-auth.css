@@ -10,41 +10,9 @@
   align-items: center;
   justify-content: center;
   padding: clamp(1.25rem, 4vw, 3rem);
-  overflow: hidden;
-  /* Pinta encima del fondo real de <body> (que sí sigue el tema) con el
-   * fondo fijo de .tema-claro-fijo — si no, se vería el navy oscuro del
-   * body asomando detrás en modo oscuro del sistema. */
-  background: linear-gradient(180deg, var(--color-bg) 0%, #ffffff 70%);
-}
-
-/* Dos manchas de color de marca, muy suaves, ancladas a esquinas opuestas —
- * el mismo lenguaje visual de la landing (gradientes de marca) pero
- * reducido a un detalle de fondo, no un elemento que compita con la
- * tarjeta. `pointer-events: none` para que nunca interfieran con clicks. */
-.contenedor::before,
-.contenedor::after {
-  content: '';
-  position: absolute;
-  width: min(32rem, 70vw);
-  height: min(32rem, 70vw);
-  border-radius: 50%;
-  filter: blur(60px);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.contenedor::before {
-  top: -12rem;
-  left: -10rem;
-  background: radial-gradient(circle, var(--color-brand-200) 0%, transparent 70%);
-  opacity: 0.55;
-}
-
-.contenedor::after {
-  bottom: -14rem;
-  right: -10rem;
-  background: radial-gradient(circle, var(--color-brand-400) 0%, transparent 70%);
-  opacity: 0.35;
+  /* Mismo fondo neutro que el hero de la landing (el body sigue el tema del
+   * sistema; este contenedor fija .tema-neutro-fijo para no depender de él). */
+  background-color: var(--color-bg);
 }
 
 .tarjeta {
@@ -58,8 +26,8 @@
   padding: clamp(1.75rem, 4vw, 2.5rem);
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 1.25rem;
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .marca {
@@ -70,13 +38,13 @@
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-lg);
   letter-spacing: -0.01em;
-  color: var(--color-primary);
+  color: var(--color-text);
 }
 
 .marca__icono {
   width: 1.75rem;
   height: 1.75rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
 }
 

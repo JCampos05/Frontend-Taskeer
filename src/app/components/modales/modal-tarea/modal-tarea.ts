@@ -1,3 +1,4 @@
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   CdkDrag,
@@ -53,7 +54,7 @@ export const PRIORIDADES: { valor: PrioridadTarea; etiqueta: string }[] = [
 @Component({
   selector: 'app-modal-tarea',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
+  imports: [CdkTrapFocus, 
     ReactiveFormsModule,
     ModalConfirmacion,
     SvgBasura,
@@ -65,6 +66,7 @@ export const PRIORIDADES: { valor: PrioridadTarea; etiqueta: string }[] = [
   ],
   templateUrl: './modal-tarea.html',
   styleUrl: './modal-tarea.css',
+  host: { '(document:keydown.escape)': 'alPresionarEscape()' },
 })
 export class ModalTarea implements OnInit {
   private readonly fb = inject(FormBuilder);
@@ -350,5 +352,12 @@ export class ModalTarea implements OnInit {
       if (cuerpo?.error?.message) return cuerpo.error.message;
     }
     return 'No pudimos completar la operación. Intenta de nuevo.';
+  }
+
+  /** Escape cierra el drawer, salvo que la confirmación de borrado esté
+   * encima (esa maneja su propio Escape). */
+  alPresionarEscape(): void {
+    if (this.confirmandoBorrado()) return;
+    this.cerrar.emit();
   }
 }

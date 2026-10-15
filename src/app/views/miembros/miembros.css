@@ -3,11 +3,11 @@
 }
 
 .contenido {
-  padding: clamp(1.5rem, 5vw, 3rem);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-width: 48rem;
+  max-width: 72rem;
 }
 
 .encabezado {
@@ -30,8 +30,8 @@
   flex-wrap: wrap;
   padding: 1rem;
   border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
-  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-sunken);
 }
 
 .formulario-inline .campo {
@@ -42,7 +42,7 @@
 .formulario-inline select,
 .select-rol {
   padding: 0.625rem 0.75rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border-strong);
   background-color: var(--color-surface);
   color: var(--color-text);
@@ -86,9 +86,9 @@
   align-items: center;
   gap: 0.85rem;
   padding: 0.85rem 1rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-sunken);
 }
 
 .avatar {
@@ -98,8 +98,8 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 999px;
-  background-color: var(--color-brand-100);
-  color: var(--color-brand-700);
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-soft-text);
   font-weight: var(--font-weight-semibold);
   flex-shrink: 0;
 }
@@ -118,7 +118,7 @@
 }
 
 .fila__nombre-boton:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   text-decoration: underline;
 }
 
@@ -147,28 +147,46 @@
   font-size: var(--font-size-xs);
   padding: 0.05rem 0.4rem;
   border-radius: 999px;
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
   color: var(--color-text-muted);
 }
 
 .etiqueta-rol {
   font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
   color: var(--color-text-secondary);
+  background-color: var(--color-hover);
   flex-shrink: 0;
+}
+
+.etiqueta-rol--owner {
+  color: var(--color-accent-soft-text);
+  background-color: var(--color-accent-soft);
+}
+
+.etiqueta-rol--admin {
+  color: var(--color-warning-text);
+  background-color: color-mix(in srgb, var(--color-warning) 14%, transparent);
+}
+
+.etiqueta-rol--viewer {
+  color: var(--color-text-muted);
 }
 
 .etiqueta-estado {
   font-size: var(--font-size-xs);
   padding: 0.1rem 0.5rem;
   border-radius: 999px;
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
   color: var(--color-text-muted);
   flex-shrink: 0;
 }
 
 .etiqueta-estado--pendiente {
   background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .etiqueta-estado--vencida {
@@ -189,13 +207,13 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
   flex-shrink: 0;
 }
 
 .boton-icono:hover {
-  background-color: var(--color-bg);
+  background-color: var(--color-hover);
   color: var(--color-danger);
 }
 
@@ -219,4 +237,122 @@
 
 .boton--peligro-texto:hover {
   background-color: color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+
+/* Pestañas Miembros / Invitaciones */
+.pestanas {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pestanas__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 0.9rem;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.pestanas__item:hover {
+  color: var(--color-text);
+}
+
+.pestanas__item.activo {
+  color: var(--color-text);
+  border-bottom-color: var(--color-text);
+}
+
+.pestanas__contador {
+  min-width: 1.3rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background-color: var(--color-hover);
+  font-size: var(--font-size-xs);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.pestanas__contador--aviso {
+  background-color: color-mix(in srgb, var(--color-primary) 16%, transparent);
+  color: var(--color-primary-text);
+}
+
+/* Búsqueda y filtro por rol */
+.barra-herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.barra-herramientas__busqueda,
+.barra-herramientas__rol {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+}
+
+.barra-herramientas__busqueda {
+  flex: 1 1 16rem;
+}
+
+/* Tarjetas de miembro */
+.rejilla-miembros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1rem;
+}
+
+.tarjeta-miembro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+}
+
+.tarjeta-miembro__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.avatar--grande {
+  width: 3rem;
+  height: 3rem;
+  font-size: var(--font-size-lg);
+}
+
+.tarjeta-miembro__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  flex-grow: 1;
+}
+
+.tarjeta-miembro__desde {
+  margin-top: 0.25rem;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.tarjeta-miembro__acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
 }

@@ -1,106 +1,179 @@
 <div class="contenido">
   <header class="encabezado">
-    <h1>Hola, {{ authService.usuarioActual()?.displayName }}</h1>
-    <p>Esto es lo que tienes pendiente hoy.</p>
+    <p class="encabezado__fecha">{{ fechaDeHoy() }}</p>
+    <h1>{{ saludo() }}, {{ authService.usuarioActual()?.displayName }}</h1>
+    @if (!cargando() && !errorCarga()) {
+      <p class="encabezado__resumen">
+        @if (tareasDelDia().length > 0 || recordatorios().length > 0) {
+          Tienes {{ tareasDelDia().length }}
+          {{ tareasDelDia().length === 1 ? 'tarea' : 'tareas' }} para hoy y
+          {{ recordatorios().length }}
+          {{ recordatorios().length === 1 ? 'recordatorio próximo' : 'recordatorios próximos' }}.
+        } @else {
+          Nada pendiente por ahora. Marca una tarea con la estrella para verla aquí.
+        }
+      </p>
+    }
   </header>
 
-  @if (cantidadVencidas() > 0) {
-    <a routerLink="/app/mi-dia" class="aviso-vencidas">
-      <app-svg-advertencia class="aviso-vencidas__icono" />
-      <span>
-        Tienes {{ cantidadVencidas() }}
-        {{ cantidadVencidas() === 1 ? 'tarea vencida' : 'tareas vencidas' }} — revisalas en Mi día.
-      </span>
+  @if (errorCarga()) {
+    <p class="alerta alerta--error" role="alert">
+      No pudimos cargar tu inicio.
+      <button type="button" class="enlace-sutil" (click)="reintentar()">Reintentar</button>
+    </p>
+  } @else {
+  <div class="resumen">
+    <a routerLink="/app/mi-dia" class="metrica">
+      <span class="metrica__icono"><app-svg-estrella-llena /></span>
+      <span class="metrica__valor">{{ tareasDelDia().length }}</span>
+      <span class="metrica__etiqueta">Para hoy</span>
     </a>
-  }
+    <a
+      routerLink="/app/mi-dia"
+      class="metrica"
+      [class.metrica--alerta]="cantidadVencidas() > 0"
+    >
+      <span class="metrica__icono"><app-svg-advertencia /></span>
+      <span class="metrica__valor">{{ cantidadVencidas() }}</span>
+      <span class="metrica__etiqueta">{{ cantidadVencidas() === 1 ? 'Vencida' : 'Vencidas' }}</span>
+    </a>
+    <div class="metrica metrica--estatica">
+      <span class="metrica__icono"><app-svg-campana /></span>
+      <span class="metrica__valor">{{ recordatorios().length }}</span>
+      <span class="metrica__etiqueta">Recordatorios</span>
+    </div>
+    <a routerLink="/app/workspaces" class="metrica">
+      <span class="metrica__icono"><app-svg-carpetas /></span>
+      <span class="metrica__valor">{{ workspaces().length }}</span>
+      <span class="metrica__etiqueta">Workspaces</span>
+    </a>
+  </div>
 
   @if (misInvitaciones().length > 0) {
     <section class="seccion">
       <h2><app-svg-usuarios class="seccion__icono" />Invitaciones pendientes</h2>
-      <div class="lista-invitaciones">
-        @for (invitacion of misInvitaciones(); track invitacion.id) {
-          <article class="invitacion">
-            <div class="invitacion__info">
-              <p class="invitacion__titulo">Te invitaron a "{{ invitacion.workspaceName }}"</p>
-              <p class="invitacion__detalle">
-                Como
-                {{
-                  invitacion.role === 'ADMIN'
-                    ? 'administrador'
-                    : invitacion.role === 'EDITOR'
-                      ? 'editor'
-                      : 'solo lectura'
-                }}
-              </p>
-            </div>
-            <button
-              type="button"
-              class="boton boton--primario boton--chico"
-              [disabled]="aceptandoInvitacionId() === invitacion.id"
-              (click)="aceptarInvitacion(invitacion)"
-            >
-              {{ aceptandoInvitacionId() === invitacion.id ? 'Uniéndote…' : 'Aceptar' }}
-            </button>
-          </article>
-        }
-      </div>
+      <app-lista-invitaciones
+        [invitaciones]="misInvitaciones()"
+        [aceptandoId]="aceptandoInvitacionId()"
+        (aceptar)="aceptarInvitacion($event)"
+      />
     </section>
   }
 
   <div class="paneles">
-    <section class="seccion">
-      <h2><app-svg-campana class="seccion__icono" />Próximos recordatorios</h2>
+    <section class="seccion seccion--principal">
+      <div class="seccion__cabecera">
+        <h2><app-svg-estrella-llena class="seccion__icono" />Tu día</h2>
+        <a routerLink="/app/mi-dia" class="enlace-sutil">Ver Mi día →</a>
+      </div>
 
       @if (cargando()) {
-        <p class="estado-vacio-texto">Cargando…</p>
-      } @else if (recordatorios().length === 0) {
-        <p class="estado-vacio-texto">No tienes recordatorios pendientes.</p>
+        <div class="esqueleto-lista" role="status" aria-label="Cargando">
+          <div class="esqueleto esqueleto--linea"></div>
+          <div class="esqueleto esqueleto--linea"></div>
+        </div>
+      } @else if (tareasDelDia().length === 0) {
+        <p class="estado-vacio-texto">
+          No hay tareas para hoy. Abre una desde un tablero y agrégala a tu día con la estrella, o
+          asígnate una con fecha límite.
+        </p>
       } @else {
-        <ul class="lista-recordatorios">
-          @for (recordatorio of recordatorios(); track recordatorio.id) {
+        <ul class="lista-tareas">
+          @for (tarea of tareasDelDia().slice(0, 6); track tarea.id) {
             <li>
               <a
-                class="recordatorio"
-                [routerLink]="[
-                  '/app/workspaces',
-                  recordatorio.workspaceId,
-                  'boards',
-                  recordatorio.board.id,
-                ]"
+                class="tarea"
+                [routerLink]="['/app/workspaces', tarea.workspaceId, 'boards', tarea.boardId]"
               >
-                <span class="recordatorio__tarea">{{ recordatorio.task.title }}</span>
-                <span class="recordatorio__meta">
-                  {{ recordatorio.board.name }} · {{ formatearFecha(recordatorio.remindAt) }}
+                <span class="tarea__principal">
+                  <span class="tarea__titulo">{{ tarea.titulo }}</span>
+                  <span class="tarea__meta">{{ tarea.tablero }}</span>
                 </span>
+                <span
+                  class="etiqueta-prioridad"
+                  [class]="'etiqueta-prioridad--' + tarea.prioridad.toLowerCase()"
+                >
+                  {{ etiquetaPrioridad(tarea.prioridad) }}
+                </span>
+                @if (tarea.dueAt) {
+                  <span class="etiqueta-fecha" [class.etiqueta-fecha--vencida]="esVencida(tarea.dueAt)">
+                    {{ formatearFecha(tarea.dueAt) }}
+                  </span>
+                }
               </a>
             </li>
           }
         </ul>
+        @if (tareasDelDia().length > 6) {
+          <a routerLink="/app/mi-dia" class="enlace-sutil">
+            Y {{ tareasDelDia().length - 6 }} más en Mi día →
+          </a>
+        }
       }
     </section>
 
-    <section class="seccion">
-      <h2><app-svg-carpetas class="seccion__icono" />Tus workspaces</h2>
+    <div class="columna-lateral">
+      <section class="seccion">
+        <h2><app-svg-campana class="seccion__icono" />Próximos recordatorios</h2>
 
-      @if (cargando()) {
-        <p class="estado-vacio-texto">Cargando…</p>
-      } @else if (workspaces().length === 0) {
-        <p class="estado-vacio-texto">
-          Todavía no tienes workspaces —
-          <a routerLink="/app/workspaces">crea el primero</a>
-          para empezar.
-        </p>
-      } @else {
-        <div class="rejilla-workspaces">
-          @for (workspace of workspaces(); track workspace.id) {
-            <a [routerLink]="['/app/workspaces', workspace.id]" class="workspace-mini">
-              <app-svg-carpetas class="icono" />
-              {{ workspace.name }}
-            </a>
-          }
+        @if (cargando()) {
+          <div class="esqueleto-lista" role="status" aria-label="Cargando">
+          <div class="esqueleto esqueleto--linea"></div>
+          <div class="esqueleto esqueleto--linea"></div>
         </div>
-        <a routerLink="/app/workspaces" class="enlace-sutil">Ver todos tus workspaces →</a>
-      }
-    </section>
+        } @else if (recordatorios().length === 0) {
+          <p class="estado-vacio-texto">No tienes recordatorios pendientes.</p>
+        } @else {
+          <ul class="lista-recordatorios">
+            @for (recordatorio of recordatorios(); track recordatorio.id) {
+              <li>
+                <a
+                  class="recordatorio"
+                  [routerLink]="[
+                    '/app/workspaces',
+                    recordatorio.workspaceId,
+                    'boards',
+                    recordatorio.board.id,
+                  ]"
+                >
+                  <span class="recordatorio__tarea">{{ recordatorio.task.title }}</span>
+                  <span class="recordatorio__meta">
+                    {{ recordatorio.board.name }} · {{ formatearFecha(recordatorio.remindAt) }}
+                  </span>
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="seccion">
+        <h2><app-svg-carpetas class="seccion__icono" />Tus workspaces</h2>
+
+        @if (cargando()) {
+          <div class="esqueleto-lista" role="status" aria-label="Cargando">
+          <div class="esqueleto esqueleto--linea"></div>
+          <div class="esqueleto esqueleto--linea"></div>
+        </div>
+        } @else if (workspaces().length === 0) {
+          <p class="estado-vacio-texto">
+            Todavía no tienes workspaces —
+            <a routerLink="/app/workspaces">crea el primero</a>
+            para empezar.
+          </p>
+        } @else {
+          <div class="rejilla-workspaces">
+            @for (workspace of workspaces(); track workspace.id) {
+              <a [routerLink]="['/app/workspaces', workspace.id]" class="workspace-mini">
+                <span class="workspace-mini__inicial">{{ workspace.name.charAt(0) }}</span>
+                {{ workspace.name }}
+              </a>
+            }
+          </div>
+          <a routerLink="/app/workspaces" class="enlace-sutil">Ver todos tus workspaces →</a>
+        }
+      </section>
+    </div>
   </div>
+  }
 </div>

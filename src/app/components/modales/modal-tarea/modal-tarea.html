@@ -1,6 +1,6 @@
 <button type="button" class="fondo" (click)="cerrar.emit()" aria-label="Cerrar"></button>
 
-<div class="panel" role="dialog" aria-modal="true">
+<div class="panel" role="dialog" aria-modal="true" cdkTrapFocus cdkTrapFocusAutoCapture>
   <header class="encabezado">
     <h2>{{ esEdicion() ? 'Editar tarea' : 'Nueva tarea' }}</h2>
     <div class="encabezado__acciones">
@@ -138,7 +138,12 @@
               placeholder="Agregar un paso…"
               autocomplete="off"
             />
-            <button type="submit" class="boton boton--secundario boton--chico" [disabled]="agregandoSubtarea()">
+            <button
+              type="submit"
+              class="boton boton--secundario boton--chico"
+              aria-label="Agregar paso"
+              [disabled]="agregandoSubtarea()"
+            >
               +
             </button>
           </form>
@@ -174,7 +179,7 @@
 @if (confirmandoBorrado()) {
   <app-modal-confirmacion
     titulo="Eliminar tarea"
-    mensaje="Esta acción no se puede deshacer. La tarea se eliminará permanentemente."
+    mensaje="Esta acción no se puede deshacer. La tarea se eliminará del tablero."
     [confirmando]="eliminando()"
     (confirmar)="confirmarBorrado()"
     (cancelar)="confirmandoBorrado.set(false)"

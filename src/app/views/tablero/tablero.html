@@ -6,6 +6,17 @@
         <app-svg-tablero class="encabezado__icono" />
         {{ tablero()?.name || 'Tablero' }}
       </h1>
+      @if (resumen(); as r) {
+        <p class="encabezado__resumen">
+          <span>{{ r.total }} {{ r.total === 1 ? 'tarea' : 'tareas' }}</span>
+          <span>{{ r.completadas }} {{ r.completadas === 1 ? 'completada' : 'completadas' }}</span>
+          @if (r.vencidas > 0) {
+            <span class="encabezado__resumen--alerta">
+              {{ r.vencidas }} {{ r.vencidas === 1 ? 'vencida' : 'vencidas' }}
+            </span>
+          }
+        </p>
+      }
     </div>
     <div class="encabezado__acciones">
       @if (puedeGestionarRolesDeTablero()) {
@@ -39,7 +50,11 @@
   }
 
   @if (cargando()) {
-    <p class="estado-vacio">Cargando…</p>
+    <div class="esqueleto-rejilla" role="status" aria-label="Cargando">
+    @for (n of [1, 2, 3]; track n) {
+      <div class="esqueleto esqueleto--columna"></div>
+    }
+  </div>
   } @else if (tablero()) {
     <div class="tablero" cdkDropListGroup>
       @for (columna of tablero()!.columns; track columna.id) {
@@ -105,78 +120,6 @@
             }
           </header>
 
-          <div
-            class="lista-tareas"
-            cdkDropList
-            [cdkDropListData]="columna.tasks"
-            [cdkDropListDisabled]="!puedeGestionarTareas(miRolEfectivo())"
-            [cdkDropListEnterPredicate]="predicadoEntradaColumna(columna)"
-            (cdkDropListDropped)="alSoltar($event, columna)"
-          >
-            @for (tarea of tareasVisibles(columna); track tarea.id) {
-              <article
-                class="tarjeta-tarea"
-                cdkDrag
-                [cdkDragData]="tarea"
-                [cdkDragDisabled]="!puedeGestionarTareas(miRolEfectivo())"
-                (cdkDragMoved)="alArrastrar($event, columna)"
-                (click)="abrirTarea(tarea, columna.id)"
-              >
-                <div class="tarjeta-tarea__encabezado">
-                  <h3>{{ tarea.title }}</h3>
-                  <div class="tarjeta-tarea__acciones">
-                    <span
-                      class="etiqueta-prioridad"
-                      [class]="'etiqueta-prioridad--' + tarea.priority.toLowerCase()"
-                    >
-                      {{ etiquetaPrioridad(tarea.priority) }}
-                    </span>
-                    <button
-                      type="button"
-                      class="tarjeta-tarea__estrella"
-                      [class.tarjeta-tarea__estrella--activa]="tarea.inMyDay"
-                      [disabled]="actualizandoMiDiaId() === tarea.id"
-                      (click)="alternarMiDiaTarjeta(tarea, $event)"
-                      [attr.aria-label]="tarea.inMyDay ? 'Quitar de Mi día' : 'Agregar a Mi día'"
-                      [title]="tarea.inMyDay ? 'Quitar de Mi día' : 'Agregar a Mi día'"
-                    >
-                      @if (tarea.inMyDay) {
-                        <app-svg-estrella-llena />
-                      } @else {
-                        <app-svg-estrella />
-                      }
-                    </button>
-                  </div>
-                </div>
-                @if (tarea.dueAt || nombreMiembro(tarea.assigneeId) || tarea.subtaskTotal > 0) {
-                  <div class="tarjeta-tarea__meta">
-                    @if (tarea.dueAt) {
-                      <span
-                        class="etiqueta-fecha"
-                        [class.etiqueta-fecha--vencida]="
-                          !columna.isDoneColumn && esFechaVencida(tarea.dueAt)
-                        "
-                      >
-                        {{ formatearFechaCorta(tarea.dueAt, zonaHoraria()) }}
-                      </span>
-                    }
-                    @if (nombreMiembro(tarea.assigneeId); as nombre) {
-                      <span class="etiqueta-asignado">{{ nombre }}</span>
-                    }
-                    @if (tarea.subtaskTotal > 0) {
-                      <span
-                        class="etiqueta-subtareas"
-                        [class.etiqueta-subtareas--completo]="tarea.subtaskCompletado === tarea.subtaskTotal"
-                      >
-                        ✓ {{ tarea.subtaskCompletado }}/{{ tarea.subtaskTotal }}
-                      </span>
-                    }
-                  </div>
-                }
-              </article>
-            }
-          </div>
-
           @if (puedeGestionarTareas(miRolEfectivo())) {
             <button
               type="button"
@@ -193,6 +136,83 @@
               Tarea
             </button>
           }
+
+          <div
+            class="lista-tareas"
+            cdkDropList
+            [cdkDropListData]="columna.tasks"
+            [cdkDropListDisabled]="!puedeGestionarTareas(miRolEfectivo())"
+            [cdkDropListEnterPredicate]="predicadoEntradaColumna(columna)"
+            (cdkDropListDropped)="alSoltar($event, columna)"
+          >
+            @for (tarea of tareasVisibles(columna); track tarea.id) {
+              <article
+                class="tarjeta-tarea"
+                cdkDrag
+                [cdkDragData]="tarea"
+                [cdkDragDisabled]="!puedeGestionarTareas(miRolEfectivo())"
+                (cdkDragMoved)="alArrastrar($event, columna)"
+                tabindex="0"
+                role="button"
+                (click)="abrirTarea(tarea, columna.id)"
+                (keydown.enter)="abrirTarea(tarea, columna.id)"
+              >
+                <div class="tarjeta-tarea__encabezado">
+                  <span
+                    class="etiqueta-prioridad"
+                    [class]="'etiqueta-prioridad--' + tarea.priority.toLowerCase()"
+                  >
+                    {{ etiquetaPrioridad(tarea.priority) }}
+                  </span>
+                  <button
+                    type="button"
+                    class="tarjeta-tarea__estrella"
+                    [class.tarjeta-tarea__estrella--activa]="tarea.inMyDay"
+                    [disabled]="actualizandoMiDiaId() === tarea.id"
+                    (click)="alternarMiDiaTarjeta(tarea, $event)"
+                    [attr.aria-label]="tarea.inMyDay ? 'Quitar de Mi día' : 'Agregar a Mi día'"
+                    [title]="tarea.inMyDay ? 'Quitar de Mi día' : 'Agregar a Mi día'"
+                  >
+                    @if (tarea.inMyDay) {
+                      <app-svg-estrella-llena />
+                    } @else {
+                      <app-svg-estrella />
+                    }
+                  </button>
+                </div>
+                <h3>{{ tarea.title }}</h3>
+                @if (tarea.description) {
+                  <p class="tarjeta-tarea__descripcion">{{ tarea.description }}</p>
+                }
+                @if (tarea.dueAt || nombreMiembro(tarea.assigneeId) || tarea.subtaskTotal > 0) {
+                  <div class="tarjeta-tarea__meta">
+                    @if (tarea.dueAt) {
+                      <span
+                        class="etiqueta-fecha"
+                        [class.etiqueta-fecha--vencida]="
+                          !columna.isDoneColumn && esFechaVencida(tarea.dueAt)
+                        "
+                      >
+                        {{ formatearFechaCorta(tarea.dueAt, zonaHoraria()) }}
+                      </span>
+                    }
+                    @if (tarea.subtaskTotal > 0) {
+                      <span
+                        class="etiqueta-subtareas"
+                        [class.etiqueta-subtareas--completo]="tarea.subtaskCompletado === tarea.subtaskTotal"
+                      >
+                        ✓ {{ tarea.subtaskCompletado }}/{{ tarea.subtaskTotal }}
+                      </span>
+                    }
+                    @if (nombreMiembro(tarea.assigneeId); as nombre) {
+                      <span class="avatar-asignado" [title]="nombre">{{ nombre.charAt(0) }}</span>
+                    }
+                  </div>
+                }
+              </article>
+            }
+          </div>
+
         </section>
       }
 
@@ -256,7 +276,7 @@
 @if (mostrandoOverrides() && puedeGestionarRolesDeTablero()) {
   <button type="button" class="fondo" (click)="alternarPanelOverrides()" aria-label="Cerrar"></button>
 
-  <aside class="panel-overrides" role="dialog" aria-modal="true">
+  <aside class="panel-overrides" role="dialog" aria-modal="true" cdkTrapFocus cdkTrapFocusAutoCapture>
     <header class="panel-overrides__encabezado">
       <div class="panel-overrides__titulo">
         <app-svg-usuarios />
@@ -268,7 +288,7 @@
     </header>
 
     <p class="panel-overrides__ayuda">
-      Asigná un rol distinto al de workspace para un miembro, solo dentro de este tablero. Elegir
+      Asigna un rol distinto al de workspace para un miembro, solo dentro de este tablero. Elegir
       "Rol de workspace" quita el override.
     </p>
 

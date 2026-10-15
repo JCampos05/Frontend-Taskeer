@@ -4,5 +4,5 @@
 
 .contenedor {
   min-height: 100dvh;
-  background: linear-gradient(180deg, var(--color-bg) 0%, #ffffff 70%);
+  background-color: var(--color-bg);
 }

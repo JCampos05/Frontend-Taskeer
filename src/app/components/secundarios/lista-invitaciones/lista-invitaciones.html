@@ -1,0 +1,18 @@
+<div class="lista-invitaciones">
+  @for (invitacion of invitaciones(); track invitacion.id) {
+    <article class="invitacion">
+      <div class="invitacion__info">
+        <p class="invitacion__titulo">Te invitaron a "{{ invitacion.workspaceName }}"</p>
+        <p class="invitacion__detalle">Como {{ etiquetaRol(invitacion.role) }}</p>
+      </div>
+      <button
+        type="button"
+        class="boton boton--primario boton--chico"
+        [disabled]="aceptandoId() === invitacion.id"
+        (click)="aceptar.emit(invitacion)"
+      >
+        {{ aceptandoId() === invitacion.id ? 'Uniéndote…' : 'Aceptar' }}
+      </button>
+    </article>
+  }
+</div>

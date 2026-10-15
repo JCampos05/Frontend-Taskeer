@@ -1,7 +1,27 @@
 <div class="contenido">
-  <h1>Configuración</h1>
+  <header class="encabezado">
+    <h1>Configuración</h1>
+    <p>Administra tu cuenta, cómo se ve Taskeer y tu seguridad.</p>
+  </header>
 
-  <section class="seccion">
+  <div class="disposicion">
+    <nav class="menu" aria-label="Secciones de configuración">
+      @for (item of secciones; track item.id) {
+        <button
+          type="button"
+          class="menu__item"
+          [class.activo]="seccionActiva() === item.id"
+          [attr.aria-current]="seccionActiva() === item.id ? 'page' : null"
+          (click)="seccionActiva.set(item.id)"
+        >
+          {{ item.etiqueta }}
+        </button>
+      }
+      <a routerLink="/app/planes" class="menu__item menu__item--enlace">Plan y facturación →</a>
+    </nav>
+
+    <div class="paneles">
+  <section class="seccion" [hidden]="seccionActiva() !== 'perfil'">
     <h2><app-svg-persona class="seccion__icono" />Perfil</h2>
     <p class="seccion__descripcion">
       El correo no se puede cambiar por ahora — editarlo llega en una actualización futura.
@@ -37,7 +57,7 @@
     </form>
 
     <div class="campo campo--solo-lectura">
-      <label>Correo</label>
+      <span class="campo-etiqueta" id="etiqueta-correo">Correo</span>
       <div class="correo-con-copiar">
         <p>{{ authService.usuarioActual()?.email }}</p>
         <button
@@ -86,7 +106,7 @@
     }
   </section>
 
-  <section class="seccion">
+  <section class="seccion" [hidden]="seccionActiva() !== 'apariencia'">
     <h2><app-svg-sol class="seccion__icono" />Apariencia</h2>
     <p class="seccion__descripcion">Elige cómo se ve Taskeer en este dispositivo.</p>
 
@@ -121,7 +141,7 @@
     </div>
   </section>
 
-  <section class="seccion">
+  <section class="seccion" [hidden]="seccionActiva() !== 'region'">
     <h2><app-svg-reloj class="seccion__icono" />Región</h2>
     <p class="seccion__descripcion">
       Para mostrar fechas y horas en tu hora local — las tareas siempre se guardan en UTC.
@@ -169,7 +189,7 @@
     }
   </section>
 
-  <section class="seccion">
+  <section class="seccion" [hidden]="seccionActiva() !== 'seguridad'">
     <h2><app-svg-candado class="seccion__icono" />Seguridad</h2>
 
     @if (!authService.usuarioActual()?.hasPassword) {
@@ -368,4 +388,6 @@
       </div>
     }
   </section>
+    </div>
+  </div>
 </div>

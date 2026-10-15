@@ -36,8 +36,7 @@ export const routes: Routes = [
     // AuthService.continuarConGoogle) — sin guard: todavía no hay sesión de
     // Taskeer en este punto, la sesión solo existe del lado de Supabase.
     path: 'auth/callback',
-    loadComponent: () =>
-      import('./views/auth-callback/auth-callback').then((m) => m.AuthCallback),
+    loadComponent: () => import('./views/auth-callback/auth-callback').then((m) => m.AuthCallback),
   },
   {
     // Coincide con el link que arma sendWorkspaceInvitationEmail en el
@@ -53,18 +52,21 @@ export const routes: Routes = [
   {
     path: 'app',
     canActivate: [authGuard],
-    loadComponent: () => import('./components/compuestos/layout-app/layout-app').then((m) => m.LayoutApp),
+    loadComponent: () =>
+      import('./components/compuestos/layout-app/layout-app').then((m) => m.LayoutApp),
     children: [
       { path: '', redirectTo: 'inicio', pathMatch: 'full' },
-      { path: 'inicio', loadComponent: () => import('./views/inicio/inicio').then((m) => m.Inicio) },
+      {
+        path: 'inicio',
+        loadComponent: () => import('./views/inicio/inicio').then((m) => m.Inicio),
+      },
       {
         path: 'mi-dia',
         loadComponent: () => import('./views/mi-dia/mi-dia').then((m) => m.MiDia),
       },
       {
         path: 'workspaces',
-        loadComponent: () =>
-          import('./views/workspaces/workspaces').then((m) => m.WorkspacesVista),
+        loadComponent: () => import('./views/workspaces/workspaces').then((m) => m.WorkspacesVista),
       },
       {
         path: 'workspaces/:workspaceId',
@@ -77,6 +79,10 @@ export const routes: Routes = [
       {
         path: 'workspaces/:workspaceId/boards/:boardId',
         loadComponent: () => import('./views/tablero/tablero').then((m) => m.Tablero),
+      },
+      {
+        path: 'planes',
+        loadComponent: () => import('./views/planes/planes').then((m) => m.Planes),
       },
       {
         path: 'configuracion',
@@ -98,9 +104,7 @@ export const routes: Routes = [
   {
     path: 'errores/error-inesperado',
     loadComponent: () =>
-      import('./views/errores/error-inesperado/error-inesperado').then(
-        (m) => m.ErrorInesperado,
-      ),
+      import('./views/errores/error-inesperado/error-inesperado').then((m) => m.ErrorInesperado),
   },
   {
     path: 'errores/servicio-no-disponible',

@@ -1,12 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ModalConfirmacion } from '../../components/modales/modal-confirmacion/modal-confirmacion';
+import { ModalMoverTablero } from '../../components/modales/modal-mover-tablero/modal-mover-tablero';
 import { BotonVolver } from '../../components/secundarios/boton-volver/boton-volver';
 import { SvgBasura } from '../../components/svgs/svg-basura/svg-basura';
 import { SvgCarpetas } from '../../components/svgs/svg-carpetas/svg-carpetas';
 import { SvgLapiz } from '../../components/svgs/svg-lapiz/svg-lapiz';
+import { SvgMover } from '../../components/svgs/svg-mover/svg-mover';
 import { SvgTablero } from '../../components/svgs/svg-tablero/svg-tablero';
 import { SvgUsuarios } from '../../components/svgs/svg-usuarios/svg-usuarios';
 import { ErrorApi } from '../../models/auth';
@@ -22,6 +24,8 @@ import { puedeGestionarTableros } from '../../utils/permisos';
   selector: 'app-tableros',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ModalMoverTablero,
+    SvgMover,
     ReactiveFormsModule,
     RouterLink,
     SvgTablero,
@@ -54,6 +58,18 @@ export class Tableros {
   protected readonly mostrarFormulario = signal(false);
   protected readonly editandoId = signal<string | null>(null);
   protected readonly borrandoId = signal<string | null>(null);
+
+  // --- Mover un tablero a otro workspace ---
+  protected readonly moviendo = signal<Board | null>(null);
+  protected readonly procesandoMovimiento = signal(false);
+
+  /** Workspaces donde el usuario es propietario o administrador, sin el actual:
+   * los únicos a los que puede mover un tablero. */
+  protected readonly destinosMovimiento = computed(() =>
+    this.workspacesService
+      .workspacesConocidos()
+      .filter((w) => w.id !== this.workspaceId && (w.myRole === 'OWNER' || w.myRole === 'ADMIN')),
+  );
 
   protected readonly puedeGestionar = puedeGestionarTableros;
 
@@ -165,6 +181,44 @@ export class Tableros {
       this.toastService.exito(nombre ? `Tablero "${nombre}" eliminado.` : 'Tablero eliminado.');
     } catch (err) {
       this.errorMensaje.set(this.obtenerMensajeError(err));
+    }
+  }
+
+  protected pedirMovimiento(board: Board, evento: Event): void {
+    evento.preventDefault();
+    evento.stopPropagation();
+    this.moviendo.set(board);
+  }
+
+  protected cancelarMovimiento(): void {
+    if (this.procesandoMovimiento()) return;
+    this.moviendo.set(null);
+  }
+
+  protected async confirmarMovimiento(destinoId: string): Promise<void> {
+    const board = this.moviendo();
+    if (!board || this.procesandoMovimiento()) return;
+
+    this.procesandoMovimiento.set(true);
+    try {
+      const resultado = await this.boardsService.mover(this.workspaceId, {
+        targetWorkspaceId: destinoId,
+        boardIds: [board.id],
+      });
+      const destino =
+        this.workspacesService.workspacesConocidos().find((w) => w.id === destinoId)?.name ?? 'el destino';
+      this.boards.update((lista) => lista.filter((b) => b.id !== board.id));
+      this.moviendo.set(null);
+      this.toastService.exito(
+        `Tablero "${board.name}" movido a "${destino}"` +
+          (resultado.tasksUnassigned > 0
+            ? ` (${resultado.tasksUnassigned} ${resultado.tasksUnassigned === 1 ? 'tarea quedó sin asignar' : 'tareas quedaron sin asignar'}).`
+            : '.'),
+      );
+    } catch (err) {
+      this.toastService.error(this.obtenerMensajeError(err));
+    } finally {
+      this.procesandoMovimiento.set(false);
     }
   }
 
