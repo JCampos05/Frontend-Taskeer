@@ -203,6 +203,9 @@ html {
 }
 
 .enlace-sutil {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   color: var(--color-primary-text);
@@ -211,6 +214,11 @@ html {
 
 .enlace-sutil:hover {
   text-decoration: underline;
+}
+
+.enlace-sutil app-svg-flecha {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .campo input {

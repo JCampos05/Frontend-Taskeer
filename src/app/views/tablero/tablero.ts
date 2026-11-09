@@ -20,6 +20,7 @@ import {
   TareaEditable,
 } from '../../components/modales/modal-tarea/modal-tarea';
 import { BotonVolver } from '../../components/secundarios/boton-volver/boton-volver';
+import { SvgPalomita } from '../../components/svgs/svg-palomita/svg-palomita';
 import { SvgBasura } from '../../components/svgs/svg-basura/svg-basura';
 import { SvgCheck } from '../../components/svgs/svg-check/svg-check';
 import { SvgCopiar } from '../../components/svgs/svg-copiar/svg-copiar';
@@ -54,6 +55,7 @@ import { puedeGestionarTableros, puedeGestionarTareas } from '../../utils/permis
     CdkDropList,
     CdkDrag,
     SvgMas,
+    SvgPalomita,
     SvgLapiz,
     SvgBasura,
     SvgUsuarios,

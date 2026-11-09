@@ -57,8 +57,16 @@
 }
 
 .menu__item--enlace {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   margin-top: 0.5rem;
   color: var(--color-text-muted);
+}
+
+.menu__flecha {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .paneles {

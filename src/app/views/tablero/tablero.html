@@ -201,7 +201,7 @@
                         class="etiqueta-subtareas"
                         [class.etiqueta-subtareas--completo]="tarea.subtaskCompletado === tarea.subtaskTotal"
                       >
-                        ✓ {{ tarea.subtaskCompletado }}/{{ tarea.subtaskTotal }}
+                        <app-svg-palomita class="etiqueta-subtareas__icono" />{{ tarea.subtaskCompletado }}/{{ tarea.subtaskTotal }}
                       </span>
                     }
                     @if (nombreMiembro(tarea.assigneeId); as nombre) {

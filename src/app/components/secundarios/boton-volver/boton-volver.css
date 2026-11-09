@@ -4,9 +4,17 @@
 }
 
 .volver {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+}
+
+.volver__icono {
+  width: 1rem;
+  height: 1rem;
+  transform: rotate(180deg);
 }
 
 .volver:hover {

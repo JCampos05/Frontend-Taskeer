@@ -17,7 +17,7 @@
           {{ item.etiqueta }}
         </button>
       }
-      <a routerLink="/app/planes" class="menu__item menu__item--enlace">Plan y facturación →</a>
+      <a routerLink="/app/planes" class="menu__item menu__item--enlace">Plan y facturación<app-svg-flecha class="menu__flecha" /></a>
     </nav>
 
     <div class="paneles">
@@ -76,7 +76,7 @@
       </div>
     </div>
 
-    @if (!authService.usuarioActual()?.emailVerifiedAt) {
+    @if (verificacionCorreoActiva && !authService.usuarioActual()?.emailVerifiedAt) {
       <div class="aviso-verificacion">
         <p>Tu correo todavía no está verificado.</p>
 

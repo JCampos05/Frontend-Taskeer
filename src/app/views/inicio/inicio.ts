@@ -2,6 +2,7 @@ import { ListaInvitaciones } from '../../components/secundarios/lista-invitacion
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SvgFlecha } from '../../components/svgs/svg-flecha/svg-flecha';
 import { SvgAdvertencia } from '../../components/svgs/svg-advertencia/svg-advertencia';
 import { SvgCampana } from '../../components/svgs/svg-campana/svg-campana';
 import { SvgCarpetas } from '../../components/svgs/svg-carpetas/svg-carpetas';
@@ -43,7 +44,7 @@ interface TareaDelDia {
 @Component({
   selector: 'app-inicio',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ListaInvitaciones, SvgAdvertencia, SvgCampana, SvgCarpetas, SvgEstrellaLlena, SvgUsuarios],
+  imports: [RouterLink, ListaInvitaciones, SvgAdvertencia, SvgCampana, SvgCarpetas, SvgEstrellaLlena, SvgFlecha, SvgUsuarios],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css',
 })

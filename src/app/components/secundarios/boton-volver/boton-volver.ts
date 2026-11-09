@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { SvgFlecha } from '../../svgs/svg-flecha/svg-flecha';
 import { RouterLink } from '@angular/router';
 
 /** Link "← volver" del encabezado de una vista — repetido idéntico (mismo
@@ -8,8 +9,8 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-boton-volver',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
-  template: `<a [routerLink]="ruta()" class="volver">← {{ etiqueta() }}</a>`,
+  imports: [RouterLink, SvgFlecha],
+  template: `<a [routerLink]="ruta()" class="volver"><app-svg-flecha class="volver__icono" />{{ etiqueta() }}</a>`,
   styleUrl: './boton-volver.css',
 })
 export class BotonVolver {

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SvgPalomita } from '../../components/svgs/svg-palomita/svg-palomita';
 import { SvgCampana } from '../../components/svgs/svg-campana/svg-campana';
 import { SvgCandado } from '../../components/svgs/svg-candado/svg-candado';
 import { SvgEstrellaLlena } from '../../components/svgs/svg-estrella-llena/svg-estrella-llena';
@@ -37,6 +38,7 @@ interface Plan {
     SvgUsuarios,
     SvgCandado,
     SvgEstrellaLlena,
+    SvgPalomita,
     SvgLuna,
     SvgLogo,
   ],

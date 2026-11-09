@@ -64,7 +64,7 @@
     <section class="seccion seccion--principal">
       <div class="seccion__cabecera">
         <h2><app-svg-estrella-llena class="seccion__icono" />Tu día</h2>
-        <a routerLink="/app/mi-dia" class="enlace-sutil">Ver Mi día →</a>
+        <a routerLink="/app/mi-dia" class="enlace-sutil">Ver Mi día<app-svg-flecha /></a>
       </div>
 
       @if (cargando()) {
@@ -106,7 +106,7 @@
         </ul>
         @if (tareasDelDia().length > 6) {
           <a routerLink="/app/mi-dia" class="enlace-sutil">
-            Y {{ tareasDelDia().length - 6 }} más en Mi día →
+            Y {{ tareasDelDia().length - 6 }} más en Mi día<app-svg-flecha />
           </a>
         }
       }
@@ -170,7 +170,7 @@
               </a>
             }
           </div>
-          <a routerLink="/app/workspaces" class="enlace-sutil">Ver todos tus workspaces →</a>
+          <a routerLink="/app/workspaces" class="enlace-sutil">Ver todos tus workspaces<app-svg-flecha /></a>
         }
       </section>
     </div>

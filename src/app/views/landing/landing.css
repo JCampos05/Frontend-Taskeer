@@ -379,12 +379,20 @@
 }
 
 .mockup__pie em {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
   padding: 0 0.3rem;
   border-radius: 999px;
   background-color: var(--color-surface-sunken);
   font-size: 0.5rem;
   font-style: normal;
   color: var(--color-text-secondary);
+}
+
+.mockup__pie em app-svg-palomita {
+  width: 0.55rem;
+  height: 0.55rem;
 }
 
 .mockup__pie em.vencida {

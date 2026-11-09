@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CodigosRecuperacion } from '../../components/principales/codigos-recuperacion/codigos-recuperacion';
+import { SvgFlecha } from '../../components/svgs/svg-flecha/svg-flecha';
 import { SvgCandado } from '../../components/svgs/svg-candado/svg-candado';
 import { SvgCheck } from '../../components/svgs/svg-check/svg-check';
 import { SvgCopiar } from '../../components/svgs/svg-copiar/svg-copiar';
@@ -43,6 +44,7 @@ type SeccionConfiguracion = 'perfil' | 'apariencia' | 'region' | 'seguridad';
     CodigosRecuperacion,
     SvgCheck,
     SvgCopiar,
+    SvgFlecha,
     SvgPersona,
     SvgSol,
     SvgReloj,
@@ -169,6 +171,9 @@ export class Configuracion {
     this.correoCopiado.set(true);
     setTimeout(() => this.correoCopiado.set(false), 2000);
   }
+
+  /** Reenvío de verificación suspendido mientras no haya correo transaccional. */
+  protected readonly verificacionCorreoActiva = false;
 
   protected async reenviarVerificacion(): Promise<void> {
     if (this.reenviandoVerificacion()) return;

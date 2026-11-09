@@ -1,5 +1,5 @@
 <div class="aviso">
-  Guarda estos códigos ahora — cada uno funciona una sola vez para recuperar
+  Guarda estos códigos ahora: cada uno funciona una sola vez para recuperar
   tu cuenta si olvidas tu contraseña, y no vas a poder volver a verlos
   después de salir de esta pantalla.
 </div>
@@ -12,7 +12,13 @@
 
 <div class="acciones">
   <button type="button" class="boton boton--secundario" (click)="copiarTodos()">
-    {{ copiado() ? 'Copiado ✓' : 'Copiar todos' }}
+    @if (copiado()) {
+      <app-svg-check class="icono" />
+      Copiado
+    } @else {
+      <app-svg-copiar class="icono" />
+      Copiar todos
+    }
   </button>
   <button type="button" class="boton boton--secundario" (click)="descargarTxt()">
     Descargar .txt

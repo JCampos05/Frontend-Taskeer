@@ -552,6 +552,9 @@
 .etiqueta-fecha,
 .etiqueta-asignado,
 .etiqueta-subtareas {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   font-size: var(--font-size-xs);
   padding: 0.1rem 0.45rem;
   border-radius: 999px;
@@ -563,6 +566,11 @@
   color: var(--color-danger);
   background-color: color-mix(in srgb, var(--color-danger) 14%, transparent);
   font-weight: var(--font-weight-medium);
+}
+
+.etiqueta-subtareas__icono {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 .etiqueta-subtareas--completo {

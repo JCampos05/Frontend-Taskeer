@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { SvgCheck } from '../../svgs/svg-check/svg-check';
+import { SvgCopiar } from '../../svgs/svg-copiar/svg-copiar';
 
 /**
  * Muestra los 10 códigos de recuperación en texto plano — UNA sola vez,
@@ -9,6 +11,7 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
 @Component({
   selector: 'app-codigos-recuperacion',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SvgCheck, SvgCopiar],
   templateUrl: './codigos-recuperacion.html',
   styleUrl: './codigos-recuperacion.css',
 })
